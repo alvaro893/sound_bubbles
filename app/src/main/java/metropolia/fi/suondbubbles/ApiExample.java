@@ -10,6 +10,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
+import metropolia.fi.suondbubbles.apiConnection.SearchTask;
+import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
+import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+
 public class ApiExample extends AppCompatActivity implements AsyncResponse {
     EditText search;
     Button search_btn;
@@ -27,10 +32,10 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onClick(View v) {
                 String nameTrack = search.getText().toString();
-                if(nameTrack.length() > 0){
+                if (nameTrack.length() > 0) {
                     searchTrack(nameTrack);
-                }else{
-                    Toast. makeText(ApiExample.this, "Search Box empty", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ApiExample.this, "Search Box empty", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -38,38 +43,19 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_api_example, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void processFinish(String result) {
+
         this.result.setText(result);
+        //ServerFile file = new createServerFileFromJSON(result);
+    }
+
+    private ServerFile CreateServerFileFromJSON(String json){
+        return null;
     }
 
     protected void searchTrack(String name) {
-        name = name.replace(" ", "%20");
-        String url = "http://dev.mw.metropolia.fi/dianag/AudioResourceSpace/plugins/api_audio_search/index.php/?key=M4B-lnwO3clT-MGJmnMM1NGOpJF4q4YNxaBoQzLTjMx9dit4w1QoUZxO3LuVJeQWO03fxaNfdX38tMN1oJ_2ViQq7h_2e1hKcv_h_jAhYXPJJnMayzS-Ih6FcgwvBVaB&link=true&collection=11&search=" + name;
-        SearchTask searchTask = new SearchTask();
-        searchTask.delegate = this;
-        searchTask.execute(url);
+        ServerConnection serverConnection = new ServerConnection();
+        serverConnection.search(name);
         Toast. makeText (getBaseContext(), "searching" ,
                 Toast. LENGTH_LONG )
                 .show();
