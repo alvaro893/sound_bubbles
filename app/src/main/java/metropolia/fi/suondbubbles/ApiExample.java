@@ -44,7 +44,6 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void processFinish(String result) {
-
         this.result.setText(result);
         //ServerFile file = new createServerFileFromJSON(result);
     }
@@ -54,10 +53,11 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
     }
 
     protected void searchTrack(String name) {
-        ServerConnection serverConnection = new ServerConnection();
-        serverConnection.search(name);
-        Toast. makeText (getBaseContext(), "searching" ,
-                Toast. LENGTH_LONG )
-                .show();
+        SearchTask searchTask = new SearchTask();
+        searchTask.delegate = this;
+        searchTask.execute(name);
+        Toast. makeText (getBaseContext(), "searching", Toast. LENGTH_LONG ).show();
     }
+
+
 }

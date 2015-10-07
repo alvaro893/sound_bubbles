@@ -19,26 +19,9 @@ public class SearchTask extends AsyncTask<String, Void, String> {
     private StringBuffer sb;
 
     protected String doInBackground(String... params) {
-        try {
-        URL url = new URL(params[0]);
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            //readStream(in);
-
-            BufferedReader bf = new BufferedReader(new InputStreamReader(in));
-            sb = new StringBuffer("");
-            String line = "";
-            while ((line = bf.readLine()) != null) {
-                sb.append(line);
-            }
-            bf.close();
-            System. out .println(sb.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-
-        }
-        return sb.toString();
+        ServerConnection serverConnection = new ServerConnection();
+        String searchResult = serverConnection.search(params[0]);
+        return searchResult;
     }
 
     protected void onPostExecute(String result) {
