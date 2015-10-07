@@ -3,9 +3,9 @@
 
 ## Pushing changes to this Repository
 - Never push directly to the master
-- instead create a pull request (PR)
+- Create a pull request (PR)
 
-Hence you firs make a branch:
+Hence you first make a branch:
 - `git checkout -b your-branch-name`
 - add the changed files `git add --all` for all files
 - `git commit -m 'my commit message'`
@@ -24,3 +24,14 @@ After that, go to GitHub:
 - `git status` all information about your non committed changes
 - `git reset --hard HEAD` destroy all changes. USE CAREFULLY
 ### last advice: use [Google](www.google.com) :)
+
+## Testing in Android studio
+- add `testCompile 'junit:junit:4.12'` to "dependencies" in build.gradle (Module:app)
+- Create folder `app/src/test/java` if needed
+
+#### To create a testing class
+- Open your class
+- In the editor (not in the class name) right-click and select `Go To` -> `Tests`
+- Follow the stepts to create the test
+
+#### See the [documentation](https://developer.android.com/training/testing/unit-testing/local-unit-tests.html#run)
