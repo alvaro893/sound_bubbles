@@ -43,8 +43,14 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
     }
 
     @Override
-    public void processFinish(String result) {
-        this.result.setText(result);
+    public void processFinish(ServerFile[] result) {
+        StringBuilder text = new StringBuilder();
+        text.append("--Found " + result.length + " items--\n");
+
+        for(int i = 0; i < result.length; i++){
+            text.append(i+1 + " " + result[i].getTitle() + " - " + result[i].getSoundType() + " - " + result[i].getCategory() + '\n');
+        }
+        this.result.setText(text.toString());
         //ServerFile file = new createServerFileFromJSON(result);
     }
 
@@ -53,6 +59,7 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
     }
 
     protected void searchTrack(String name) {
+        name = name.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
         searchTask.execute(name);
