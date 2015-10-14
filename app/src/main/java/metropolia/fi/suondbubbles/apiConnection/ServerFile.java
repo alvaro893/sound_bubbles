@@ -11,13 +11,17 @@ import java.net.URL;
  * This class should recive the JSON
  */
 public class ServerFile {
-    private String title, filename, category, soundType, fileExtension, collectionName;
+    private String title, filename, category, soundType, fileExtension, collectionName, description, tags;
     private int lenght, collectionID;
-    private double fileSize;
+    private double fileSize, lat, lon;
     private URL link;
 
-    public ServerFile(JSONObject json)
-    {
+    public ServerFile(){
+
+    }
+
+    public ServerFile(JSONObject json){
+        // TODO: add missing fields to constructor ?
         Log.d("checkServerFile", json.toString());
         try {
             if (json.has("Title")) {
@@ -80,44 +84,115 @@ public class ServerFile {
         }
     }
 
-
-    public URL getLink() {
-        return link;
-    }
-
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getFilename() {
         return filename;
     }
 
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     public String getCategory() {
         return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getSoundType() {
         return soundType;
     }
 
+    public void setSoundType(String soundType) {
+        this.soundType = soundType;
+    }
+
     public String getFileExtension() {
         return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
     }
 
     public String getCollectionName() {
         return collectionName;
     }
 
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
     public int getLenght() {
         return lenght;
+    }
+
+    public void setLenght(int lenght) {
+        this.lenght = lenght;
     }
 
     public int getCollectionID() {
         return collectionID;
     }
 
+    public void setCollectionID(int collectionID) {
+        this.collectionID = collectionID;
+    }
+
     public double getFileSize() {
         return fileSize;
+    }
+
+    public void setFileSize(double fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    public URL getLink() {
+        return link;
+    }
+
+    public void setLink(URL link) {
+        this.link = link;
     }
 }

@@ -33,8 +33,7 @@ public class ServerConnection {
         Builder uri = new Uri.Builder()
                 .scheme("http")
                 .authority(this.authority)
-                .path(this.path)
-                .appendQueryParameter("key", apiKey);
+                .path(this.path);
         return uri;
     }
 
@@ -76,6 +75,7 @@ public class ServerConnection {
             urlConnection.setDoOutput(true); // This set the request as a post request
 
             // payload to send
+            // TODO: implement upload file in post
             urlConnection.setChunkedStreamingMode(0);
             OutputStream out = urlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
@@ -126,7 +126,7 @@ public class ServerConnection {
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_auth/auth.php/");
         String builtUrl = uri.build().toString();
-        // parameters
+        // parameters to send
         HashMap<String,String> params = new HashMap<>();
         params.put("username", user);
         params.put("password", pass);
@@ -152,16 +152,35 @@ public class ServerConnection {
     public String search(String search){
 
         Uri.Builder uri = setUri();
-            uri.appendEncodedPath("api_audio_search/index.php/")
-            .appendQueryParameter("link", "true")
-            .appendQueryParameter("collection", "11")
-            .appendQueryParameter("search", search.trim());
+        uri.appendEncodedPath("api_audio_search/index.php/")
+                .appendQueryParameter("key", apiKey)
+                .appendQueryParameter("link", "true")
+                .appendQueryParameter("collection", "11")
+                .appendQueryParameter("search", search.trim());
 
         String builtUrl = uri.build().toString();
         return doHttpGetRequest(builtUrl);
     }
-    public void upload(){
-        // TODO: implement upload
+    public String upload(ServerFile file){
+        Uri.Builder uri = setUri();
+        uri.appendEncodedPath("api_upload/");
+        String builtUrl = uri.build().toString();
+
+        // parameters to send
+        HashMap<String,String> params = new HashMap<>();
+        params.put("key", apiKey);
+        params.put("collection", Integer.toString(file.getCollectionID()));
+        params.put("resourcetype", "4");
+        params.put("field75", file.getCategory());
+        params.put("field76", file.getSoundType());
+        params.put("field73", file.getDescription());
+        params.put("field74", file.getTags());
+        params.put("field8", file.getTitle());
+        params.put("field77", Double.toString(file.getLat()));
+        params.put("field79", Double.toString(file.getLat()));
+
+       // return doHttpPostRequest()
+        return doHttpPostRequest(builtUrl, params);
     }
 
 

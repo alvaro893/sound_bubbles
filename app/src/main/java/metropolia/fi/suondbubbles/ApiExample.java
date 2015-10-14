@@ -43,12 +43,13 @@ public class ApiExample extends AppCompatActivity implements AsyncResponse {
     }
 
     @Override
-    public void processFinish(ServerFile[] result) {
+    public void processFinish(Object result) {
+        ServerFile[] filesArray = (ServerFile[]) result;
         StringBuilder text = new StringBuilder();
-        text.append("--Found " + result.length + " items--\n");
+        text.append("--Found " + filesArray.length + " items--\n");
 
-        for(int i = 0; i < result.length; i++){
-            text.append(i+1 + " " + result[i].getTitle() + " - " + result[i].getSoundType() + " - " + result[i].getCategory() + '\n');
+        for(int i = 0; i < filesArray.length; i++){
+            text.append(i+1 + " " + filesArray[i].getTitle() + " - " + filesArray[i].getSoundType() + " - " + filesArray[i].getCategory() + '\n');
         }
         this.result.setText(text.toString());
         //ServerFile file = new createServerFileFromJSON(result);
