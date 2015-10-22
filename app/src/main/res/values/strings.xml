@@ -3,5 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_api_example">ApiExample</string>
+    <string name="title_activity_search_Activity">searchActivity</string>
+    <string name="title_activity_upload">UploadActivity</string>
 </resources>

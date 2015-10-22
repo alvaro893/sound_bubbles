@@ -34,7 +34,12 @@ public class SearchTask extends AsyncTask<String, Void, ServerFile[]> {
     }
 
     protected void onPostExecute(ServerFile[] result) {
-        delegate.processFinish(result);
+        try {
+            delegate.processFinish(result);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d("processFinish", e.getMessage());
+        }
     }
 
 }
