@@ -27,7 +27,7 @@ import java.util.HashMap;
  */
 public class ServerConnection {
     public String Lastresponse;
-    public String status;
+    public boolean isLogged = false;
     private String apiKey = null;
     private String authority = "dev.mw.metropolia.fi";
     private String path = "dianag/AudioResourceSpace/plugins/";
@@ -116,16 +116,10 @@ public class ServerConnection {
     }
 
     public ServerConnection(){
-        try {
-            auth("androidApp", "1uithread");
-            status = "logged";
-        } catch (NoApiKeyException e) {
-            e.printStackTrace();
-            status = "not logged";
-        }
+
     }
 
-    public String auth(String user, String pass) throws NoApiKeyException {
+    public void auth(String user, String pass) throws NoApiKeyException {
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_auth/auth.php/");
         String builtUrl = uri.build().toString();
@@ -138,18 +132,20 @@ public class ServerConnection {
         try {
             response = new JSONObject(doHttpPostRequest(builtUrl, params));
         }catch (Exception e){
-            e.printStackTrace();
             throw new NoApiKeyException();
         }
 
 
         try {
             this.apiKey = response.getString("api_key");
+            Log.d("ServerConnection", apiKey);
+            if(this.apiKey.length() > 35){
+                this.isLogged = true;
+                throw new NoApiKeyException();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(this.apiKey.equals(null)) throw new NoApiKeyException();
-        return this.apiKey;
     }
 
     public String search(String search){
