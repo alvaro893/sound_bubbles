@@ -2,9 +2,8 @@ package metropolia.fi.suondbubbles.apiConnection.testactivities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,18 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.RawFilesAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 import metropolia.fi.suondbubbles.apiConnection.UploadTask;
 
 public class UploadActivity extends AppCompatActivity implements AsyncResponse {

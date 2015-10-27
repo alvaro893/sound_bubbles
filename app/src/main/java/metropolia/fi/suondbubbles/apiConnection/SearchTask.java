@@ -21,7 +21,7 @@ public class SearchTask extends AsyncTask<String, Void, ServerFile[]> {
         try {
             jsonArray = new JSONArray(searchResult);
             fileArray = new ServerFile[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 fileArray[i] = new ServerFile(jsonArray.getJSONArray(i).getJSONObject(0));
             }
         } catch (JSONException e) {
@@ -36,7 +36,7 @@ public class SearchTask extends AsyncTask<String, Void, ServerFile[]> {
     protected void onPostExecute(ServerFile[] result) {
         try {
             delegate.processFinish(result);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             Log.d("processFinish", e.getMessage());
         }
