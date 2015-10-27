@@ -2,17 +2,23 @@ package metropolia.fi.suondbubbles.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
+import metropolia.fi.suondbubbles.apiConnection.LoginTask;
+import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 
 public class LoginActivity extends AppCompatActivity implements AsyncResponse {
-    Button activity_login_btn;
-    EditText activity_login_et_user, activity_login_et_pass;
+    private Button activity_login_btn;
+    private EditText activity_login_et_user, activity_login_et_pass;
+    private ServerConnection serverConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +27,19 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         activity_login_btn = (Button) findViewById(R.id.go_button);
         activity_login_et_user = (EditText) findViewById(R.id.username);
         activity_login_et_pass = (EditText) findViewById(R.id.password);
+
+        // button click listener
+        activity_login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String user = LoginActivity.this.activity_login_et_user.getText().toString();
+                String pass = LoginActivity.this.activity_login_et_pass.getText().toString();
+                if(isFormValid()){
+                    login(user, pass);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -45,8 +64,36 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         return super.onOptionsItemSelected(item);
     }
 
+    public void login(String user, String pass){
+        LoginTask loginTask = new LoginTask();
+        loginTask.delegate = this;
+        loginTask.execute(user, pass);
+        Toast.makeText(this, R.string.logging_activity_login, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void processFinish(Object result) {
+        this.serverConnection = (ServerConnection) result;
+        if(serverConnection.isLogged == true){
+            //TODO: Create intent to next activity
+            Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(this, R.string.nologin_activity_login, Toast.LENGTH_LONG).show();
+        }
+    }
 
+    private boolean isFormValid(){
+        boolean isUserEmpty = this.activity_login_et_user.getText().toString().isEmpty();
+        boolean isPassEmpty = this.activity_login_et_pass.getText().toString().isEmpty();
+        if(isUserEmpty){
+            this.activity_login_et_user.setError(getString(R.string.emptyfiled_activity_login));
+        }
+        if(isPassEmpty){
+            this.activity_login_et_pass.setError(getString(R.string.emptyfiled_activity_login));
+        }
+        if(isPassEmpty || isUserEmpty)
+            return false;
+        else
+            return true;
     }
 }
