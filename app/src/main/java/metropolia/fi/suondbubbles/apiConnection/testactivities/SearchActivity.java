@@ -1,4 +1,4 @@
-package metropolia.fi.suondbubbles;
+package metropolia.fi.suondbubbles.apiConnection.testactivities;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -14,8 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.net.URL;
-import java.util.Random;
 
+import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
 import metropolia.fi.suondbubbles.apiConnection.SearchTask;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;

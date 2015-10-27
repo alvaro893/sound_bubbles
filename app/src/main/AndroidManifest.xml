@@ -19,17 +19,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".apiConnection.testactivities.SearchActivity"
             android:label="@string/title_activity_search_Activity" >
+
         </activity>
         <activity
-            android:name=".UploadActivity"
+            android:name=".apiConnection.testactivities.UploadActivity"
             android:label="@string/title_activity_upload" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
