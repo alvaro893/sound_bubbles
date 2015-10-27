@@ -21,11 +21,14 @@
         <activity
             android:name=".apiConnection.testactivities.SearchActivity"
             android:label="@string/title_activity_search_Activity" >
-
         </activity>
         <activity
             android:name=".apiConnection.testactivities.UploadActivity"
             android:label="@string/title_activity_upload" >
+        </activity>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:label="@string/title_activity_login" >
         </activity>
     </application>
 
