@@ -29,17 +29,18 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
 
     }
 
-    public View getView(int position, View convertView, ViewGroup
-            parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.row_layout, parent, false);
-        TextView name, category;
-        name = (TextView) rowView.findViewById(R.id.row_name);
-        category = (TextView) rowView.findViewById(R.id.row_category);
+        View rowView = inflater.inflate(R.layout.grid_element, parent, false);
+        TextView name, category, soundType;
+        name = (TextView) rowView.findViewById(R.id.grid_name);
+        category = (TextView) rowView.findViewById(R.id.grid_category);
+        soundType = (TextView) rowView.findViewById(R.id.grid_sound_type);
 
         name.setText(serverFileArray.get(position).getTitle());
         category.setText(serverFileArray.get(position).getCategory());
+        soundType.setText(serverFileArray.get(position).getSoundType());
         return rowView;
     }
 }

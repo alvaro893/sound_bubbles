@@ -16,4 +16,7 @@
     <string name="emptyfiled_activity_login">Field is empty</string>
     <string name="logging_activity_login">Logging</string>
     <string name="logsucess_activity_login">login successful</string>
+    <string name="searchhint_activity_search">Search</string>
+    <string name="cancelbtn_activity_search">Cancel</string>
+    <string name="addbtn_activity_search">Add</string>
 </resources>

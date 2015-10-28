@@ -19,8 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".apiConnection.testactivities.SearchActivity"
-            android:label="@string/title_activity_search_Activity" >
+            android:name=".activities.SearchActivity"
+            android:label="@string/title_activity_search_Activity"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".apiConnection.testactivities.UploadActivity"

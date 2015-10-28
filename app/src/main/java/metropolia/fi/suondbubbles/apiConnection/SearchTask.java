@@ -9,13 +9,15 @@ import org.json.JSONException;
 /**
  * Created by alvarob on 25.9.2015.
  */
-public class SearchTask extends AsyncTask<String, Void, ServerFile[]> {
+public class SearchTask extends AsyncTask<Object, Void, ServerFile[]> {
     public AsyncResponse delegate = null;
-    private StringBuffer sb;
+    //private StringBuffer sb;
 
-    protected ServerFile[] doInBackground(String... params) {
-        ServerConnection serverConnection = new ServerConnection();
-        String searchResult = serverConnection.search(params[0]);
+    protected ServerFile[] doInBackground(Object... params) {
+        Log.d("params", ""+params.length);
+        ServerConnection serverConnection = (ServerConnection) params[0];
+        String strToSearch = (String) params[1];
+        String searchResult = serverConnection.search(strToSearch);
         JSONArray jsonArray;
         ServerFile[] fileArray = null;
         try {
