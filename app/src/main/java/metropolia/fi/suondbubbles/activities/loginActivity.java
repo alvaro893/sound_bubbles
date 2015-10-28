@@ -1,8 +1,8 @@
 package metropolia.fi.suondbubbles.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +19,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     private Button activity_login_btn;
     private EditText activity_login_et_user, activity_login_et_pass;
     private ServerConnection serverConnection;
+    private Intent intentSearchActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         activity_login_btn = (Button) findViewById(R.id.go_button);
         activity_login_et_user = (EditText) findViewById(R.id.username);
         activity_login_et_pass = (EditText) findViewById(R.id.password);
+        intentSearchActivity = new Intent(this, SearchActivity.class);
 
         // button click listener
         activity_login_btn.setOnClickListener(new View.OnClickListener() {
@@ -34,7 +36,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
             public void onClick(View view) {
                 String user = LoginActivity.this.activity_login_et_user.getText().toString();
                 String pass = LoginActivity.this.activity_login_et_pass.getText().toString();
-                if(isFormValid()){
+                if (isFormValid()) {
                     login(user, pass);
                 }
             }
@@ -67,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     public void login(String user, String pass){
         LoginTask loginTask = new LoginTask();
         loginTask.delegate = this;
-        loginTask.execute(user, pass);
+        loginTask.execute(user, pass); // when the asynctask is finished the processFinish method is executed
         Toast.makeText(this, R.string.logging_activity_login, Toast.LENGTH_SHORT).show();
     }
 
@@ -75,8 +77,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     public void processFinish(Object result) {
         this.serverConnection = (ServerConnection) result;
         if(serverConnection.isLogged == true){
-            //TODO: Create intent to next activity
+            intentSearchActivity.putExtra("ServerConnection", serverConnection);
+            startActivity(intentSearchActivity);
             Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_LONG).show();
+
         }else{
             Toast.makeText(this, R.string.nologin_activity_login, Toast.LENGTH_LONG).show();
         }

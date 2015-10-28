@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".apiConnection.testactivities.SearchActivity"
+            android:name=".activities.SearchActivity"
             android:label="@string/title_activity_search_Activity" >
         </activity>
         <activity
