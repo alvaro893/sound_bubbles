@@ -83,20 +83,6 @@ public class ServerFile {
         }
     }
 
-    @Override
-    public String toString() {
-        return this.getTitle();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if(this.filename.equals( ((ServerFile) o).getFilename()) ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     public String getTitle() {
         return title;
     }
