@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -26,7 +25,7 @@ import java.util.HashMap;
 /**
  * Created by alvarob on 30.9.2015.
  */
-public class ServerConnection implements Serializable {
+public class ServerConnection {
     public String Lastresponse;
     public boolean isLogged = false;
     private String apiKey = null;
@@ -126,8 +125,8 @@ public class ServerConnection implements Serializable {
         String builtUrl = uri.build().toString();
         // parameters to send
         HashMap<String,String> params = new HashMap<>();
-        params.put("username", user.trim());
-        params.put("password", pass.trim());
+        params.put("username", user);
+        params.put("password", pass);
 
         JSONObject response;
         try {
