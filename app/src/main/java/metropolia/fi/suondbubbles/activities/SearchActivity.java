@@ -38,6 +38,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     //private Button search_btn, play_btn;
     //private TextView result;
     private ServerFile[] filesArray;
+    private ArrayList<ServerFile> filesList;
     private ServerConnection serverConnection;
 
     @Override
@@ -53,9 +54,9 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         //serverConnection = (ServerConnection) getIntent().getSerializableExtra("ServerConnection");
         activity_search_et_search = (EditText) findViewById(R.id.search);
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
+        activity_search_grid = (GridView) findViewById(R.id.gridView);
         // broad search in order to show something
-        //performSearch(" ");
-        //showList();
+        performSearch(" ");
         //result.setMovementMethod(new ScrollingMovementMethod());
 
 //        search_btn.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +111,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     private void showList() {
-        final ArrayList<ServerFile> filesList = new ArrayList<ServerFile>(Arrays.asList(filesArray));
+        filesList = new ArrayList<>(Arrays.asList(filesArray));
+        Log.d("filesArray", filesList.toString());
         ServerFilesArrayAdapter adapter;
         adapter = new ServerFilesArrayAdapter(this, filesList);
         this.activity_search_grid.setAdapter(adapter);
@@ -126,12 +128,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         });
     }
 
+    // processFinish is called after this method automatically
     protected void performSearch(String search) {
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
         Log.d("serverConnection", serverConnection.toString());
-        searchTask.execute(serverConnection, search.trim()); // the result will be in processFinnish method
+        searchTask.execute(serverConnection, search.trim());
         Toast. makeText (getBaseContext(), "searching", Toast. LENGTH_LONG ).show();
     }
 

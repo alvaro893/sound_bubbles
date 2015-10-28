@@ -33,12 +33,14 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
         LayoutInflater inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.grid_element, parent, false);
-        TextView name, category;
+        TextView name, category, soundType;
         name = (TextView) rowView.findViewById(R.id.grid_name);
         category = (TextView) rowView.findViewById(R.id.grid_category);
+        soundType = (TextView) rowView.findViewById(R.id.grid_sound_type);
 
         name.setText(serverFileArray.get(position).getTitle());
         category.setText(serverFileArray.get(position).getCategory());
+        soundType.setText(serverFileArray.get(position).getSoundType());
         return rowView;
     }
 }
