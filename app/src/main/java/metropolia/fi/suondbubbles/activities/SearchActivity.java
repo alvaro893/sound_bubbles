@@ -1,82 +1,57 @@
 package metropolia.fi.suondbubbles.activities;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import metropolia.fi.suondbubbles.R;
-import metropolia.fi.suondbubbles.adapters.RawFilesAdapter;
 import metropolia.fi.suondbubbles.adapters.ServerFilesArrayAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
 import metropolia.fi.suondbubbles.apiConnection.SearchTask;
-import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private EditText activity_search_et_search;
     private GridView activity_search_grid;
-    //private Button search_btn, play_btn;
-    //private TextView result;
+    private Button activity_search_btn_cancel, activity_search_btn_add;
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
-    private ServerConnection serverConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        Bundle extras = getIntent().getExtras();
-        if(extras == null) {
-            new Exception();
-        } else {
-            serverConnection = (ServerConnection) extras.getSerializable("ServerConnection");
-        }
-        //serverConnection = (ServerConnection) getIntent().getSerializableExtra("ServerConnection");
+
+        // don't use this activity if the user isn't logged yet
+        if(!SoundBubbles.userIsLogged())
+            SoundBubbles.openLoginActivity(this);
+        // initialize views
         activity_search_et_search = (EditText) findViewById(R.id.search);
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
         activity_search_grid = (GridView) findViewById(R.id.gridView);
+        activity_search_btn_cancel = (Button) findViewById(R.id.cancel);
+        activity_search_btn_add = (Button) findViewById(R.id.add);
+
         // broad search in order to show something
         performSearch(" ");
-        //result.setMovementMethod(new ScrollingMovementMethod());
-
-//        search_btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // hide keyboard
-//                activity_search_et_search.clearFocus();
-//                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(activity_search_et_search.getWindowToken(), 0);
-//
-//                String nameTrack = activity_search_et_search.getText().toString();
-//                if (nameTrack.length() > 0) {
-//                    performSearch(nameTrack);
-//                } else {
-//                    Toast.makeText(SearchActivity.this, "Search Box empty", Toast.LENGTH_SHORT).show();
-//                }
-//                setPlayButton(play_btn);
-//            }
-//        });
-        
+        setCancelButton();
 
     }
 
@@ -85,6 +60,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         return new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                SoundBubbles.hideKeyboard(SearchActivity.this, v);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     performSearch(v.getText().toString());
                     return true;
@@ -94,7 +70,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         };
     }
 
-    //TODO: convert this in media player for every row
     private void playFile(ServerFile file){
 
         URL urlTrack = file.getLink();
@@ -133,8 +108,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
-        Log.d("serverConnection", serverConnection.toString());
-        searchTask.execute(serverConnection, search.trim());
+        Log.d("serverConnection", SoundBubbles.serverConnection.toString());
+        searchTask.execute(SoundBubbles.serverConnection, search.trim());
         Toast. makeText (getBaseContext(), "searching", Toast. LENGTH_LONG ).show();
     }
 
@@ -142,16 +117,37 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     public void processFinish(Object result) {
         filesArray = (ServerFile[]) result;
         showList();
+    }
 
+    private void setCancelButton(){
+        this.activity_search_btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+    }
 
-//        StringBuilder text = new StringBuilder();
-//        text.append("--Found " + filesArray.length + " items--\n");
-//
-//        for(int i = 0; i < filesArray.length; i++){
-//            text.append(i+1 + " " + filesArray[i].getTitle() + " - " + filesArray[i].getSoundType() + " - " + filesArray[i].getCategory() + '\n');
-//        }
-//        this.result.setText(text.toString());
-        //ServerFile file = new createServerFileFromJSON(result);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_logout) {
+            SoundBubbles.logout();
+            SoundBubbles.openLoginActivity(this);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 

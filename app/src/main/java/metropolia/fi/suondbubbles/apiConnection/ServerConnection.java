@@ -26,7 +26,7 @@ import java.util.HashMap;
 /**
  * Created by alvarob on 30.9.2015.
  */
-public class ServerConnection implements Serializable {
+public class ServerConnection {
     public String Lastresponse;
     public boolean isLogged = false;
     private String apiKey = null;
