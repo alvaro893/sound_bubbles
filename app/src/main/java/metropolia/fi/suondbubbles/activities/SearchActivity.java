@@ -3,6 +3,7 @@ package metropolia.fi.suondbubbles.activities;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private Button activity_search_btn_cancel, activity_search_btn_add;
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
+    private MediaPlayer mediaPlayer;
+    private int lastSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +78,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
         URL urlTrack = file.getLink();
         //set up MediaPlayer
-        MediaPlayer mp = new MediaPlayer();
+        mediaPlayer = new MediaPlayer();
         try {
-            mp.setDataSource(SearchActivity.this, Uri.parse(urlTrack.toString()));
-            mp.prepare();
-            mp.start();
+            mediaPlayer.setDataSource(SearchActivity.this, Uri.parse(urlTrack.toString()));
+            mediaPlayer.prepare();
+            mediaPlayer.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,16 +92,41 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private void showList() {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
         Log.d("filesArray", filesList.toString());
-        ServerFilesArrayAdapter adapter;
+        final ServerFilesArrayAdapter adapter;
         adapter = new ServerFilesArrayAdapter(this, filesList);
         this.activity_search_grid.setAdapter(adapter);
 
         // set click for every item
         this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, final View currentGridView, int position, long id) {
                 ServerFile serverFile = filesList.get(position);
                 playFile(serverFile);
+                lastSelected = position;
+                // change background
+                currentGridView.setBackground(ContextCompat.getDrawable(
+                        SearchActivity.this, R.drawable.grid_border_selected));
+                Log.d("adapter", adapter.getName().getText().toString());
+                // set pause button
+                adapter.switchToButtonPause(currentGridView);
+                adapter.getBtn_pause().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(mediaPlayer.isPlaying()){
+                            mediaPlayer.stop();
+                        }
+                        adapter.backToNormal(currentGridView);
+                    }
+                });
+                // remove button when music is gone
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        if(adapter.backToNormal(currentGridView)){
+                            Toast. makeText (getBaseContext(), "stopped", Toast. LENGTH_LONG ).show();
+                        }
+                    }
+                });
             }
 
         });

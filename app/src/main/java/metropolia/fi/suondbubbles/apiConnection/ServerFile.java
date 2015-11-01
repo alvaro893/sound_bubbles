@@ -25,8 +25,10 @@ public class ServerFile {
         try {
             if (json.has("Title")) {
                 this.title = json.getString("Title");
+                if(this.title.isEmpty())
+                    this.title = "((No title))";
             } else {
-                this.title = null;
+                this.title = "((No title))";
             }
             if (json.has("Original filename")) {
                 this.filename = json.getString("Original filename");
@@ -40,8 +42,10 @@ public class ServerFile {
             }
             if (json.has("Category")) {
                 this.category = json.getString("Category");
+                if(this.category.isEmpty())
+                    this.category = "((missed category))";
             }else{
-                this.category = null;
+                this.category = "((missed category))";
             }
             if (json.has("File extension")) {
                 this.fileExtension = json.getString("File extension");
