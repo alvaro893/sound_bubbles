@@ -3,6 +3,7 @@ package metropolia.fi.suondbubbles.activities;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,10 +23,12 @@ import android.widget.Toast;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.ServerFilesArrayAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
+import metropolia.fi.suondbubbles.apiConnection.CategoryTask;
 import metropolia.fi.suondbubbles.apiConnection.SearchTask;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 
@@ -57,6 +60,18 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         performSearch(" ");
         setCancelButton();
 
+        // categories
+        String[] categories = new String[0];
+        CategoryTask categoryTask = new CategoryTask();
+        categoryTask.execute();
+        try {
+            categories = categoryTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        Log.d("categories", Arrays.deepToString(categories));
     }
 
 

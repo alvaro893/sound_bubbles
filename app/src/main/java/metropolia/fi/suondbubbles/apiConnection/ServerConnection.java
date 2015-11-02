@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -309,6 +310,28 @@ public class ServerConnection {
         }
 
         return response;
+    }
+
+    public String[] getCategories(){
+        String urlStr = "http://dev.mw.metropolia.fi/dianag/AudioResourceSpace/plugins/api_upload/help_options.php";
+        String category = "Category";
+        String response = doHttpGetRequest(urlStr);
+        JSONArray jsonArray;
+        JSONObject jsonObject = null;
+        String categories = null;
+        try {
+            jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = (jsonArray.getJSONArray(i).getJSONObject(0));
+                if(jsonObject.has(category))
+                    break;
+            }
+            categories = jsonObject.getString(category);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("JSONException", e.getMessage());
+        }
+        return categories.split(",");
     }
 
 

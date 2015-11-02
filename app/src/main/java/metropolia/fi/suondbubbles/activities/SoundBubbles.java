@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import java.io.Serializable;
 
+import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 
 /**
@@ -56,6 +58,15 @@ import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 
     public static void logout(){
         serverConnection = null;
+    }
+
+    public static void setSimpleSnackbar(View view, String text){
+        Snackbar.make(view, text, Snackbar.LENGTH_LONG)
+                .setAction("CLOSE", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {}
+                })
+                .show();
     }
 
 }

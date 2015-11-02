@@ -46,8 +46,8 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
         setChildViews(rowView);
 
         name.setText(serverFileArray.get(position).getTitle());
-        category.setText(serverFileArray.get(position).getCategory());
-        soundType.setText(serverFileArray.get(position).getSoundType());
+        category.setText(serverFileArray.get(position).getFileExtension());
+        soundType.setText("" + serverFileArray.get(position).getLenght() + " seconds");
         return rowView;
     }
 
