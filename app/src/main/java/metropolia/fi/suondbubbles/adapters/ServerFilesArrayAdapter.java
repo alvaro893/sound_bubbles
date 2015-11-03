@@ -31,29 +31,29 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
 
     }
 
-    private void setChildViews(View rowView){
-        name = (TextView) rowView.findViewById(R.id.grid_name);
-        category = (TextView) rowView.findViewById(R.id.grid_category);
-        soundType = (TextView) rowView.findViewById(R.id.grid_sound_type);
-        btn_pause = (ImageButton) rowView.findViewById(R.id.pause_button);
+    private void setChildViews(View gridElement){
+        name = (TextView) gridElement.findViewById(R.id.grid_name);
+        category = (TextView) gridElement.findViewById(R.id.grid_category);
+        soundType = (TextView) gridElement.findViewById(R.id.grid_sound_type);
+        btn_pause = (ImageButton) gridElement.findViewById(R.id.pause_button);
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.grid_element, parent, false);
+        View gridElement = inflater.inflate(R.layout.grid_element, parent, false);
 
-        setChildViews(rowView);
+        setChildViews(gridElement);
 
         name.setText(serverFileArray.get(position).getTitle());
         category.setText(serverFileArray.get(position).getFileExtension());
         soundType.setText("" + serverFileArray.get(position).getLenght() + " seconds");
-        return rowView;
+        return gridElement;
     }
 
-    public boolean switchToButtonPause(View rowView){
-        if(rowView != null){
-            setChildViews(rowView);
+    public boolean switchToButtonPause(View gridElement){
+        if(gridElement != null){
+            setChildViews(gridElement);
             name.setVisibility(View.GONE);
             category.setVisibility(View.GONE);
             soundType.setVisibility(View.GONE);
@@ -63,9 +63,9 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
             return false;
     }
 
-    public boolean backToNormal(View rowView){
-        if(rowView != null){
-            setChildViews(rowView);
+    public boolean backToNormal(View gridElement){
+        if(gridElement != null){
+            setChildViews(gridElement);
             name.setVisibility(View.VISIBLE);
             category.setVisibility(View.VISIBLE);
             soundType.setVisibility(View.VISIBLE);

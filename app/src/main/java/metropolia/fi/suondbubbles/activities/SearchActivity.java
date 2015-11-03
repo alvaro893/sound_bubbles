@@ -3,7 +3,6 @@ package metropolia.fi.suondbubbles.activities;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +24,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import metropolia.fi.suondbubbles.R;
+import metropolia.fi.suondbubbles.adapters.CategoriesAdapter;
 import metropolia.fi.suondbubbles.adapters.ServerFilesArrayAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
 import metropolia.fi.suondbubbles.apiConnection.CategoryTask;
@@ -40,6 +39,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private ArrayList<ServerFile> filesList;
     private MediaPlayer mediaPlayer;
     private int lastSelected;
+    private String[] categories;
+    private boolean categoryWasSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +58,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         activity_search_btn_add = (Button) findViewById(R.id.add);
 
         // broad search in order to show something
-        performSearch(" ");
+        //performSearch(" ");
         setCancelButton();
 
         // categories
-        String[] categories = new String[0];
-        CategoryTask categoryTask = new CategoryTask();
-        categoryTask.execute();
-        try {
-            categories = categoryTask.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        Log.d("categories", Arrays.deepToString(categories));
+        showCategoriesList();
+        categoryWasSelected = false;
+
     }
 
 
@@ -104,7 +97,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     }
 
-    private void showList() {
+    private void showServerFileList() {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
         Log.d("filesArray", filesList.toString());
         final ServerFilesArrayAdapter adapter;
@@ -137,13 +130,27 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        if(adapter.backToNormal(currentGridView)){
-                            Toast. makeText (getBaseContext(), "stopped", Toast. LENGTH_LONG ).show();
+                        if (adapter.backToNormal(currentGridView)) {
+                            Toast.makeText(getBaseContext(), "stopped", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
             }
 
+        });
+    }
+
+    private void showCategoriesList(){
+        getCategories();
+        CategoriesAdapter adapter = new CategoriesAdapter(this, this.categories);
+        this.activity_search_grid.setAdapter(adapter);
+
+        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long l) {
+                performSearch(categories[itemPosition]);
+                categoryWasSelected = true;
+            }
         });
     }
 
@@ -160,7 +167,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void processFinish(Object result) {
         filesArray = (ServerFile[]) result;
-        showList();
+        showServerFileList();
     }
 
     private void setCancelButton(){
@@ -194,5 +201,27 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         return super.onOptionsItemSelected(item);
     }
 
+    private void getCategories(){
+        categories = new String[0];
+        CategoryTask categoryTask = new CategoryTask();
+        categoryTask.execute();
+        try {
+            categories = categoryTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        Log.d("categories", Arrays.deepToString(categories));
+    }
 
+    @Override
+    public void onBackPressed() {
+        if(categoryWasSelected){
+            showCategoriesList();
+            categoryWasSelected = false;
+        }else{
+            super.onBackPressed();
+        }
+    }
 }
