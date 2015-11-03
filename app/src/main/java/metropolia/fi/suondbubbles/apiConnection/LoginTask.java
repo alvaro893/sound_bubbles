@@ -13,6 +13,7 @@ public class LoginTask extends AsyncTask<String, Void, ServerConnection> {
     protected ServerConnection doInBackground(String ...params){
 
         ServerConnection serverConnection = new ServerConnection();
+        serverConnection.switchToMuseumAPI();
         try {
             serverConnection.auth(params[0], params[1]);
         } catch (NoApiKeyException e) {

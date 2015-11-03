@@ -313,9 +313,10 @@ public class ServerConnection {
     }
 
     public String[] getCategories(){
-        String urlStr = "http://dev.mw.metropolia.fi/dianag/AudioResourceSpace/plugins/api_upload/help_options.php";
+        Uri.Builder uri = setUri();
+        uri.appendEncodedPath("api_upload/help_options.php");
         String category = "Category";
-        String response = doHttpGetRequest(urlStr);
+        String response = doHttpGetRequest(uri.build().toString());
         JSONArray jsonArray;
         JSONObject jsonObject = null;
         String categories = null;
@@ -334,5 +335,9 @@ public class ServerConnection {
         return categories.split(",");
     }
 
+    public void switchToMuseumAPI(){
+        this.authority = "resourcespace.tekniikanmuseo.fi";
+        this.path = "plugins";
+    }
 
 }
