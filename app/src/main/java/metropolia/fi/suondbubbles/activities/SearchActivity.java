@@ -38,9 +38,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
     private MediaPlayer mediaPlayer;
-    private int lastSelected;
+    private Integer lastSelected;
     private String[] categories;
     private boolean categoryWasSelected;
+    private View lastElementSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +111,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             public void onItemClick(AdapterView<?> parent, final View currentGridView, int position, long id) {
                 ServerFile serverFile = filesList.get(position);
                 playFile(serverFile);
-                lastSelected = position;
-                // change background
-                currentGridView.setBackground(ContextCompat.getDrawable(
-                        SearchActivity.this, R.drawable.grid_border_selected));
+                selectLastElement(position, currentGridView);
                 Log.d("adapter", adapter.getName().getText().toString());
                 // set pause button
                 adapter.switchToButtonPause(currentGridView);
@@ -223,5 +221,16 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         }else{
             super.onBackPressed();
         }
+    }
+
+    // make visible the clicked element
+    private void selectLastElement(int position, View currentGridView){
+        if(lastElementSelected != null){
+            lastElementSelected.setBackground(ContextCompat.getDrawable(SearchActivity.this, R.drawable.grid_border));
+        }
+        lastSelected = position;
+        lastElementSelected = currentGridView;
+        currentGridView.setBackground(ContextCompat.getDrawable(
+                SearchActivity.this, R.drawable.grid_border_selected));
     }
 }

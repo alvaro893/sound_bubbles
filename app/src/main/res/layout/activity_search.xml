@@ -21,6 +21,7 @@
             android:background="@drawable/rounded"
             android:inputType="text"
             android:id="@+id/search"
+            android:drawableRight="@android:drawable/ic_menu_search"
             android:hint="@string/searchhint_activity_search"
             android:layout_marginTop="15dp" />
 
@@ -38,7 +39,7 @@
             android:id="@+id/gridView"
             android:columnWidth="90dp"
             android:numColumns="3"
-            android:verticalSpacing="0dp"
+            android:verticalSpacing="5dp"
             android:horizontalSpacing="0dp"
             android:stretchMode="columnWidth"
             android:gravity="center"/>
@@ -57,6 +58,8 @@
             android:layout_height="match_parent"
             android:text="@string/cancelbtn_activity_search"
             android:id="@+id/cancel"
+            android:backgroundTint="#ff1d44"
+            android:textColor="@android:color/white"
             android:layout_gravity="left"
             android:layout_weight="0.50" />
 
@@ -65,6 +68,8 @@
             android:layout_height="match_parent"
             android:text="@string/addbtn_activity_search"
             android:id="@+id/add"
+            android:backgroundTint="#35ba7a"
+            android:textColor="@android:color/white"
             android:layout_gravity="right"
             android:layout_weight="0.50" />
     </LinearLayout>
