@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +27,7 @@ import java.util.HashMap;
 /**
  * Created by alvarob on 30.9.2015.
  */
-public class ServerConnection implements Serializable {
+public class ServerConnection {
     public String Lastresponse;
     public boolean isLogged = false;
     private String apiKey = null;
@@ -311,5 +312,32 @@ public class ServerConnection implements Serializable {
         return response;
     }
 
+    public String[] getCategories(){
+        Uri.Builder uri = setUri();
+        uri.appendEncodedPath("api_upload/help_options.php");
+        String category = "Category";
+        String response = doHttpGetRequest(uri.build().toString());
+        JSONArray jsonArray;
+        JSONObject jsonObject = null;
+        String categories = null;
+        try {
+            jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = (jsonArray.getJSONArray(i).getJSONObject(0));
+                if(jsonObject.has(category))
+                    break;
+            }
+            categories = jsonObject.getString(category);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("JSONException", e.getMessage());
+        }
+        return categories.split(",");
+    }
+
+    public void switchToMuseumAPI(){
+        this.authority = "resourcespace.tekniikanmuseo.fi";
+        this.path = "plugins";
+    }
 
 }

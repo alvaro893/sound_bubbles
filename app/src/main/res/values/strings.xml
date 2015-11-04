@@ -19,4 +19,5 @@
     <string name="searchhint_activity_search">Search</string>
     <string name="cancelbtn_activity_search">Cancel</string>
     <string name="addbtn_activity_search">Add</string>
+    <string name="action_logout">Log out</string>
 </resources>

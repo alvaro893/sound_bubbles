@@ -18,13 +18,13 @@ import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     private Button activity_login_btn;
     private EditText activity_login_et_user, activity_login_et_pass;
-    private ServerConnection serverConnection;
     private Intent intentSearchActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        checkHasLogged();
         activity_login_btn = (Button) findViewById(R.id.go_button);
         activity_login_et_user = (EditText) findViewById(R.id.username);
         activity_login_et_pass = (EditText) findViewById(R.id.password);
@@ -75,9 +75,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void processFinish(Object result) {
-        this.serverConnection = (ServerConnection) result;
-        if(serverConnection.isLogged == true){
-            intentSearchActivity.putExtra("ServerConnection", serverConnection);
+        // save ServerConnection object
+        SoundBubbles.serverConnection = (ServerConnection) result;
+
+        if(SoundBubbles.userIsLogged()){
             startActivity(intentSearchActivity);
             Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_LONG).show();
 
@@ -99,5 +100,14 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
             return false;
         else
             return true;
+    }
+
+    private void checkHasLogged(){
+        if(SoundBubbles.serverConnection == null){
+            return;
+        }
+        if(!SoundBubbles.serverConnection.isLogged){
+            startActivity(this.intentSearchActivity);
+        }
     }
 }
