@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/username"
         android:hint="@string/username_activity_login"
-        android:text="androidApp"
+        android:text="androidTest"
         android:inputType="textPersonName"
         android:maxLines="1"
         android:background="@drawable/rounded"

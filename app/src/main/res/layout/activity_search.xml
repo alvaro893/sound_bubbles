@@ -52,23 +52,12 @@
         android:layout_height="wrap_content"
         android:weightSum="1">
 
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/cancelbtn_activity_search"
-            android:id="@+id/cancel"
-            android:backgroundTint="#ff1d44"
-            android:textColor="@android:color/white"
-            android:layout_gravity="left"
-            android:layout_weight="0.50" />
-
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/addbtn_activity_search"
             android:id="@+id/add"
-            android:backgroundTint="#35ba7a"
+            android:background="@color/passive_aqua"
             android:textColor="@android:color/white"
             android:layout_gravity="right"
             android:layout_weight="0.50" />

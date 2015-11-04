@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="passive_green">#00C853</color>
+    <color name="active_green">#00E676</color>
+    <color name="passive_aqua">#abcecb</color>
+    <color name="active_aqua">#8beadc</color>
+    <color name="passive_pink">#d55482</color>
+    <color name="active_pink">#ef2275</color>
+    <color name="passive_lemon">#9E9D24</color>
+    <color name="active_lemon">#dbf200</color>
+    <color name="passive_seawave">#1e3a42</color>
+    <color name="active_seawave">#0f7384</color>
+    <color name="passive_blue">#00B8D4</color>
+    <color name="active_blue">#00E5FF</color>
+    <color name="passive_red">#D50000</color>
+    <color name="active_red">#FF1744</color>
+    <color name="passive_orange">#CE9B36</color>
+    <color name="active_orange">#ffb000</color>
+</resources>

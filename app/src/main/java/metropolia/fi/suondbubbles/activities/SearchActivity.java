@@ -34,7 +34,7 @@ import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private EditText activity_search_et_search;
     private GridView activity_search_grid;
-    private Button activity_search_btn_cancel, activity_search_btn_add;
+    private Button activity_search_btn_add;
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
     private MediaPlayer mediaPlayer;
@@ -55,12 +55,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         activity_search_et_search = (EditText) findViewById(R.id.search);
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
         activity_search_grid = (GridView) findViewById(R.id.gridView);
-        activity_search_btn_cancel = (Button) findViewById(R.id.cancel);
         activity_search_btn_add = (Button) findViewById(R.id.add);
 
         // broad search in order to show something
         //performSearch(" ");
-        setCancelButton();
+        setAddButton();
 
         // categories
         showCategoriesList();
@@ -168,8 +167,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         showServerFileList();
     }
 
-    private void setCancelButton(){
-        this.activity_search_btn_cancel.setOnClickListener(new View.OnClickListener() {
+    private void setAddButton(){
+        this.activity_search_btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
