@@ -45,7 +45,7 @@ public class Bubble extends View {
         super.onDraw(canvas);
 
         rectCoordinates.right = canvas.getWidth();
-        canvas.drawRoundRect(rectCoordinates,50,50,color);
+        canvas.drawRoundRect(rectCoordinates,100,100,color);
     }
 
     @Override
