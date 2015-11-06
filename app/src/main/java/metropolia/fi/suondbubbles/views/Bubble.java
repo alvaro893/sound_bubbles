@@ -4,9 +4,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Random;
+
+import metropolia.fi.suondbubbles.controllers.BubbleTouchController;
 
 /**
  * Created by Vallo on 11/6/2015.
@@ -14,19 +18,24 @@ import java.util.Random;
 public class Bubble extends View {
 
     private Paint color;
+    private GestureDetector mDetector;
+    private int height;     //bubble height must be in int
 
-    //bubble height must be in int
-    private int height;
     private String DEBUG_TAG = "Bubble class";
     private RectF rectCoordinates;
 
 
     public Bubble(Context context, int height) {
         super(context);
-        this.height = height;
+        init(height);
         createRoundedRectangle();
     }
 
+
+    private void init(int height){
+        this.height = height;
+        this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),getRootView()));
+    }
 
     private void createRoundedRectangle() {
         initStyle();
@@ -39,6 +48,11 @@ public class Bubble extends View {
         color.setARGB(124, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mDetector.onTouchEvent(event);
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {

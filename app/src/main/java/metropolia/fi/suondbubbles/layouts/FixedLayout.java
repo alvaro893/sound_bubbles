@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import metropolia.fi.suondbubbles.touchControllers.FixedLayoutTouchController;
+import metropolia.fi.suondbubbles.controllers.FixedLayoutTouchController;
 
 /**
  * Created by Vallo on 11/6/2015.

@@ -1,7 +1,9 @@
-package metropolia.fi.suondbubbles;
+package metropolia.fi.suondbubbles.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import metropolia.fi.suondbubbles.R;
 
 public class MainSurfaceActivity extends AppCompatActivity {
 
@@ -13,5 +15,8 @@ public class MainSurfaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_surface);
 
     }
+
+
+
 
 }

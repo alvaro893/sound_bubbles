@@ -31,7 +31,7 @@
             android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
-        <activity android:name=".MainSurfaceActivity" >
+        <activity android:name=".activities.MainSurfaceActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
