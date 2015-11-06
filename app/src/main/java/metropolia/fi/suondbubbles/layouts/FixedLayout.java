@@ -32,7 +32,7 @@ public class FixedLayout extends ViewGroup {
     }
 
     private void init(){
-        controller = new FixedLayoutTouchController((ViewGroup)getRootView());
+        controller = new FixedLayoutTouchController(getContext(),(ViewGroup)getRootView());
         mDetector = new GestureDetector(getContext(), controller);
     }
 

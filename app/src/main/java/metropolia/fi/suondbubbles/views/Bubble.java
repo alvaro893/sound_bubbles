@@ -14,25 +14,29 @@ import java.util.Random;
 public class Bubble extends View {
 
     private Paint color;
+
+    //bubble height must be in int
     private int height;
     private String DEBUG_TAG = "Bubble class";
     private RectF rectCoordinates;
 
 
-    public Bubble(Context context) {
+    public Bubble(Context context, int height) {
         super(context);
-        init();
+        this.height = height;
+        createRoundedRectangle();
     }
 
 
-    private void init() {
+    private void createRoundedRectangle() {
+        initStyle();
+        rectCoordinates = new RectF(0,0,0,height);
+    }
+    
+    private void initStyle(){
         Random rnd = new Random();
-        height = 400;
-
         color = new Paint(Paint.ANTI_ALIAS_FLAG);
         color.setARGB(124, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-
-        rectCoordinates = new RectF(0,0,0,height);
     }
 
 
