@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="metropolia.fi.suondbubbles.MainSurfaceActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:baselineAligned="false"
+        android:id="@+id/bubble_surface_panel">
+
+        <metropolia.fi.suondbubbles.layouts.FixedLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/fixedLaytout_1"
+            android:layout_weight="1" />
+
+        <metropolia.fi.suondbubbles.layouts.FixedLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/fixedLaytout_2"
+            android:layout_weight="1" />
+
+        <metropolia.fi.suondbubbles.layouts.FixedLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/fixedLaytout_3"
+            android:layout_weight="1" />
+
+        <metropolia.fi.suondbubbles.layouts.FixedLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/fixedLaytout_4"
+            android:layout_weight="1" />
+
+        <metropolia.fi.suondbubbles.layouts.FixedLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/fixedLaytout_5"
+            android:layout_weight="1" />
+
+        <metropolia.fi.suondbubbles.layouts.FixedLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/fixedLaytout_6"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/contol_panel">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_new"
+            android:src="@android:drawable/ic_menu_help"
+            android:layout_marginRight="40dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_record"
+            android:src="@android:drawable/ic_menu_help"
+            android:layout_marginRight="40dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_play"
+            android:src="@android:drawable/ic_menu_help"
+            android:layout_marginRight="40dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_add"
+            android:src="@android:drawable/ic_menu_help" />
+    </LinearLayout>
+</LinearLayout>

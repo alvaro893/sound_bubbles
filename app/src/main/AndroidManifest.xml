@@ -21,7 +21,7 @@
         <activity
             android:name=".activities.SearchActivity"
             android:label="@string/title_activity_search_Activity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name=".apiConnection.testactivities.UploadActivity"
@@ -30,6 +30,12 @@
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login" >
+        </activity>
+        <activity android:name=".MainSurfaceActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+            </intent-filter>
         </activity>
     </application>
 
