@@ -2,6 +2,8 @@ package metropolia.fi.suondbubbles.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ScrollView;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.controllers.BubbleDragController;
@@ -16,6 +18,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
     private FixedLayout fixedLayout_4;
     private FixedLayout fixedLayout_5;
     private FixedLayout fixedLayout_6;
+    private ScrollView scrollView;
 
 
 
@@ -25,9 +28,18 @@ public class MainSurfaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_surface);
         init();
 
+
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     private void init() {
+        scrollView = (ScrollView)findViewById(R.id.scrollView);
+
         fixedLayout_1 = (FixedLayout)findViewById(R.id.fixedLaytout_1);
         fixedLayout_2 = (FixedLayout)findViewById(R.id.fixedLaytout_2);
         fixedLayout_3 = (FixedLayout)findViewById(R.id.fixedLaytout_3);
@@ -44,6 +56,5 @@ public class MainSurfaceActivity extends AppCompatActivity {
 
 
     }
-
 
 }
