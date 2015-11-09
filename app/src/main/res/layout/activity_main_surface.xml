@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="metropolia.fi.suondbubbles.activities.MainSurfaceActivity"
-    android:orientation="vertical">
+    tools:context="metropolia.fi.suondbubbles.activities.MainSurfaceActivity">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:id="@+id/scrollView"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:baselineAligned="false"
             android:id="@+id/bubble_surface_panel">
 
@@ -64,34 +61,39 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:gravity="center_horizontal"
-        android:id="@+id/contol_panel">
+        android:id="@+id/contol_panel"
+        android:layout_alignParentBottom="true">
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_new"
-            android:src="@android:drawable/ic_menu_help"
-            android:layout_marginRight="40dp" />
+            android:src="@mipmap/ic_new"
+            android:layout_marginRight="40dp"
+            android:background="@android:color/transparent" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_record"
-            android:src="@android:drawable/ic_menu_help"
-            android:layout_marginRight="40dp" />
+            android:src="@mipmap/ic_record"
+            android:layout_marginRight="40dp"
+            android:background="@android:color/transparent" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_play"
-            android:src="@android:drawable/ic_menu_help"
-            android:layout_marginRight="40dp" />
+            android:src="@mipmap/ic_play"
+            android:layout_marginRight="40dp"
+            android:background="@android:color/transparent" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_add"
-            android:src="@android:drawable/ic_menu_help" />
+            android:background="@android:color/transparent"
+            android:src="@mipmap/ic_add" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
