@@ -16,4 +16,27 @@
     <color name="active_red">#FF1744</color>
     <color name="passive_orange">#CE9B36</color>
     <color name="active_orange">#ffb000</color>
+    
+    
+    <array name="passive_colors">
+        <item>@color/passive_green</item>
+        <item>@color/passive_aqua</item>
+        <item>@color/passive_pink</item>
+        <item>@color/passive_lemon</item>
+        <item>@color/passive_seawave</item>
+        <item>@color/passive_blue</item>
+        <item>@color/passive_red</item>
+        <item>@color/passive_orange</item>
+    </array>
+    
+    <array name="active_colors">
+        <item>@color/active_green</item>
+        <item>@color/active_aqua</item>
+        <item>@color/active_pink</item>
+        <item>@color/active_lemon</item>
+        <item>@color/active_seawave</item>
+        <item>@color/active_blue</item>
+        <item>@color/active_red</item>
+        <item>@color/active_orange</item>
+    </array>
 </resources>
