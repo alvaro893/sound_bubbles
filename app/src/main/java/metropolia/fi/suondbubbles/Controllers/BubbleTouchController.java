@@ -8,16 +8,18 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 
+import metropolia.fi.suondbubbles.views.Bubble;
+
 
 public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListener {
 
     private Context context;
-    private View view;
+    private Bubble bubble;
     private String DEBUG_TAG = "BubbleTouchController";
 
-    public BubbleTouchController(Context context, View view){
+    public BubbleTouchController(Context context, Bubble bubble){
         this.context = context;
-        this.view = view;
+        this.bubble = bubble;
 
     }
 
@@ -25,6 +27,8 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
     public boolean onDown(MotionEvent e) {
         return true;
     }
+
+
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
@@ -35,12 +39,13 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
     @Override
     public void onLongPress(MotionEvent e) {
         Log.d(DEBUG_TAG, "Start dragging bubble");
-        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        bubble.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 
         ClipData data = ClipData.newPlainText("", "");
-        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-        view.startDrag(data, shadowBuilder, view, 0);
-        view.setVisibility(View.INVISIBLE);
+
+        bubble.startDrag(data, new View.DragShadowBuilder(bubble), bubble, 0);
+        bubble.setVisibility(View.INVISIBLE);
     }
+
 
 }

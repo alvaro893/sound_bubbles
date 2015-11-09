@@ -1,6 +1,7 @@
 package metropolia.fi.suondbubbles.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -10,6 +11,7 @@ import android.view.View;
 
 import java.util.Random;
 
+import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.controllers.BubbleTouchController;
 
 /**
@@ -17,9 +19,15 @@ import metropolia.fi.suondbubbles.controllers.BubbleTouchController;
  */
 public class Bubble extends View {
 
-    private Paint color;
+
+
+    private Paint color, passive_color, active_color;
+
     private GestureDetector mDetector;
     private int height;     //bubble height must be in int
+    private int color_selection;
+    private TypedArray passive_colors, active_colors;
+
 
     private String DEBUG_TAG = "Bubble class";
     private RectF rectCoordinates;
@@ -31,10 +39,21 @@ public class Bubble extends View {
         createRoundedRectangle();
     }
 
+    public Paint getPassive_color() {
+        return passive_color;
+    }
+
+    public Paint getActive_color() {
+        return active_color;
+    }
+
+    public void setColor(Paint color) {
+        this.color = color;
+    }
 
     private void init(int height){
         this.height = height;
-        this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),getRootView()));
+        this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
     }
 
     private void createRoundedRectangle() {
@@ -44,9 +63,22 @@ public class Bubble extends View {
     
     private void initStyle(){
         Random rnd = new Random();
-        color = new Paint(Paint.ANTI_ALIAS_FLAG);
-        color.setARGB(124, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        color_selection = rnd.nextInt(8);
+
+        active_colors = getContext().getResources().obtainTypedArray(R.array.active_colors);
+        passive_colors = getContext().getResources().obtainTypedArray(R.array.passive_colors);
+
+        active_color = new Paint(Paint.ANTI_ALIAS_FLAG);
+        active_color.setColor(active_colors.getColor(color_selection,0));
+
+        passive_color = new Paint(Paint.ANTI_ALIAS_FLAG);
+        passive_color.setColor(passive_colors.getColor(color_selection,0));
+
+        setColor(passive_color);
+
     }
+
+
 
 
     @Override
@@ -61,6 +93,7 @@ public class Bubble extends View {
         rectCoordinates.right = canvas.getWidth();
         canvas.drawRoundRect(rectCoordinates,100,100,color);
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
