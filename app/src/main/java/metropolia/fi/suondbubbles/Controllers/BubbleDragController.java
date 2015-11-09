@@ -1,4 +1,4 @@
-package metropolia.fi.suondbubbles.controllers;
+package metropolia.fi.suondbubbles.Controllers;
 
 import android.view.DragEvent;
 import android.view.View;

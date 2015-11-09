@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ScrollView;
 
+import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
-import metropolia.fi.suondbubbles.controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 
 public class MainSurfaceActivity extends AppCompatActivity {

@@ -7,11 +7,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import metropolia.fi.suondbubbles.controllers.FixedLayoutTouchController;
+import metropolia.fi.suondbubbles.Controllers.FixedLayoutTouchController;
 
-/**
- * Created by Vallo on 11/6/2015.
- */
+
 public class FixedLayout extends ViewGroup {
 
     GestureDetector mDetector;

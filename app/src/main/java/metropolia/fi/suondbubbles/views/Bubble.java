@@ -11,12 +11,10 @@ import android.view.View;
 
 import java.util.Random;
 
+import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
 import metropolia.fi.suondbubbles.R;
-import metropolia.fi.suondbubbles.controllers.BubbleTouchController;
 
-/**
- * Created by Vallo on 11/6/2015.
- */
+
 public class Bubble extends View {
 
 
