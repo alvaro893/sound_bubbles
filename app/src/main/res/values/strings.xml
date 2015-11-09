@@ -8,7 +8,7 @@
     <string name="upload_question">Do you want to upload this file?</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
-    <string name="title_activity_login">Login</string>
+    <string name="title_activity_login">Log in</string>
     <string name="username_activity_login">username</string>
     <string name="password_activity_login">password</string>
     <string name="go_activity_login">GO!</string>
@@ -18,6 +18,6 @@
     <string name="logsucess_activity_login">login successful</string>
     <string name="searchhint_activity_search">Search</string>
     <string name="cancelbtn_activity_search">Cancel</string>
-    <string name="addbtn_activity_search">Add</string>
+    <string name="addbtn_activity_search">Select</string>
     <string name="action_logout">Log out</string>
 </resources>

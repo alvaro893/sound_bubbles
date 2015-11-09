@@ -4,12 +4,13 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.net.URL;
 
 /**
  * This class should recive the JSON
  */
-public class ServerFile {
+public class ServerFile implements Serializable {
     private String title, filename, category, soundType, fileExtension, collectionName, description, tags;
     private int lenght, collectionID;
     private double fileSize, lat, lon;

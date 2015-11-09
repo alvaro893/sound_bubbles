@@ -1,5 +1,6 @@
 package metropolia.fi.suondbubbles.activities;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +40,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
     private MediaPlayer mediaPlayer;
-    private Integer lastSelected;
+    private Integer lastSelectedId;
     private String[] categories;
     private boolean categoryWasSelected;
     private View lastElementSelected;
@@ -153,6 +155,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     // processFinish is called after this method automatically
     protected void performSearch(String search) {
+        lastSelectedId = null;
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
@@ -171,6 +174,14 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         this.activity_search_btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (lastSelectedId == null) {
+                    Toast.makeText(SearchActivity.this, "Select some sound first",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(SearchActivity.this, MainSurfaceActivity.class);
+                    intent.putExtra("selectedFile", filesList.get(lastSelectedId));
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -227,7 +238,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         if(lastElementSelected != null){
             lastElementSelected.setBackground(ContextCompat.getDrawable(SearchActivity.this, R.drawable.grid_border));
         }
-        lastSelected = position;
+        lastSelectedId = position;
         lastElementSelected = currentGridView;
         currentGridView.setBackground(ContextCompat.getDrawable(
                 SearchActivity.this, R.drawable.grid_border_selected));

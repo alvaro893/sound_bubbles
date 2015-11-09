@@ -1,8 +1,11 @@
 package metropolia.fi.suondbubbles.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
@@ -21,6 +24,8 @@ public class MainSurfaceActivity extends AppCompatActivity {
     private FixedLayout fixedLayout_6;
     private ScrollView scrollView;
     private ImageView removeView;
+    private Intent intentSearchActivity;
+    private ImageButton addBtn;
 
 
 
@@ -28,6 +33,10 @@ public class MainSurfaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_surface);
+        intentSearchActivity = new Intent(this, SearchActivity.class);
+        addBtn = (ImageButton) findViewById(R.id.btn_add);
+
+        setButtonsBar();
         init();
 
 
@@ -58,6 +67,15 @@ public class MainSurfaceActivity extends AppCompatActivity {
         fixedLayout_6.setOnDragListener(new BubbleDragController());
         removeView.setOnDragListener(new BubbleDragController());
 
+    }
+
+    private void setButtonsBar(){
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(intentSearchActivity);
+            }
+        });
     }
 
 }
