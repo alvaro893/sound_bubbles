@@ -3,6 +3,7 @@ package metropolia.fi.suondbubbles.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
@@ -19,6 +20,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
     private FixedLayout fixedLayout_5;
     private FixedLayout fixedLayout_6;
     private ScrollView scrollView;
+    private ImageView removeView;
 
 
 
@@ -46,6 +48,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
         fixedLayout_4 = (FixedLayout)findViewById(R.id.fixedLaytout_4);
         fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
+        removeView = (ImageView)findViewById(R.id.remove_view);
 
         fixedLayout_1.setOnDragListener(new BubbleDragController());
         fixedLayout_2.setOnDragListener(new BubbleDragController());
@@ -53,7 +56,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
         fixedLayout_4.setOnDragListener(new BubbleDragController());
         fixedLayout_5.setOnDragListener(new BubbleDragController());
         fixedLayout_6.setOnDragListener(new BubbleDragController());
-
+        removeView.setOnDragListener(new BubbleDragController());
 
     }
 
