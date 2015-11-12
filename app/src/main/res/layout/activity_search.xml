@@ -60,7 +60,8 @@
             android:background="@color/passive_aqua"
             android:textColor="@android:color/white"
             android:layout_gravity="right"
-            android:layout_weight="0.50" />
+            android:layout_weight="0.50"
+            android:gravity="center"/>
     </LinearLayout>
 
 </LinearLayout>
