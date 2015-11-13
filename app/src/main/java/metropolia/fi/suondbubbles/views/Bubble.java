@@ -13,6 +13,7 @@ import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
 import metropolia.fi.suondbubbles.R;
+import metropolia.fi.suondbubbles.helper.PixelsConverter;
 
 
 public class Bubble extends View {
@@ -89,7 +90,7 @@ public class Bubble extends View {
         super.onDraw(canvas);
 
         rectCoordinates.right = canvas.getWidth();
-        canvas.drawRoundRect(rectCoordinates,100,100,color);
+        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertPixelsToDp(60,getContext()),PixelsConverter.convertPixelsToDp(60,getContext()),color);
     }
 
 

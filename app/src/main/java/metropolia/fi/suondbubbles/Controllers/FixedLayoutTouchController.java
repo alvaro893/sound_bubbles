@@ -1,15 +1,12 @@
 package metropolia.fi.suondbubbles.Controllers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import metropolia.fi.suondbubbles.activities.MainSurfaceActivity;
-import metropolia.fi.suondbubbles.activities.SoundBubbles;
-import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.helper.PixelsConverter;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 import metropolia.fi.suondbubbles.views.Bubble;
 
@@ -47,7 +44,7 @@ public class FixedLayoutTouchController extends GestureDetector.SimpleOnGestureL
 //        ServerFile f = (ServerFile) SoundBubbles.getObjectFromIntent(activity, "selectedFile");
 //        Log.d(DEBUG_TAG, f.getTitle());
 
-        bubble = new Bubble(context,400);
+        bubble = new Bubble(context, (int) PixelsConverter.convertPixelsToDp(400,context));
         layoutParams = new FixedLayout.LayoutParams(container.getWidth(),bubble.getHeight(),0, (int)e.getY());
         container.addView(bubble, layoutParams);
 
