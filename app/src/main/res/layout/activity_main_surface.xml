@@ -101,7 +101,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_add"
             android:background="@android:color/transparent"
-            android:src="@mipmap/ic_add" />
+            android:src="@mipmap/ic_add"
+            android:onClick="addNewBubble"/>
     </LinearLayout>
 
 </RelativeLayout>

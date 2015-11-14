@@ -13,6 +13,7 @@ import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
 import metropolia.fi.suondbubbles.R;
+import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.helper.PixelsConverter;
 
 
@@ -23,18 +24,19 @@ public class Bubble extends View {
     private Paint color, passive_color, active_color;
 
     private GestureDetector mDetector;
-    private int height;     //bubble height must be in int
+    private int height;
     private int color_selection;
     private TypedArray passive_colors, active_colors;
+    private ServerFile serverFile;
 
 
     private String DEBUG_TAG = "Bubble class";
     private RectF rectCoordinates;
 
 
-    public Bubble(Context context, int height) {
+    public Bubble(Context context, ServerFile serverFile) {
         super(context);
-        init(height);
+        init(serverFile);
         createRoundedRectangle();
     }
 
@@ -50,8 +52,9 @@ public class Bubble extends View {
         this.color = color;
     }
 
-    private void init(int height){
-        this.height = height;
+    private void init(ServerFile serverFile){
+        this.serverFile = serverFile;
+        this.height = (int)PixelsConverter.convertDpToPixel(serverFile.getLenght() * 100,getContext());
         this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
     }
 
@@ -88,9 +91,8 @@ public class Bubble extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
         rectCoordinates.right = canvas.getWidth();
-        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertPixelsToDp(60,getContext()),PixelsConverter.convertPixelsToDp(60,getContext()),color);
+        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertDpToPixel(100,getContext()),PixelsConverter.convertDpToPixel(100,getContext()),color);
     }
 
 

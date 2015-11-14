@@ -2,42 +2,24 @@ package metropolia.fi.suondbubbles.layouts;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import metropolia.fi.suondbubbles.Controllers.FixedLayoutTouchController;
-
 
 public class FixedLayout extends ViewGroup {
-
-    GestureDetector mDetector;
-    FixedLayoutTouchController controller;
 
 
     private String DEBUG_TAG = "FixedLayout";
 
     public FixedLayout(Context context) {
         super(context);
-        init();
     }
 
     public FixedLayout(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        init();
 
     }
 
-    private void init(){
-        controller = new FixedLayoutTouchController(getContext(),(ViewGroup)getRootView());
-        mDetector = new GestureDetector(getContext(), controller);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return mDetector.onTouchEvent(event);
-    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
