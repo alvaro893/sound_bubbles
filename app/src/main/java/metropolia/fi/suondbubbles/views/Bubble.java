@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,20 +25,34 @@ public class Bubble extends View {
     private Paint color, passive_color, active_color;
 
     private GestureDetector mDetector;
-    private int height;
+
+
+
+    private int bubbleHeight;
     private int color_selection;
+    private int bubbleBottomY;
+    private int finalfittingYcoordinate = 0;
     private TypedArray passive_colors, active_colors;
     private ServerFile serverFile;
-
-
     private String DEBUG_TAG = "Bubble class";
     private RectF rectCoordinates;
-
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
         init(serverFile);
         createRoundedRectangle();
+    }
+
+    public int getBubbleBottomY() {
+        return bubbleBottomY;
+    }
+
+    public void setBubbleBottomY(int bubbleBottomY) {
+        this.bubbleBottomY = bubbleBottomY;
+    }
+
+    public int getBubbleHeight() {
+        return bubbleHeight;
     }
 
     public Paint getPassive_color() {
@@ -54,13 +69,13 @@ public class Bubble extends View {
 
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
-        this.height = (int)PixelsConverter.convertDpToPixel(serverFile.getLenght() * 100,getContext());
+        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(serverFile.getLenght() * 50,getContext());
         this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
     }
 
     private void createRoundedRectangle() {
         initStyle();
-        rectCoordinates = new RectF(0,0,0,height);
+        rectCoordinates = new RectF(0,0,0, bubbleHeight);
     }
     
     private void initStyle(){
@@ -74,10 +89,27 @@ public class Bubble extends View {
         active_color.setColor(active_colors.getColor(color_selection,0));
 
         passive_color = new Paint(Paint.ANTI_ALIAS_FLAG);
-        passive_color.setColor(passive_colors.getColor(color_selection,0));
+        passive_color.setColor(passive_colors.getColor(color_selection, 0));
 
         setColor(passive_color);
 
+    }
+
+    public int returnFittingYcoordinate(int containerBottomY, int parentYCoordinates){
+        if (bubbleHeight + parentYCoordinates <= containerBottomY)
+            finalfittingYcoordinate = parentYCoordinates;
+        else
+            finalfittingYcoordinate = containerBottomY - bubbleHeight;
+
+        setBubbleBottomY(finalfittingYcoordinate + bubbleHeight);
+
+        Log.d(DEBUG_TAG, "containerBottomY is " + containerBottomY);
+        Log.d(DEBUG_TAG,"BubbleHeight is " + bubbleHeight);
+        Log.d(DEBUG_TAG, "parentYCoordinates is " + parentYCoordinates);
+        Log.d(DEBUG_TAG, "finalfittingYcoordinate is " + finalfittingYcoordinate);
+        Log.d(DEBUG_TAG, "bubblebottomY is " + getBubbleBottomY());
+
+        return finalfittingYcoordinate;
     }
 
 
@@ -101,7 +133,7 @@ public class Bubble extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.EXACTLY);
-        int heightSpec = MeasureSpec.makeMeasureSpec(height,MeasureSpec.EXACTLY);
+        int heightSpec = MeasureSpec.makeMeasureSpec(bubbleHeight,MeasureSpec.EXACTLY);
 
         setMeasuredDimension(widthSpec,heightSpec);
     }

@@ -55,7 +55,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
     private Intent intentSearchActivity;
     private int secondActivityRequest = 542;
 
-    /** data recieved from intent will be in these */
+    /** data received from intent will be in these */
     private Bundle receivedBundle;
     private float receivedYCoordinates;
     private int receivedLayoutId;
@@ -70,6 +70,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
 
 
     private Random randomNumber;
+    private int bubbleYcoordinate = 0;
 
 
     @Override
@@ -87,6 +88,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
 
 
         randomNumber = new Random();
+
     }
 
     private void initLineList() {
@@ -191,7 +193,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
 
 
         /** adding Y coordinate of visible screen to intent for activityOnResult*/
-        intentSearchActivity.putExtra(viewCoordinates, (float)scrollView.getScrollY());
+        intentSearchActivity.putExtra(viewCoordinates, 0.0f);
 
         /** adding random fixedLayout ID to intent for activityOnResult*/
         intentSearchActivity.putExtra(viewID, linesList.get(randomNumber.nextInt(linesList.size())).getId());
@@ -226,7 +228,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
             Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
 
 
-            /** adding data relevent for bubble view creation in onActivityResult method */
+            /** adding data relevant for bubble view creation in onActivityResult method */
             intentSearchActivity.putExtra(viewCoordinates, e.getY());
             intentSearchActivity.putExtra(viewID, container.getId());
 
@@ -243,24 +245,34 @@ public class MainSurfaceActivity extends AppCompatActivity {
         if(requestCode == secondActivityRequest){
             if(resultCode == Activity.RESULT_OK){
 
-                /** data assigment to local members*/
+                /** data assignment to local members*/
                 receivedBundle = data.getBundleExtra(returnBundle);
                 receivedYCoordinates = receivedBundle.getFloat(viewCoordinates);
                 receivedLayoutId = receivedBundle.getInt(viewID);
                 receivedServerFile = (ServerFile)receivedBundle.getSerializable(selectedFile);
 
 
-                /** assignent of double tapped viewGroup recived from intent */
+                /** assignment of double tapped viewGroup received from intent */
                 receivedFixedLayout = (FixedLayout)findViewById(receivedLayoutId);
 
                 /** bubble view creation, not yet visible */
                 bubble = new Bubble(getBaseContext(), receivedServerFile);
 
-                /** bubble size and location in viewgroup assigment*/
-                layoutParams = new FixedLayout.LayoutParams(receivedFixedLayout.getWidth(),bubble.getHeight(),0,(int)receivedYCoordinates);
+
+
+
+                if(receivedYCoordinates == 0){
+                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), scrollView.getScrollY());
+                }else{
+                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), (int) receivedYCoordinates);
+                }
+
+                layoutParams = new FixedLayout.LayoutParams(receivedFixedLayout.getWidth(),0,0,bubbleYcoordinate);
 
                 /** bubble view assigned to viewgroup, bubble view is now visible*/
                 receivedFixedLayout.addView(bubble, layoutParams);
+
+
 
             }
         }
