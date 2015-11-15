@@ -44,7 +44,6 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
         ClipData data = ClipData.newPlainText("", "");
 
         bubble.startDrag(data, new View.DragShadowBuilder(bubble), bubble, 0);
-        bubble.setVisibility(View.INVISIBLE);
     }
 
 
