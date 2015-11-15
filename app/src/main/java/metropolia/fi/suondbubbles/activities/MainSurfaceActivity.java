@@ -92,7 +92,8 @@ public class MainSurfaceActivity extends AppCompatActivity {
     }
 
     private void initLineList() {
-        linesList = new ArrayList<FixedLayout>();
+
+        linesList = new ArrayList<>();
         linesList.add(fixedLayout_1);
         linesList.add(fixedLayout_2);
         linesList.add(fixedLayout_3);
@@ -116,6 +117,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
     /** method for assigning touchListeners and dragListeners for viewGroups(FixedLayout)*/
     private void initListeners() {
 
+        BubbleDragController bubbleDragController = new BubbleDragController();
 
         fixedLayout_1 = (FixedLayout)findViewById(R.id.fixedLaytout_1);
         fixedLayout_2 = (FixedLayout)findViewById(R.id.fixedLaytout_2);
@@ -175,13 +177,13 @@ public class MainSurfaceActivity extends AppCompatActivity {
             }
         });
 
-        fixedLayout_1.setOnDragListener(new BubbleDragController());
-        fixedLayout_2.setOnDragListener(new BubbleDragController());
-        fixedLayout_3.setOnDragListener(new BubbleDragController());
-        fixedLayout_4.setOnDragListener(new BubbleDragController());
-        fixedLayout_5.setOnDragListener(new BubbleDragController());
-        fixedLayout_6.setOnDragListener(new BubbleDragController());
-        removeView.setOnDragListener(new BubbleDragController());
+        fixedLayout_1.setOnDragListener(bubbleDragController);
+        fixedLayout_2.setOnDragListener(bubbleDragController);
+        fixedLayout_3.setOnDragListener(bubbleDragController);
+        fixedLayout_4.setOnDragListener(bubbleDragController);
+        fixedLayout_5.setOnDragListener(bubbleDragController);
+        fixedLayout_6.setOnDragListener(bubbleDragController);
+        removeView.setOnDragListener(bubbleDragController);
 
     }
 

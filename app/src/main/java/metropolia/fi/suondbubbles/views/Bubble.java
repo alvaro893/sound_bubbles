@@ -86,7 +86,7 @@ public class Bubble extends View {
         passive_colors = getContext().getResources().obtainTypedArray(R.array.passive_colors);
 
         active_color = new Paint(Paint.ANTI_ALIAS_FLAG);
-        active_color.setColor(active_colors.getColor(color_selection,0));
+        active_color.setColor(active_colors.getColor(color_selection, 0));
 
         passive_color = new Paint(Paint.ANTI_ALIAS_FLAG);
         passive_color.setColor(passive_colors.getColor(color_selection, 0));
@@ -96,23 +96,30 @@ public class Bubble extends View {
     }
 
     public int returnFittingYcoordinate(int containerBottomY, int parentYCoordinates){
-        if (bubbleHeight + parentYCoordinates <= containerBottomY)
+        int result =  bubbleHeight - parentYCoordinates;
+
+        if (bubbleHeight + parentYCoordinates <= containerBottomY && parentYCoordinates >= 0) {
             finalfittingYcoordinate = parentYCoordinates;
-        else
+        }
+        else if(parentYCoordinates < 0){
+            finalfittingYcoordinate = 0;
+
+        }
+
+        else {
             finalfittingYcoordinate = containerBottomY - bubbleHeight;
+        }
 
         setBubbleBottomY(finalfittingYcoordinate + bubbleHeight);
 
         Log.d(DEBUG_TAG, "containerBottomY is " + containerBottomY);
-        Log.d(DEBUG_TAG,"BubbleHeight is " + bubbleHeight);
+        Log.d(DEBUG_TAG, "BubbleHeight is " + bubbleHeight);
         Log.d(DEBUG_TAG, "parentYCoordinates is " + parentYCoordinates);
         Log.d(DEBUG_TAG, "finalfittingYcoordinate is " + finalfittingYcoordinate);
         Log.d(DEBUG_TAG, "bubblebottomY is " + getBubbleBottomY());
 
         return finalfittingYcoordinate;
     }
-
-
 
 
     @Override
