@@ -1,5 +1,6 @@
 package metropolia.fi.suondbubbles.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,6 +44,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private String[] categories;
     private boolean categoryWasSelected;
     private View lastElementSelected;
+    private Bundle bundle;
+    private final String viewCoordinates = "viewCoordinates";
+    private final String viewID = "viewID";
+    private final String selectedFile = "selectedFile";
+    private final String returnBundle = "returnBundle";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,9 +183,22 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     Toast.makeText(SearchActivity.this, "Select some sound first",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent = new Intent(SearchActivity.this, MainSurfaceActivity.class);
-                    intent.putExtra("selectedFile", filesList.get(lastSelectedId));
-                    startActivity(intent);
+
+                    Intent receivedIntent = getIntent();
+                    float coordinates = receivedIntent.getFloatExtra(viewCoordinates, 0);
+                    int receivedViewId = receivedIntent.getIntExtra(viewID, 0);
+
+
+                    bundle = new Bundle();
+                    bundle.putSerializable(selectedFile, filesList.get(lastSelectedId));
+                    bundle.putFloat(viewCoordinates,coordinates);
+                    bundle.putInt(viewID,receivedViewId);
+
+
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra(returnBundle,bundle);
+                    setResult(Activity.RESULT_OK, returnIntent);
+                    finish();
                 }
             }
         });

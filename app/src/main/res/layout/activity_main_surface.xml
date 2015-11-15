@@ -5,14 +5,6 @@
     android:layout_height="match_parent"
     tools:context="metropolia.fi.suondbubbles.activities.MainSurfaceActivity">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:id="@+id/remove_view"
-        android:background="#205140"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="200dp" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,6 +56,16 @@
         </LinearLayout>
     </ScrollView>
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:id="@+id/remove_view"
+        android:background="#205140"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="false"
+        android:focusable="false"
+        android:alpha="0" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -101,7 +103,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_add"
             android:background="@android:color/transparent"
-            android:src="@mipmap/ic_add" />
+            android:src="@mipmap/ic_add"
+            android:onClick="addNewBubble"/>
     </LinearLayout>
 
 </RelativeLayout>
