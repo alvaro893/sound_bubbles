@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
@@ -16,17 +17,28 @@ public class BubbleDragController implements View.OnDragListener {
     private FixedLayout.LayoutParams layoutParams;
     private String DEBUG_TAG = "dragController";
     private Bubble bubbleView;
+    private ImageView removeView;
     private int viewCenterY = 0;
+
+    public void setRemoveView(ImageView removeView){
+        this.removeView = removeView;
+    }
 
     @Override
     public boolean onDrag(View v, DragEvent event) {
         int action = event.getAction();
+
         switch (event.getAction()) {
+
 
             case DragEvent.ACTION_DRAG_STARTED:
                 Log.d(DEBUG_TAG,"ACTION_DRAG_STARTED");
                 bubbleView = (Bubble)event.getLocalState();
                 bubbleView.setVisibility(View.INVISIBLE);
+
+                removeView.setAlpha(1f);
+
+
                 break;
 
             case DragEvent.ACTION_DRAG_ENTERED:
@@ -87,12 +99,17 @@ public class BubbleDragController implements View.OnDragListener {
 
             case DragEvent.ACTION_DRAG_ENDED:
 
+
                 bubbleView = (Bubble) event.getLocalState();
+
 
                 if(!bubbleView.isShown()){
                     bubbleView.setVisibility(View.VISIBLE);
 
                 }
+
+                removeView.setAlpha(0f);
+
                 break;
 
 

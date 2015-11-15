@@ -126,6 +126,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
         fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
         removeView = (ImageView)findViewById(R.id.remove_view);
+        bubbleDragController.setRemoveView(removeView);
 
         mDetector_1 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_1));
         mDetector_2 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_2));

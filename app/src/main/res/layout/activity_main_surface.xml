@@ -62,7 +62,9 @@
         android:id="@+id/remove_view"
         android:background="#205140"
         android:layout_centerHorizontal="true"
-        android:adjustViewBounds="false" />
+        android:adjustViewBounds="false"
+        android:focusable="false"
+        android:alpha="0" />
 
     <LinearLayout
         android:orientation="horizontal"
