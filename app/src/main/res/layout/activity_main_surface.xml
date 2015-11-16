@@ -77,9 +77,10 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
             android:id="@+id/btn_new"
             android:src="@mipmap/ic_new"
-            android:layout_marginRight="40dp"
+            android:onClick="startNewSession"
             android:background="@android:color/transparent" />
 
         <ImageButton
