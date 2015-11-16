@@ -29,8 +29,8 @@ import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.CategoriesAdapter;
 import metropolia.fi.suondbubbles.adapters.ServerFilesArrayAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.CategoryTask;
-import metropolia.fi.suondbubbles.apiConnection.SearchTask;
+import metropolia.fi.suondbubbles.apiConnection.tasks.CategoryTask;
+import metropolia.fi.suondbubbles.apiConnection.tasks.SearchTask;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {

@@ -1,10 +1,14 @@
-package metropolia.fi.suondbubbles.apiConnection;
+package metropolia.fi.suondbubbles.apiConnection.tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
+import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
+import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 
 /**
  * Created by alvarob on 25.9.2015.
