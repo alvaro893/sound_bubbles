@@ -1,6 +1,7 @@
 package metropolia.fi.suondbubbles.activities;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +19,11 @@ import java.util.Random;
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 import metropolia.fi.suondbubbles.views.Bubble;
 
-public class MainSurfaceActivity extends AppCompatActivity {
+public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener{
 
     private String DEBUG_TAG = "MainSurfaceActivity";
 
@@ -192,7 +194,7 @@ public class MainSurfaceActivity extends AppCompatActivity {
     /** called on add button click*/
     public void addNewBubble(View v){
 
-        Log.d(DEBUG_TAG,"Y coordinate is " + scrollView.getScrollY());
+        Log.d(DEBUG_TAG, "Y coordinate is " + scrollView.getScrollY());
 
 
         /** adding Y coordinate of visible screen to intent for activityOnResult*/
@@ -203,6 +205,30 @@ public class MainSurfaceActivity extends AppCompatActivity {
 
         /** starting SearchActivity for a result */
         startActivityForResult(intentSearchActivity, secondActivityRequest);
+    }
+
+    /** method called on start new session yes click **/
+    @Override
+    public void onDialogYesClick(DialogFragment dialog) {
+        dialog.dismiss();
+
+        for(int index = 0; index < linesList.size(); index++){
+            linesList.get(index).removeAllViews();
+        }
+
+    }
+
+    /** method called on start new session cancel click **/
+    @Override
+    public void onDialogCancelClick(DialogFragment dialog) {
+        dialog.dismiss();
+    }
+
+    /** called on new button click*/
+    public void startNewSession(View v){
+        DialogFragment dialogFragment = new ConfirmDialogFragment();
+        dialogFragment.show(getFragmentManager(), "ConfirmDialogFagment");
+
     }
 
 

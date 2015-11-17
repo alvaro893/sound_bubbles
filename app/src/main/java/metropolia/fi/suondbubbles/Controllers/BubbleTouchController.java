@@ -29,6 +29,7 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
     }
 
 
+    
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {

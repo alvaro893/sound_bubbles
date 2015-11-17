@@ -20,4 +20,7 @@
     <string name="cancelbtn_activity_search">Cancel</string>
     <string name="addbtn_activity_search">Select</string>
     <string name="action_logout">Log out</string>
+    <string name="confirm_Dialog_Message">Are you sure you want to start new session?</string>
+    <string name="confirm_Dialog_Positive_Button">YES</string>
+    <string name="confirm_Dialog_Negative_Button">CANCEL</string>
 </resources>
