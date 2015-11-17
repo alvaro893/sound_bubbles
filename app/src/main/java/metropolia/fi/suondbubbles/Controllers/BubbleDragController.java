@@ -35,15 +35,13 @@ public class BubbleDragController implements View.OnDragListener {
                 Log.d(DEBUG_TAG,"ACTION_DRAG_STARTED");
                 bubbleView = (Bubble)event.getLocalState();
                 bubbleView.setVisibility(View.INVISIBLE);
-
                 removeView.setAlpha(1f);
-
-
                 break;
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 switch (v.getId()){
                     case R.id.remove_view:
+                        removeView.setSelected(true);
                         Log.d(DEBUG_TAG,"Entered remove_view");
                         break;
                     case R.id.fixedLaytout_1:
@@ -68,12 +66,17 @@ public class BubbleDragController implements View.OnDragListener {
                         break;
 
                     default:
-                        Log.d(DEBUG_TAG,"Entered unspecified bubbleView");
                         break;
                 }
                 break;
 
+
             case DragEvent.ACTION_DRAG_EXITED:
+                switch (v.getId()) {
+                    case R.id.remove_view:
+                        removeView.setSelected(false);
+                        break;
+                }
                 break;
 
             case DragEvent.ACTION_DROP:
@@ -85,7 +88,7 @@ public class BubbleDragController implements View.OnDragListener {
 
                 if(v.getId() == R.id.remove_view){
                     owner.removeView(bubbleView);
-
+                    removeView.setSelected(false);
 
                 } else{
                     owner.removeView(bubbleView);
