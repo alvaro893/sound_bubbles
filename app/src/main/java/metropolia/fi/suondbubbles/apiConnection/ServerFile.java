@@ -84,10 +84,9 @@ import java.net.URL;
  */
 public class ServerFile implements Serializable {
     private String title, filename, category, soundType, fileExtension, collectionName, description,
-            tags, creator, language, publisher, rights, location, source;
+            tags, creator, language, publisher, rights, location, source, link, pathLocalFile;
     private int length, collectionID;
     private double fileSize;
-    private URL link;
 
     public ServerFile(){
 
@@ -150,11 +149,7 @@ public class ServerFile implements Serializable {
             }else{
                 this.collectionID = 0;
             }
-            if (json.has("Download link")) {
-                this.link = new URL(json.getString("Download link"));
-            }else{
-                this.link = null;
-            }
+
 
         }catch (Exception e){
             Log.e("ServerFile", "error in constructor: "+e.getMessage());
@@ -239,6 +234,70 @@ public class ServerFile implements Serializable {
         this.tags = tags;
     }
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getRights() {
+        return rights;
+    }
+
+    public void setRights(String rights) {
+        this.rights = rights;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getPathLocalFile() {
+        return pathLocalFile;
+    }
+
+    public void setPathLocalFile(String pathLocalFile) {
+        this.pathLocalFile = pathLocalFile;
+    }
+
     public int getLength() {
         return length;
     }
@@ -261,13 +320,5 @@ public class ServerFile implements Serializable {
 
     public void setFileSize(double fileSize) {
         this.fileSize = fileSize;
-    }
-
-    public URL getLink() {
-        return link;
-    }
-
-    public void setLink(URL link) {
-        this.link = link;
     }
 }

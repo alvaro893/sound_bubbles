@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Calendar;
 
 /**
  * Created by alvarob on 14.11.2015
@@ -25,11 +26,11 @@ import java.net.URL;
  * params[1]: name of the file to be created
  *
  */
-public class DownloadTask extends AsyncTask<String, Void, Void> {
+public class DownloadTask extends AsyncTask<String, Void, String> {
     final String DEBUG_TAG = "DownloadTask";
     @Override
-    protected Void doInBackground(String... params) {
-        // create file
+    protected String doInBackground(String... params) {
+        File file = null;
         try{
             URL url = new URL(params[0]);
             // create folder
@@ -37,10 +38,11 @@ public class DownloadTask extends AsyncTask<String, Void, Void> {
             if(!folder.exists()){
                 folder.mkdir();
             }
-            // create file
-            File file = new File(Environment.getExternalStorageDirectory()+File.separator+"sounds", params[1]);
-
-            if(file.exists()){
+            // create file (if file is already in memory, it won't be downloaded
+            // unless the file is older than 24h
+            file = new File(Environment.getExternalStorageDirectory()+File.separator+"sounds", params[1]);
+            long now = Calendar.getInstance().getTimeInMillis();
+            if(file.exists() && now - file.lastModified() > 86400000){
                 boolean isDeleted = file.delete();
                 Log.d(DEBUG_TAG, "isDeleted:"+isDeleted);
             }
@@ -73,10 +75,7 @@ public class DownloadTask extends AsyncTask<String, Void, Void> {
             Log.d(DEBUG_TAG, e.getClass().toString() + ":" +e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        return file.getPath();
     }
 
-    protected void onPostExecute(){
-
-    }
 }

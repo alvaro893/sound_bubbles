@@ -69,7 +69,7 @@ public class Bubble extends View {
 
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
-        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(serverFile.getLenght() * 50,getContext());
+        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(serverFile.getLength() * 50,getContext());
         this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
     }
 
