@@ -1,10 +1,8 @@
 package metropolia.fi.suondbubbles.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,13 +10,15 @@ import android.widget.Toast;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.tasks.LoginTask;
+import metropolia.fi.suondbubbles.apiConnection.CollectionID;
 import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
+import metropolia.fi.suondbubbles.apiConnection.tasks.LoginTask;
 
 public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     private Button activity_login_btn;
-    private EditText activity_login_et_user, activity_login_et_pass;
+    private EditText activity_login_et_user, activity_login_et_pass, activity_login_et_collection;
     private Intent intentMainSurfaceActivity;
+    private String collection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         activity_login_btn = (Button) findViewById(R.id.go_button);
         activity_login_et_user = (EditText) findViewById(R.id.username);
         activity_login_et_pass = (EditText) findViewById(R.id.password);
+        activity_login_et_collection = (EditText) findViewById(R.id.collection_id);
         intentMainSurfaceActivity = new Intent(this, MainSurfaceActivity.class);
 
         // button click listener
@@ -36,6 +37,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
             public void onClick(View view) {
                 String user = LoginActivity.this.activity_login_et_user.getText().toString();
                 String pass = LoginActivity.this.activity_login_et_pass.getText().toString();
+                collection = LoginActivity.this.activity_login_et_collection.getText().toString();
                 if (isFormValid()) {
                     login(user, pass);
                 }
@@ -44,27 +46,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public void login(String user, String pass){
         LoginTask loginTask = new LoginTask();
@@ -79,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         SoundBubbles.serverConnection = (ServerConnection) result;
 
         if(SoundBubbles.userIsLogged()){
+            CollectionID.setCollectionID(collection);
             startActivity(intentMainSurfaceActivity);
             Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_LONG).show();
 
@@ -90,13 +72,17 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     private boolean isFormValid(){
         boolean isUserEmpty = this.activity_login_et_user.getText().toString().isEmpty();
         boolean isPassEmpty = this.activity_login_et_pass.getText().toString().isEmpty();
+        boolean isCollectionEmpty = this.activity_login_et_collection.getText().toString().isEmpty();
         if(isUserEmpty){
             this.activity_login_et_user.setError(getString(R.string.emptyfiled_activity_login));
         }
         if(isPassEmpty){
             this.activity_login_et_pass.setError(getString(R.string.emptyfiled_activity_login));
         }
-        if(isPassEmpty || isUserEmpty)
+        if(isUserEmpty){
+            this.activity_login_et_collection.setError(getString(R.string.emptyfiled_activity_login));
+        }
+        if(isPassEmpty || isUserEmpty || isCollectionEmpty)
             return false;
         else
             return true;
