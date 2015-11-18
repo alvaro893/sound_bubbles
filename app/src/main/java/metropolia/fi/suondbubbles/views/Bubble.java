@@ -33,6 +33,7 @@ public class Bubble extends View {
     private int color_selection;
     private int bubbleBottomY;
     private int finalfittingYcoordinate = 0;
+    private int fitMargin = 0;
     private TypedArray passive_colors, active_colors;
     private ServerFile serverFile;
     private String DEBUG_TAG = "Bubble class";
@@ -48,6 +49,8 @@ public class Bubble extends View {
         createRoundedRectangle();
     }
 
+
+    /** Initializes mediaplayer and set listerners **/
     private void initMediaplayer() {
         try {
             mediaPlayer = new MediaPlayer();
@@ -70,6 +73,7 @@ public class Bubble extends View {
 
     }
 
+    /** starts mediaplayer with async prepering*/
     public void startPlaying(){
         try {
             mediaPlayer.prepareAsync();
@@ -78,6 +82,7 @@ public class Bubble extends View {
         }
     }
 
+    /** stops mediaplayer*/
     public void stopPlaying(){
         try {
             mediaPlayer.stop();
@@ -86,10 +91,12 @@ public class Bubble extends View {
         }
     }
 
+    /** return boolean value whether mediaplayer is playing currently **/
     public boolean bubbleIsPlaying(){
         return mediaPlayer.isPlaying();
     }
 
+    /** returns boolean value whether bubble has collided with horizontal line */
     public boolean isDetected() {
         return detected;
     }
@@ -98,6 +105,7 @@ public class Bubble extends View {
         this.detected = detected;
     }
 
+    /** returns bubble bottom line Y coordinate (int) */
     public int getBubbleBottomY() {
         return bubbleBottomY;
     }
@@ -122,6 +130,7 @@ public class Bubble extends View {
         this.color = color;
     }
 
+
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
         this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(serverFile.getLength() * 50,getContext());
@@ -132,7 +141,8 @@ public class Bubble extends View {
         initStyle();
         rectCoordinates = new RectF(0,0,0, bubbleHeight);
     }
-    
+
+    /** method for initilizing bubble styles attributes */
     private void initStyle(){
         Random rnd = new Random();
         color_selection = rnd.nextInt(8);
@@ -151,18 +161,18 @@ public class Bubble extends View {
     }
 
     public int returnFittingYcoordinate(int containerBottomY, int parentYCoordinates){
-        int result =  bubbleHeight - parentYCoordinates;
+        fitMargin = (int)PixelsConverter.convertDpToPixel(5,getContext());
 
         if (bubbleHeight + parentYCoordinates <= containerBottomY && parentYCoordinates >= 0) {
             finalfittingYcoordinate = parentYCoordinates;
         }
         else if(parentYCoordinates < 0){
-            finalfittingYcoordinate = 0;
+            finalfittingYcoordinate = 0 + fitMargin;
 
         }
 
         else {
-            finalfittingYcoordinate = containerBottomY - bubbleHeight;
+            finalfittingYcoordinate = containerBottomY - bubbleHeight - fitMargin;
         }
 
         setBubbleBottomY(finalfittingYcoordinate);
@@ -182,6 +192,7 @@ public class Bubble extends View {
         return mDetector.onTouchEvent(event);
     }
 
+    /** draws rounded rectangle with 100dp corner radius*/
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -190,11 +201,15 @@ public class Bubble extends View {
     }
 
 
+    /** handles bubble bound size*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        /** set bubble width bound to be same as parent view width */
         int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.EXACTLY);
+
+        /** set bubble height bound */
         int heightSpec = MeasureSpec.makeMeasureSpec(bubbleHeight,MeasureSpec.EXACTLY);
 
         setMeasuredDimension(widthSpec,heightSpec);
