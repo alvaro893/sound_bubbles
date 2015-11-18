@@ -34,6 +34,8 @@ public class Bubble extends View {
     private int bubbleBottomY;
     private int finalfittingYcoordinate = 0;
     private int fitMargin = 0;
+
+    private int alpha = (int)(0.8 * 255);
     private TypedArray passive_colors, active_colors;
     private ServerFile serverFile;
     private String DEBUG_TAG = "Bubble class";
@@ -41,6 +43,7 @@ public class Bubble extends View {
     private MediaPlayer mediaPlayer;
 
     private boolean detected = false;
+    private boolean active = false;
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
@@ -105,6 +108,14 @@ public class Bubble extends View {
         this.detected = detected;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     /** returns bubble bottom line Y coordinate (int) */
     public int getBubbleBottomY() {
         return bubbleBottomY;
@@ -152,9 +163,11 @@ public class Bubble extends View {
 
         active_color = new Paint(Paint.ANTI_ALIAS_FLAG);
         active_color.setColor(active_colors.getColor(color_selection, 0));
+        active_color.setAlpha(alpha);
 
         passive_color = new Paint(Paint.ANTI_ALIAS_FLAG);
         passive_color.setColor(passive_colors.getColor(color_selection, 0));
+        passive_color.setAlpha(alpha);
 
         setColor(passive_color);
 
@@ -165,17 +178,21 @@ public class Bubble extends View {
 
         if (bubbleHeight + parentYCoordinates <= containerBottomY && parentYCoordinates >= 0) {
             finalfittingYcoordinate = parentYCoordinates;
+            setBubbleBottomY(parentYCoordinates + bubbleHeight);
         }
         else if(parentYCoordinates < 0){
-            finalfittingYcoordinate = 0 + fitMargin;
+            finalfittingYcoordinate = fitMargin;
+            setBubbleBottomY(finalfittingYcoordinate + bubbleHeight - fitMargin);
 
         }
 
         else {
             finalfittingYcoordinate = containerBottomY - bubbleHeight - fitMargin;
+            setBubbleBottomY(finalfittingYcoordinate + bubbleHeight + fitMargin);
+
         }
 
-        setBubbleBottomY(finalfittingYcoordinate);
+
 
         Log.d(DEBUG_TAG, "containerBottomY is " + containerBottomY);
         Log.d(DEBUG_TAG, "BubbleHeight is " + bubbleHeight);

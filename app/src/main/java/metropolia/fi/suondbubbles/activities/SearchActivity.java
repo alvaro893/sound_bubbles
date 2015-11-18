@@ -136,9 +136,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        if (adapter.backToNormal(currentGridView)) {
-                            Toast.makeText(getBaseContext(), "stopped", Toast.LENGTH_LONG).show();
-                        }
+                        adapter.backToNormal(currentGridView);
+//                        if (adapter.backToNormal(currentGridView)) {
+//                            //Toast.makeText(getBaseContext(), "stopped", Toast.LENGTH_LONG).show();
+//                        }
                     }
                 });
             }
@@ -189,9 +190,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         }
         try {
             serverFile.setPathLocalFile(downloadTask.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -258,9 +257,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         categoryTask.execute();
         try {
             categories = categoryTask.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         Log.d("categories", Arrays.deepToString(categories));
