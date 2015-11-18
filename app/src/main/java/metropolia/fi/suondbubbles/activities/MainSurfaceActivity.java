@@ -9,7 +9,8 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
@@ -18,6 +19,7 @@ import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
+import metropolia.fi.suondbubbles.animations.HorizontalLineAnimation;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
@@ -28,6 +30,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     private String DEBUG_TAG = "MainSurfaceActivity";
 
     private ArrayList<FixedLayout> linesList;
+    private ArrayList<Bubble> bubbleList;
 
     /** Views*/
     private FixedLayout fixedLayout_1;
@@ -39,8 +42,9 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     private FixedLayout receivedFixedLayout;
     private ScrollView scrollView;
     private ImageView removeView;
-    private ImageButton addBtn;
     private Bubble bubble;
+    private View horizontalLine;
+    private Bubble calcBubble;
 
     /** Layout parameter */
     private FixedLayout.LayoutParams layoutParams;
@@ -71,8 +75,12 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     private final String selectedFile = "selectedFile";
 
 
+    /**Animations **/
+    private HorizontalLineAnimation horizontalLineAnimation;
+
     private Random randomNumber;
     private int bubbleYcoordinate = 0;
+    boolean AnimationON = false;
 
 
     @Override
@@ -81,16 +89,62 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         setContentView(R.layout.activity_main_surface);
         intentSearchActivity = new Intent(this, SearchActivity.class);
 
+        horizontalLine = findViewById(R.id.horizontal_line);
+
         /** scrolling down to bottom*/
         scrollToBottom();
 
         /** assigning touchListeners and dragListeners for viewGroups(FixedLayout aKa lines)*/
         initListeners();
         initLineList();
+        initHorizontalLineAnimation();
 
 
         randomNumber = new Random();
 
+        bubbleList = new ArrayList<>();
+    }
+
+    private void initHorizontalLineAnimation() {
+        horizontalLineAnimation = new HorizontalLineAnimation(
+                Animation.RELATIVE_TO_PARENT,
+                0f,
+                Animation.RELATIVE_TO_PARENT,
+                0f,
+                Animation.RELATIVE_TO_PARENT,
+                1f,
+                Animation.RELATIVE_TO_PARENT,
+                0f
+        );
+
+        horizontalLineAnimation.setDuration(40000);
+        horizontalLineAnimation.setInterpolator(new LinearInterpolator());
+        horizontalLineAnimation.setUpdateListener(new HorizontalLineAnimation.UpdateListener() {
+            @Override
+            public void onTranslationYUpdate(float y) {
+                getAnimationYvalue(y);
+            }
+        });
+
+        horizontalLineAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                horizontalLine.setVisibility(View.VISIBLE);
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                horizontalLine.setVisibility(View.INVISIBLE);
+                resetBubbleDetected();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     private void initLineList() {
@@ -129,6 +183,12 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
         removeView = (ImageView)findViewById(R.id.remove_view);
         bubbleDragController.setRemoveView(removeView);
+        bubbleDragController.setBubbleRemoveListener(new BubbleDragController.BubbleRemoveListener() {
+            @Override
+            public void bubbleRemoved(Bubble bubble) {
+                bubbleList.remove(bubble);
+            }
+        });
 
         mDetector_1 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_1));
         mDetector_2 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_2));
@@ -136,6 +196,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         mDetector_4 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_4));
         mDetector_5 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_5));
         mDetector_6 = new GestureDetector(getApplicationContext(), new FixedLayoutTouchController(fixedLayout_6));
+
 
 
         fixedLayout_1.setOnTouchListener(new View.OnTouchListener() {
@@ -216,6 +277,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
             linesList.get(index).removeAllViews();
         }
 
+        bubbleList.clear();
+
     }
 
     /** method called on start new session cancel click **/
@@ -228,6 +291,55 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     public void startNewSession(View v){
         DialogFragment dialogFragment = new ConfirmDialogFragment();
         dialogFragment.show(getFragmentManager(), "ConfirmDialogFagment");
+
+    }
+
+    public void startPlay(View v){
+
+
+        if(!AnimationON){
+            horizontalLine.startAnimation(horizontalLineAnimation);
+            AnimationON = true;
+        }
+        else if(AnimationON){
+            horizontalLine.clearAnimation();
+            stopAllBubblePlaying();
+            AnimationON = false;
+
+        }
+
+
+
+
+    }
+
+    private void stopAllBubblePlaying() {
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            if(calcBubble.bubbleIsPlaying()){
+                calcBubble.stopPlaying();
+            }
+        }
+    }
+
+    private void resetBubbleDetected() {
+        for(int i = 0 ; i < bubbleList.size(); i++){
+            bubbleList.get(i).setDetected(false);
+        }
+    }
+
+    private void getAnimationYvalue(float y){
+        for(int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            if(!calcBubble.isDetected()){
+                if(calcBubble.getBubbleBottomY() <= y && calcBubble.getBubbleBottomY() + calcBubble.getBubbleHeight()> y){
+                    calcBubble.setDetected(true);
+                    Log.d(DEBUG_TAG, "bubble detected");
+                    calcBubble.startPlaying();
+
+                }
+            }
+        }
 
     }
 
@@ -290,6 +402,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
 
 
+
                 if(receivedYCoordinates == 0){
                     bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), scrollView.getScrollY());
                 }else{
@@ -300,8 +413,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
                 /** bubble view assigned to viewgroup, bubble view is now visible*/
                 receivedFixedLayout.addView(bubble, layoutParams);
-
-
+                bubbleList.add(bubble);
+                Log.d(DEBUG_TAG,"bubble bottom:" + bubble.getBubbleBottomY());
 
             }
         }

@@ -13,12 +13,21 @@ import metropolia.fi.suondbubbles.views.Bubble;
 
 public class BubbleDragController implements View.OnDragListener {
 
+    public interface BubbleRemoveListener{
+        void bubbleRemoved(Bubble bubble);
+    }
+
     private FixedLayout container;
     private FixedLayout.LayoutParams layoutParams;
     private String DEBUG_TAG = "dragController";
     private Bubble bubbleView;
     private ImageView removeView;
     private int viewCenterY = 0;
+    private BubbleRemoveListener bubbleRemoveListener;
+
+    public void setBubbleRemoveListener(BubbleRemoveListener bubbleRemoveListener) {
+        this.bubbleRemoveListener = bubbleRemoveListener;
+    }
 
     public void setRemoveView(ImageView removeView){
         this.removeView = removeView;
@@ -88,6 +97,7 @@ public class BubbleDragController implements View.OnDragListener {
 
                 if(v.getId() == R.id.remove_view){
                     owner.removeView(bubbleView);
+                    bubbleRemoveListener.bubbleRemoved(bubbleView);
                     removeView.setSelected(false);
 
                 } else{
