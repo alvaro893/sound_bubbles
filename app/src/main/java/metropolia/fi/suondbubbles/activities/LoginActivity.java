@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.LoginTask;
+import metropolia.fi.suondbubbles.apiConnection.tasks.LoginTask;
 import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 
 public class LoginActivity extends AppCompatActivity implements AsyncResponse {

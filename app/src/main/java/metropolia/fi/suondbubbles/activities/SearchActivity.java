@@ -3,7 +3,6 @@ package metropolia.fi.suondbubbles.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,18 +19,20 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.CategoriesAdapter;
 import metropolia.fi.suondbubbles.adapters.ServerFilesArrayAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.CategoryTask;
-import metropolia.fi.suondbubbles.apiConnection.SearchTask;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.apiConnection.tasks.CategoryTask;
+import metropolia.fi.suondbubbles.apiConnection.tasks.DownloadTask;
+import metropolia.fi.suondbubbles.apiConnection.tasks.SearchTask;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private EditText activity_search_et_search;
@@ -91,11 +92,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     private void playFile(ServerFile file){
 
-        URL urlTrack = file.getLink();
+        //Download file if not exits in external memory
+        download(file);
+
         //set up MediaPlayer
         mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(SearchActivity.this, Uri.parse(urlTrack.toString()));
+            mediaPlayer.setDataSource(file.getPathLocalFile());
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (Exception e) {
@@ -175,7 +178,29 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         showServerFileList();
     }
 
+    private void download(ServerFile serverFile){
+        DownloadTask downloadTask = new DownloadTask();
+
+        // filename is not set, a timestamp will be used instead
+        if(serverFile.getFilename() == null){
+            String filename = Calendar.getInstance().getTimeInMillis() + "";
+            downloadTask.execute(serverFile.getLink(), filename);
+        }else{
+            downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
+        }
+        try {
+            serverFile.setPathLocalFile(downloadTask.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setAddButton(){
+
+
+
         this.activity_search_btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

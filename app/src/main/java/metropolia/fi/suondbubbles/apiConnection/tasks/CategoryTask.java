@@ -1,6 +1,8 @@
-package metropolia.fi.suondbubbles.apiConnection;
+package metropolia.fi.suondbubbles.apiConnection.tasks;
 
 import android.os.AsyncTask;
+
+import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 
 /**
  * Created by Alvaro on 02/11/2015.

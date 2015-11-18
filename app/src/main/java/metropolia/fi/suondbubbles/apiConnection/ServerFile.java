@@ -8,13 +8,85 @@ import java.io.Serializable;
 import java.net.URL;
 
 /**
- * This class should recive the JSON
+ * - This is a JavaBean that contains all information related to every file from the server
+ * - It contains all possible fields from server which are the following:
+ *
+ 0:  {
+ Metadata name: "Title"
+ Metadata DB field: "field8"
+ options: null
+ }-
+ 1:  {
+ Metadata name: "Creator"
+ Metadata DB field: "field81"
+ options: null
+ }-
+ 2:  {
+ Metadata name: "Language"
+ Metadata DB field: "field82"
+ options: null
+ }-
+ 3:  {
+ Metadata name: "Publisher"
+ Metadata DB field: "field83"
+ options: null
+ }-
+ 4:  {
+ Metadata name: "Rights"
+ Metadata DB field: "field84"
+ options: null
+ }-
+ 5:  {
+ Metadata name: "Location - longitude"
+ Metadata DB field: "field78"
+ options: null
+ }-
+ 6:  {
+ Metadata name: "Length (sec)"
+ Metadata DB field: "field79"
+ options: null
+ }-
+ 7:  {
+ Metadata name: "Source"
+ Metadata DB field: "field80"
+ options: null
+ }-
+ 8:  {
+ Metadata name: "Location - latitude"
+ Metadata DB field: "field77"
+ options: null
+ }-
+ 9:  {
+ Metadata name: "Original filename"
+ Metadata DB field: "originalfilename"
+ options: null
+ }-
+ 10:  {
+ Metadata name: "Description"
+ Metadata DB field: "field73"
+ options: null
+ }-
+ 11:  {
+ Metadata name: "Tags"
+ Metadata DB field: "field74"
+ options: null
+ }-
+ 12:  {
+ Metadata name: "Category"
+ Metadata DB field: "field75"
+ options: "nature,human,machine,story"
+ }-
+ 13:  {
+ Metadata name: "Sound Type"
+ Metadata DB field: "field76"
+ options: "soundscapes,ambience,effects"
+
  */
 public class ServerFile implements Serializable {
-    private String title, filename, category, soundType, fileExtension, collectionName, description, tags;
-    private int lenght, collectionID;
-    private double fileSize, lat, lon;
-    private URL link;
+    private String title, filename, category, soundType, fileExtension, collectionName, description,
+            tags, creator, language, publisher, rights, location, source, link, pathLocalFile;
+    private int length, collectionID;
+    private double fileSize;
 
     public ServerFile(){
 
@@ -66,22 +138,18 @@ public class ServerFile implements Serializable {
             if (json.has("Length (sec)")) {
                 String lenght = json.getString("Length (sec)");
                 if(!lenght.isEmpty())
-                    this.lenght = Integer.parseInt(lenght);
+                    this.length = Integer.parseInt(lenght);
                 else
-                    this.lenght = 0;
+                    this.length = 0;
             }else{
-                this.lenght = 0;
+                this.length = 0;
             }
             if (json.has("Collection ID")) {
                 this.collectionID = json.getInt("Collection ID");
             }else{
                 this.collectionID = 0;
             }
-            if (json.has("Download link")) {
-                this.link = new URL(json.getString("Download link"));
-            }else{
-                this.link = null;
-            }
+
 
         }catch (Exception e){
             Log.e("ServerFile", "error in constructor: "+e.getMessage());
@@ -166,12 +234,76 @@ public class ServerFile implements Serializable {
         this.tags = tags;
     }
 
-    public int getLenght() {
-        return lenght;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setLenght(int lenght) {
-        this.lenght = lenght;
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getRights() {
+        return rights;
+    }
+
+    public void setRights(String rights) {
+        this.rights = rights;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getPathLocalFile() {
+        return pathLocalFile;
+    }
+
+    public void setPathLocalFile(String pathLocalFile) {
+        this.pathLocalFile = pathLocalFile;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 
     public int getCollectionID() {
@@ -188,29 +320,5 @@ public class ServerFile implements Serializable {
 
     public void setFileSize(double fileSize) {
         this.fileSize = fileSize;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
-
-    public URL getLink() {
-        return link;
-    }
-
-    public void setLink(URL link) {
-        this.link = link;
     }
 }

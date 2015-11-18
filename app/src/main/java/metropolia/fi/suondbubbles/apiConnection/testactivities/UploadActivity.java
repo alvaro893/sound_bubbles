@@ -19,7 +19,7 @@ import java.util.Arrays;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.RawFilesAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.UploadTask;
+import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
 
 public class UploadActivity extends AppCompatActivity implements AsyncResponse {
 
