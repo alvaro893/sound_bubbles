@@ -208,17 +208,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     Toast.makeText(SearchActivity.this, "Select some sound first",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    // set path of local file in selected file
-                    download(filesList.get(lastSelectedId));
-                    // TODO: DELETE THIS
-                    mediaPlayer = new MediaPlayer();
-                    try {
-                        mediaPlayer.setDataSource(filesList.get(lastSelectedId).getPathLocalFile());
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
 
                     Intent receivedIntent = getIntent();
                     float coordinates = receivedIntent.getFloatExtra(viewCoordinates, 0);

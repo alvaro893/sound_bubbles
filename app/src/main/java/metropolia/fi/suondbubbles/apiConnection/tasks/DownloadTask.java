@@ -34,17 +34,22 @@ public class DownloadTask extends AsyncTask<String, Void, String> {
         try{
             URL url = new URL(params[0]);
             // create folder
-            File folder = new File(Environment.getExternalStorageDirectory()+File.separator+"sounds");
+            String FOLDER_NAME = "bubblesSounds";
+            File folder = new File(Environment.getExternalStorageDirectory()+File.separator+FOLDER_NAME);
             if(!folder.exists()){
                 folder.mkdir();
             }
             // create file (if file is already in memory, it won't be downloaded
             // unless the file is older than 24h
-            file = new File(Environment.getExternalStorageDirectory()+File.separator+"sounds", params[1]);
+            file = new File(Environment.getExternalStorageDirectory()+File.separator+FOLDER_NAME, params[1]);
             long now = Calendar.getInstance().getTimeInMillis();
             if(file.exists() && now - file.lastModified() > 86400000){
                 boolean isDeleted = file.delete();
                 Log.d(DEBUG_TAG, "isDeleted:"+isDeleted);
+                return file.getPath();
+            }
+            if(file.exists()){
+                return file.getPath();
             }
                 file.createNewFile();
             // stream to the new file
