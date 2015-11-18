@@ -19,7 +19,6 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -223,6 +222,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra(returnBundle,bundle);
                     setResult(Activity.RESULT_OK, returnIntent);
+                    mediaPlayer.stop();
                     finish();
                 }
             }

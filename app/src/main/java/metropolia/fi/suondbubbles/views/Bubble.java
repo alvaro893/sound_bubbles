@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -36,11 +37,46 @@ public class Bubble extends View {
     private ServerFile serverFile;
     private String DEBUG_TAG = "Bubble class";
     private RectF rectCoordinates;
+    private MediaPlayer mediaPlayer;
+
+    private boolean detected = false;
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
         init(serverFile);
+        initMediaplayer();
         createRoundedRectangle();
+    }
+
+    private void initMediaplayer() {
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(serverFile.getPathLocalFile());
+            mediaPlayer.prepare();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void startPlaying(){
+        mediaPlayer.start();
+    }
+
+    public void stopPlaying(){
+        mediaPlayer.stop();
+    }
+
+    public boolean bubbleIsPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
+    public boolean isDetected() {
+        return detected;
+    }
+
+    public void setDetected(boolean detected) {
+        this.detected = detected;
     }
 
     public int getBubbleBottomY() {
@@ -110,7 +146,7 @@ public class Bubble extends View {
             finalfittingYcoordinate = containerBottomY - bubbleHeight;
         }
 
-        setBubbleBottomY(finalfittingYcoordinate + bubbleHeight);
+        setBubbleBottomY(finalfittingYcoordinate);
 
         Log.d(DEBUG_TAG, "containerBottomY is " + containerBottomY);
         Log.d(DEBUG_TAG, "BubbleHeight is " + bubbleHeight);

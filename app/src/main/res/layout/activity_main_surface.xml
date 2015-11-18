@@ -11,47 +11,64 @@
         android:id="@+id/scrollView">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:baselineAligned="false"
-            android:id="@+id/bubble_surface_panel">
+            android:layout_height="wrap_content">
 
-            <metropolia.fi.suondbubbles.layouts.FixedLayout
-                android:layout_width="0dp"
-                android:layout_height="2000dp"
-                android:id="@+id/fixedLaytout_1"
-                android:layout_weight="1" />
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:id="@+id/horizontal_line"
+                android:background="@android:color/holo_green_dark"
+                android:visibility="invisible" />
 
-            <metropolia.fi.suondbubbles.layouts.FixedLayout
-                android:layout_width="0dp"
-                android:layout_height="2000dp"
-                android:id="@+id/fixedLaytout_2"
-                android:layout_weight="1" />
 
-            <metropolia.fi.suondbubbles.layouts.FixedLayout
-                android:layout_width="0dp"
-                android:layout_height="2000dp"
-                android:id="@+id/fixedLaytout_3"
-                android:layout_weight="1" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:id="@+id/bubble_surface_panel">
 
-            <metropolia.fi.suondbubbles.layouts.FixedLayout
-                android:layout_width="0dp"
-                android:layout_height="2000dp"
-                android:id="@+id/fixedLaytout_4"
-                android:layout_weight="1" />
+                <metropolia.fi.suondbubbles.layouts.FixedLayout
+                    android:layout_width="0dp"
+                    android:layout_height="2000dp"
+                    android:id="@+id/fixedLaytout_1"
+                    android:layout_weight="1" />
 
-            <metropolia.fi.suondbubbles.layouts.FixedLayout
-                android:layout_width="0dp"
-                android:layout_height="2000dp"
-                android:id="@+id/fixedLaytout_5"
-                android:layout_weight="1" />
+                <metropolia.fi.suondbubbles.layouts.FixedLayout
+                    android:layout_width="0dp"
+                    android:layout_height="2000dp"
+                    android:id="@+id/fixedLaytout_2"
+                    android:layout_weight="1" />
 
-            <metropolia.fi.suondbubbles.layouts.FixedLayout
-                android:layout_width="0dp"
-                android:layout_height="2000dp"
-                android:id="@+id/fixedLaytout_6"
-                android:layout_weight="1" />
+                <metropolia.fi.suondbubbles.layouts.FixedLayout
+                    android:layout_width="0dp"
+                    android:layout_height="2000dp"
+                    android:id="@+id/fixedLaytout_3"
+                    android:layout_weight="1" />
+
+                <metropolia.fi.suondbubbles.layouts.FixedLayout
+                    android:layout_width="0dp"
+                    android:layout_height="2000dp"
+                    android:id="@+id/fixedLaytout_4"
+                    android:layout_weight="1" />
+
+                <metropolia.fi.suondbubbles.layouts.FixedLayout
+                    android:layout_width="0dp"
+                    android:layout_height="2000dp"
+                    android:id="@+id/fixedLaytout_5"
+                    android:layout_weight="1" />
+
+                <metropolia.fi.suondbubbles.layouts.FixedLayout
+                    android:layout_width="0dp"
+                    android:layout_height="2000dp"
+                    android:id="@+id/fixedLaytout_6"
+                    android:layout_weight="1" />
+
+
+            </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>
@@ -100,7 +117,8 @@
             android:src="@drawable/play_button"
             android:layout_marginRight="30dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:onClick="startPlay"/>
 
         <ImageButton
             android:layout_width="64dp"
