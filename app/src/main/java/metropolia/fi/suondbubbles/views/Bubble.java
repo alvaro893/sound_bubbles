@@ -52,19 +52,38 @@ public class Bubble extends View {
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(serverFile.getPathLocalFile());
-            mediaPlayer.prepare();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+
+                }
+            });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.stop();
+                }
+            });
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(DEBUG_TAG,"ERROR: " + e.getMessage());
         }
 
     }
 
     public void startPlaying(){
-        mediaPlayer.start();
+        try {
+            mediaPlayer.prepareAsync();
+        }catch(Exception e){
+            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
+        }
     }
 
     public void stopPlaying(){
-        mediaPlayer.stop();
+        try {
+            mediaPlayer.stop();
+        } catch (Exception e) {
+            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
+        }
     }
 
     public boolean bubbleIsPlaying(){
