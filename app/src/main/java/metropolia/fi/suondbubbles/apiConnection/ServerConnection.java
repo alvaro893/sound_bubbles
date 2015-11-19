@@ -26,10 +26,15 @@ import java.util.HashMap;
 
 public class ServerConnection {
     public String Lastresponse;
+    private String message;
     public boolean isLogged = false;
     private String apiKey = null;
     private String authority = "dev.mw.metropolia.fi";
     private String path = "dianag/AudioResourceSpace/plugins/";
+
+    public String getMessage() {
+        return message;
+    }
 
     private Uri.Builder setUri(){
         Builder uri = new Uri.Builder()
@@ -137,6 +142,7 @@ public class ServerConnection {
 
         try {
             this.apiKey = response.getString("api_key");
+            message = apiKey;
             Log.d("ServerConnection", apiKey);
             if(this.apiKey.length() > 35){
                 this.isLogged = true;

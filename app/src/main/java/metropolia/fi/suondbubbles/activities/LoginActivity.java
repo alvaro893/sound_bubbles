@@ -1,7 +1,10 @@
 package metropolia.fi.suondbubbles.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -23,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     private static final String PREF_PASSWORD = "password";
     private static final String PREF_COLLECTION_ID = "collection_ID";
     private static final String CHECKED = "checked";
+    private static final String DEBUG_TAG = "LoginActivity";
 
     private Button activity_login_btn;
     private EditText activity_login_et_user, activity_login_et_pass, activity_login_et_collection;
@@ -60,7 +64,11 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
                         savePreferences(null, null, null, false);
                     }
 
-                    login(user, pass);
+                    if(isNetworkAvailable()) {
+                        login(user, pass);
+                    }else {
+                        Toast.makeText(getBaseContext(), R.string.no_internet_connection_activity_login, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -97,7 +105,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         LoginTask loginTask = new LoginTask();
         loginTask.delegate = this;
         loginTask.execute(user, pass); // when the asynctask is finished the processFinish method is executed
-        Toast.makeText(this, R.string.logging_activity_login, Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(this, R.string.logging_activity_login, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -105,13 +113,14 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         // save ServerConnection object
         SoundBubbles.serverConnection = (ServerConnection) result;
 
+
         if(SoundBubbles.userIsLogged()){
             CollectionID.setCollectionID(collection);
             startActivity(intentMainSurfaceActivity);
-            Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_SHORT).show();
 
         }else{
-            Toast.makeText(this, R.string.nologin_activity_login, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, ((ServerConnection) result).getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -141,5 +150,13 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         if(!SoundBubbles.serverConnection.isLogged){
             startActivity(this.intentMainSurfaceActivity);
         }
+    }
+
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

@@ -36,6 +36,7 @@ import metropolia.fi.suondbubbles.apiConnection.tasks.SearchTask;
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private EditText activity_search_et_search;
     private GridView activity_search_grid;
+    private TextView warning_text;
     private Button activity_search_btn_add;
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
@@ -63,6 +64,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
         activity_search_grid = (GridView) findViewById(R.id.gridView);
         activity_search_btn_add = (Button) findViewById(R.id.add);
+        warning_text = (TextView)findViewById(R.id.warning_text);
 
         // broad search in order to show something
         //performSearch(" ");
@@ -169,7 +171,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         searchTask.delegate = this;
         Log.d("serverConnection", SoundBubbles.serverConnection.toString());
         searchTask.execute(SoundBubbles.serverConnection, search.trim());
-        Toast. makeText (getBaseContext(), "searching", Toast. LENGTH_LONG ).show();
+        Toast. makeText (getBaseContext(), "searching", Toast.LENGTH_SHORT ).show();
     }
 
     @Override
@@ -260,6 +262,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+
         Log.d("categories", Arrays.deepToString(categories));
     }
 

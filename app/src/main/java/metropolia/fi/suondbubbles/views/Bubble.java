@@ -205,8 +205,8 @@ public class Bubble extends View {
             setBubbleBottomY(parentYCoordinates + bubbleHeight);
         }
         else if(parentYCoordinates < 0){
-            finalfittingYcoordinate = fitMargin;
-            setBubbleBottomY(finalfittingYcoordinate + bubbleHeight - fitMargin);
+            finalfittingYcoordinate = 0;
+            setBubbleBottomY(finalfittingYcoordinate + bubbleHeight);
 
         }
 
