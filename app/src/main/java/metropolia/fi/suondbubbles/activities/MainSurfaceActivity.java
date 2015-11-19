@@ -304,12 +304,12 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     public void startPlay(View v){
         if(!animationON){
-            Toast.makeText(getBaseContext(),"Started", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(),"Playing started", Toast.LENGTH_SHORT).show();
             horizontalLine.startAnimation(horizontalLineAnimation);
             animationON = true;
         }
         else{
-            Toast.makeText(getBaseContext(),"Stopped", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             horizontalLine.clearAnimation();
             stopAllBubblePlaying();
             animationON = false;
