@@ -83,7 +83,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     private int bubbleYcoordinate = 0;
     private int calcBubbleBottomY = 0;
     private int calcBubbleHeight = 0;
-    boolean AnimationON = false;
+    boolean animationON = false;
 
 
     @Override
@@ -276,6 +276,10 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     @Override
     public void onDialogYesClick(DialogFragment dialog) {
         dialog.dismiss();
+        horizontalLine.clearAnimation();
+        animationON = false;
+        stopAllBubblePlaying();
+        resetBubbleDetected();
 
         for(int index = 0; index < linesList.size(); index++){
             linesList.get(index).removeAllViews();
@@ -299,16 +303,16 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     }
 
     public void startPlay(View v){
-        if(!AnimationON){
+        if(!animationON){
             Toast.makeText(getBaseContext(),"Started", Toast.LENGTH_SHORT).show();
             horizontalLine.startAnimation(horizontalLineAnimation);
-            AnimationON = true;
+            animationON = true;
         }
         else{
             Toast.makeText(getBaseContext(),"Stopped", Toast.LENGTH_SHORT).show();
             horizontalLine.clearAnimation();
             stopAllBubblePlaying();
-            AnimationON = false;
+            animationON = false;
 
         }
     }
