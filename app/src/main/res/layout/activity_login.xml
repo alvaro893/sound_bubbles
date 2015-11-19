@@ -73,9 +73,19 @@
         android:textStyle="bold"
         android:id="@+id/go_button"
         android:background="@drawable/go_button"
-        android:layout_below="@+id/collection_id"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:layout_below="@+id/remember_checkBox" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remember Me"
+        android:id="@+id/remember_checkBox"
+        android:checked="false"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/collection_id"
+        android:layout_marginTop="20dp" />
 
 </RelativeLayout>

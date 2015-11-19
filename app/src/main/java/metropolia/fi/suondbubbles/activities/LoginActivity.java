@@ -1,10 +1,12 @@
 package metropolia.fi.suondbubbles.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,10 +17,19 @@ import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 import metropolia.fi.suondbubbles.apiConnection.tasks.LoginTask;
 
 public class LoginActivity extends AppCompatActivity implements AsyncResponse {
+
+    private static final String PREFS_NAME = "remember_prefs";
+    private static final String PREF_USERNAME = "username";
+    private static final String PREF_PASSWORD = "password";
+    private static final String PREF_COLLECTION_ID = "collection_ID";
+    private static final String CHECKED = "checked";
+
     private Button activity_login_btn;
     private EditText activity_login_et_user, activity_login_et_pass, activity_login_et_collection;
     private Intent intentMainSurfaceActivity;
     private String collection;
+    private CheckBox remember_checkbox;
+    private boolean checked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +40,56 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         activity_login_et_user = (EditText) findViewById(R.id.username);
         activity_login_et_pass = (EditText) findViewById(R.id.password);
         activity_login_et_collection = (EditText) findViewById(R.id.collection_id);
+        remember_checkbox = (CheckBox)findViewById(R.id.remember_checkBox);
         intentMainSurfaceActivity = new Intent(this, MainSurfaceActivity.class);
+
+        loadPreferences();
 
         // button click listener
         activity_login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String user = LoginActivity.this.activity_login_et_user.getText().toString();
-                String pass = LoginActivity.this.activity_login_et_pass.getText().toString();
-                collection = LoginActivity.this.activity_login_et_collection.getText().toString();
+                String user = activity_login_et_user.getText().toString();
+                String pass = activity_login_et_pass.getText().toString();
+                collection = activity_login_et_collection.getText().toString();
                 if (isFormValid()) {
+
+                    if(remember_checkbox.isChecked()){
+                        savePreferences(user, pass, collection, true);
+                    }else {
+                        savePreferences(null, null, null, false);
+                    }
+
                     login(user, pass);
                 }
             }
         });
 
+    }
+
+    private void loadPreferences() {
+        SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        String username = pref.getString(PREF_USERNAME, null);
+        String password = pref.getString(PREF_PASSWORD, null);
+        String collection = pref.getString(PREF_COLLECTION_ID, null);
+        boolean checked = pref.getBoolean(CHECKED, false);
+
+        if(checked){
+            activity_login_et_user.setText(username);
+            activity_login_et_pass.setText(password);
+            activity_login_et_collection.setText(collection);
+            remember_checkbox.setChecked(true);
+        }
+    }
+
+    public void savePreferences(String user, String pass, String collection, boolean remember_checkbox){
+        getSharedPreferences(PREFS_NAME,MODE_PRIVATE)
+                .edit()
+                .putString(PREF_USERNAME, user)
+                .putString(PREF_PASSWORD, pass)
+                .putString(PREF_COLLECTION_ID,collection)
+                .putBoolean(CHECKED, remember_checkbox)
+                .commit();
     }
 
 

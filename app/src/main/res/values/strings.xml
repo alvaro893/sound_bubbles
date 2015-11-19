@@ -13,6 +13,7 @@
     <string name="password_activity_login">Password</string>
     <string name="collection_id_activity_login">Collection ID</string>
     <string name="go_activity_login">GO</string>
+    <string name="remember_me_activity_login">Remember Me</string>
     <string name="nologin_activity_login">Login failed</string>
     <string name="emptyfiled_activity_login">Field is empty</string>
     <string name="logging_activity_login">Logging</string>
