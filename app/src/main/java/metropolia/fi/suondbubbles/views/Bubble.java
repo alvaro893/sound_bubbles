@@ -11,6 +11,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.io.IOException;
 import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
@@ -48,16 +49,33 @@ public class Bubble extends View {
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
         init(serverFile);
+        initHeight();
         initMediaplayer();
+
         createRoundedRectangle();
+    }
+
+    private void initHeight() {
+        MediaPlayer duration = new MediaPlayer();
+        try {
+            duration.setDataSource(serverFile.getPathLocalFile());
+            duration.prepare();
+            setBubbleHeight(duration.getDuration());
+            duration.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
     /** Initializes mediaplayer and set listerners **/
     private void initMediaplayer() {
         try {
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(serverFile.getPathLocalFile());
+
+            //setBubbleHeight(mediaPlayer.getDuration());
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
@@ -80,6 +98,7 @@ public class Bubble extends View {
     public void startPlaying(){
         try {
             mediaPlayer.prepareAsync();
+
         }catch(Exception e){
             Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
         }
@@ -141,12 +160,17 @@ public class Bubble extends View {
         this.color = color;
     }
 
+    public void setBubbleHeight(int bubbleHeight) {
+        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(bubbleHeight * 0.05f,getContext());
+
+    }
 
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
-        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(serverFile.getLength() * 50,getContext());
         this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
     }
+
+
 
     private void createRoundedRectangle() {
         initStyle();
