@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SuondBubbles</string>
+    <string name="app_name">SoundBubbles</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -9,13 +9,16 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="title_activity_login">Log in</string>
-    <string name="username_activity_login">username</string>
-    <string name="password_activity_login">password</string>
-    <string name="go_activity_login">GO!</string>
-    <string name="nologin_activity_login">Log in failed</string>
+    <string name="username_activity_login">Username</string>
+    <string name="password_activity_login">Password</string>
+    <string name="collection_id_activity_login">Collection ID</string>
+    <string name="go_activity_login">GO</string>
+    <string name="remember_me_activity_login">Remember Me</string>
+    <string name="nologin_activity_login">Login failed: wrong username or password</string>
+    <string name="no_internet_connection_activity_login">You are not connected to internet</string>
     <string name="emptyfiled_activity_login">Field is empty</string>
     <string name="logging_activity_login">Logging</string>
-    <string name="logsucess_activity_login">login successful</string>
+    <string name="logsucess_activity_login">Login successful</string>
     <string name="searchhint_activity_search">Search</string>
     <string name="cancelbtn_activity_search">Cancel</string>
     <string name="addbtn_activity_search">Select</string>

@@ -8,7 +8,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView">
+        android:id="@+id/scrollView"
+        android:layout_above="@+id/contol_panel">
 
         <LinearLayout
             android:orientation="vertical"
@@ -34,37 +35,44 @@
                     android:layout_width="0dp"
                     android:layout_height="2000dp"
                     android:id="@+id/fixedLaytout_1"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
                     android:layout_height="2000dp"
                     android:id="@+id/fixedLaytout_2"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
                     android:layout_height="2000dp"
                     android:id="@+id/fixedLaytout_3"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
                     android:layout_height="2000dp"
                     android:id="@+id/fixedLaytout_4"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
                     android:layout_height="2000dp"
                     android:id="@+id/fixedLaytout_5"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
                     android:layout_height="2000dp"
                     android:id="@+id/fixedLaytout_6"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_marginRight="1dp" />
 
 
             </LinearLayout>
@@ -86,14 +94,15 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="56dp"
         android:gravity="center_horizontal"
         android:id="@+id/contol_panel"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white">
 
         <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginRight="30dp"
             android:id="@+id/btn_new"
             android:src="@drawable/new_doc_button"
@@ -102,8 +111,8 @@
             android:scaleType="fitCenter" />
 
         <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:id="@+id/btn_record"
             android:src="@drawable/record_button"
             android:layout_marginRight="40dp"
@@ -111,8 +120,8 @@
             android:scaleType="fitCenter" />
 
         <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:id="@+id/btn_play"
             android:src="@drawable/play_button"
             android:layout_marginRight="30dp"
@@ -121,8 +130,8 @@
             android:onClick="startPlay"/>
 
         <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:id="@+id/btn_add"
             android:background="@android:color/transparent"
             android:src="@drawable/add_button"

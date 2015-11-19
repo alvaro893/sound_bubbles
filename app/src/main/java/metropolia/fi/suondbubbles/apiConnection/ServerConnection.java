@@ -19,20 +19,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-/**
- * Created by alvarob on 30.9.2015.
- */
+
 public class ServerConnection {
     public String Lastresponse;
+    private String message;
     public boolean isLogged = false;
     private String apiKey = null;
     private String authority = "dev.mw.metropolia.fi";
     private String path = "dianag/AudioResourceSpace/plugins/";
+
+    public String getMessage() {
+        return message;
+    }
 
     private Uri.Builder setUri(){
         Builder uri = new Uri.Builder()
@@ -140,6 +142,7 @@ public class ServerConnection {
 
         try {
             this.apiKey = response.getString("api_key");
+            message = apiKey;
             Log.d("ServerConnection", apiKey);
             if(this.apiKey.length() > 35){
                 this.isLogged = true;
@@ -156,7 +159,7 @@ public class ServerConnection {
         uri.appendEncodedPath("api_audio_search/index.php/")
                 .appendQueryParameter("key", apiKey)
                 .appendQueryParameter("link", "true")
-                .appendQueryParameter("collection", "11")
+                .appendQueryParameter("collection", CollectionID.getCollectionID())
                 .appendQueryParameter("search", search.trim());
 
         String builtUrl = uri.build().toString();
@@ -182,7 +185,7 @@ public class ServerConnection {
 //        params.put("field77", Double.toString(file.getLat()));
 //        params.put("field79", Double.toString(file.getLat()));
         // for testing
-        params.put("collection", "11");
+        params.put("collection", CollectionID.getCollectionID());
         params.put("field75", "machine");
         params.put("field76","effects" );
         params.put("field73","description" );

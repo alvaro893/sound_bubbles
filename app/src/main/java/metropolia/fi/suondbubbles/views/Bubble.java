@@ -11,6 +11,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.io.IOException;
 import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
@@ -33,6 +34,9 @@ public class Bubble extends View {
     private int color_selection;
     private int bubbleBottomY;
     private int finalfittingYcoordinate = 0;
+    private int fitMargin = 0;
+
+    private int alpha = (int)(0.8 * 255);
     private TypedArray passive_colors, active_colors;
     private ServerFile serverFile;
     private String DEBUG_TAG = "Bubble class";
@@ -40,37 +44,81 @@ public class Bubble extends View {
     private MediaPlayer mediaPlayer;
 
     private boolean detected = false;
+    private boolean active = false;
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
         init(serverFile);
+        initHeight();
         initMediaplayer();
+
         createRoundedRectangle();
     }
 
+    private void initHeight() {
+        MediaPlayer duration = new MediaPlayer();
+        try {
+            duration.setDataSource(serverFile.getPathLocalFile());
+            duration.prepare();
+            setBubbleHeight(duration.getDuration());
+            duration.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /** Initializes mediaplayer and set listerners **/
     private void initMediaplayer() {
         try {
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(serverFile.getPathLocalFile());
-            mediaPlayer.prepare();
+
+            //setBubbleHeight(mediaPlayer.getDuration());
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+
+                }
+            });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.stop();
+                }
+            });
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(DEBUG_TAG,"ERROR: " + e.getMessage());
         }
 
     }
 
+    /** starts mediaplayer with async prepering*/
     public void startPlaying(){
-        mediaPlayer.start();
+        try {
+            mediaPlayer.prepareAsync();
+
+        }catch(Exception e){
+            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
+        }
     }
 
+    /** stops mediaplayer*/
     public void stopPlaying(){
-        mediaPlayer.stop();
+        try {
+            mediaPlayer.stop();
+        } catch (Exception e) {
+            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
+        }
     }
 
+    /** return boolean value whether mediaplayer is playing currently **/
     public boolean bubbleIsPlaying(){
         return mediaPlayer.isPlaying();
     }
 
+    /** returns boolean value whether bubble has collided with horizontal line */
     public boolean isDetected() {
         return detected;
     }
@@ -79,6 +127,15 @@ public class Bubble extends View {
         this.detected = detected;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /** returns bubble bottom line Y coordinate (int) */
     public int getBubbleBottomY() {
         return bubbleBottomY;
     }
@@ -103,17 +160,24 @@ public class Bubble extends View {
         this.color = color;
     }
 
+    public void setBubbleHeight(int bubbleHeight) {
+        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(bubbleHeight * 0.05f,getContext());
+
+    }
+
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
-        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(serverFile.getLength() * 50,getContext());
         this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
     }
+
+
 
     private void createRoundedRectangle() {
         initStyle();
         rectCoordinates = new RectF(0,0,0, bubbleHeight);
     }
-    
+
+    /** method for initilizing bubble styles attributes */
     private void initStyle(){
         Random rnd = new Random();
         color_selection = rnd.nextInt(8);
@@ -123,30 +187,36 @@ public class Bubble extends View {
 
         active_color = new Paint(Paint.ANTI_ALIAS_FLAG);
         active_color.setColor(active_colors.getColor(color_selection, 0));
+        active_color.setAlpha(alpha);
 
         passive_color = new Paint(Paint.ANTI_ALIAS_FLAG);
         passive_color.setColor(passive_colors.getColor(color_selection, 0));
+        passive_color.setAlpha(alpha);
 
         setColor(passive_color);
 
     }
 
     public int returnFittingYcoordinate(int containerBottomY, int parentYCoordinates){
-        int result =  bubbleHeight - parentYCoordinates;
+        fitMargin = (int)PixelsConverter.convertDpToPixel(5,getContext());
 
         if (bubbleHeight + parentYCoordinates <= containerBottomY && parentYCoordinates >= 0) {
             finalfittingYcoordinate = parentYCoordinates;
+            setBubbleBottomY(parentYCoordinates + bubbleHeight);
         }
         else if(parentYCoordinates < 0){
             finalfittingYcoordinate = 0;
+            setBubbleBottomY(finalfittingYcoordinate + bubbleHeight);
 
         }
 
         else {
-            finalfittingYcoordinate = containerBottomY - bubbleHeight;
+            finalfittingYcoordinate = containerBottomY - bubbleHeight - fitMargin;
+            setBubbleBottomY(finalfittingYcoordinate + bubbleHeight + fitMargin);
+
         }
 
-        setBubbleBottomY(finalfittingYcoordinate);
+
 
         Log.d(DEBUG_TAG, "containerBottomY is " + containerBottomY);
         Log.d(DEBUG_TAG, "BubbleHeight is " + bubbleHeight);
@@ -163,6 +233,7 @@ public class Bubble extends View {
         return mDetector.onTouchEvent(event);
     }
 
+    /** draws rounded rectangle with 100dp corner radius*/
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -171,11 +242,15 @@ public class Bubble extends View {
     }
 
 
+    /** handles bubble bound size*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        /** set bubble width bound to be same as parent view width */
         int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.EXACTLY);
+
+        /** set bubble height bound */
         int heightSpec = MeasureSpec.makeMeasureSpec(bubbleHeight,MeasureSpec.EXACTLY);
 
         setMeasuredDimension(widthSpec,heightSpec);

@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -80,7 +81,9 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     private Random randomNumber;
     private int bubbleYcoordinate = 0;
-    boolean AnimationON = false;
+    private int calcBubbleBottomY = 0;
+    private int calcBubbleHeight = 0;
+    boolean animationON = false;
 
 
     @Override
@@ -118,6 +121,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         );
 
         horizontalLineAnimation.setDuration(40000);
+        horizontalLineAnimation.setRepeatCount(Animation.INFINITE);
         horizontalLineAnimation.setInterpolator(new LinearInterpolator());
         horizontalLineAnimation.setUpdateListener(new HorizontalLineAnimation.UpdateListener() {
             @Override
@@ -272,6 +276,10 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     @Override
     public void onDialogYesClick(DialogFragment dialog) {
         dialog.dismiss();
+        horizontalLine.clearAnimation();
+        animationON = false;
+        stopAllBubblePlaying();
+        resetBubbleDetected();
 
         for(int index = 0; index < linesList.size(); index++){
             linesList.get(index).removeAllViews();
@@ -295,22 +303,18 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     }
 
     public void startPlay(View v){
-
-
-        if(!AnimationON){
+        if(!animationON){
+            Toast.makeText(getBaseContext(),"Playing started", Toast.LENGTH_SHORT).show();
             horizontalLine.startAnimation(horizontalLineAnimation);
-            AnimationON = true;
+            animationON = true;
         }
-        else if(AnimationON){
+        else{
+            Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             horizontalLine.clearAnimation();
             stopAllBubblePlaying();
-            AnimationON = false;
+            animationON = false;
 
         }
-
-
-
-
     }
 
     private void stopAllBubblePlaying() {
@@ -324,19 +328,35 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     private void resetBubbleDetected() {
         for(int i = 0 ; i < bubbleList.size(); i++){
-            bubbleList.get(i).setDetected(false);
+            calcBubble = bubbleList.get(i);
+            if(calcBubble.isDetected()){
+                calcBubble.setDetected(false);
+                calcBubble.setColor(calcBubble.getPassive_color());
+                calcBubble.invalidate();
+            }
         }
     }
 
     private void getAnimationYvalue(float y){
         for(int i = 0; i < bubbleList.size(); i++){
             calcBubble = bubbleList.get(i);
+            calcBubbleHeight = calcBubble.getBubbleHeight();
+            calcBubbleBottomY = calcBubble.getBubbleBottomY();
+
             if(!calcBubble.isDetected()){
-                if(calcBubble.getBubbleBottomY() <= y && calcBubble.getBubbleBottomY() + calcBubble.getBubbleHeight()> y){
+                if(y <= calcBubbleBottomY && calcBubbleBottomY - calcBubbleHeight <= y){
                     calcBubble.setDetected(true);
+                    calcBubble.setColor(calcBubble.getActive_color());
+                    calcBubble.invalidate();
                     Log.d(DEBUG_TAG, "bubble detected");
                     calcBubble.startPlaying();
 
+                }
+            }else{
+                if(calcBubbleBottomY - calcBubbleHeight >= y){
+                    calcBubble.setColor(calcBubble.getPassive_color());
+                    calcBubble.invalidate();
+                    calcBubble.setDetected(false);
                 }
             }
         }
