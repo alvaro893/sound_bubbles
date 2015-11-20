@@ -20,6 +20,7 @@ import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
  public abstract class SoundBubbles {
 
     public static ServerConnection serverConnection = null;
+    public static Context MainContext = null;
 
 
     public static void hideKeyboard(Context ctx, View v){
@@ -70,4 +71,7 @@ import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
                 .show();
     }
 
+    public static Context getMainContext() {
+        return MainContext;
+    }
 }
