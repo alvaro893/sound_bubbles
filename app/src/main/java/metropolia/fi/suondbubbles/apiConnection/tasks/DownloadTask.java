@@ -40,7 +40,7 @@ public class DownloadTask extends AsyncTask<String, Void, String> {
         try{
             URL url = new URL(urlString);
             SoundFile soundFile = new SoundFile(url.openStream());
-            file = soundFile.createFile(filename);
+            file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
         }catch (Exception e){
             Log.d(DEBUG_TAG, e.getClass().toString() + ":" +e.getMessage());
             e.printStackTrace();

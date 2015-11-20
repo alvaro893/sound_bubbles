@@ -6,6 +6,7 @@ import android.media.AudioRecord;
 import android.os.Environment;
 import android.util.Log;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.BufferedInputStream;
@@ -32,7 +33,7 @@ public class SoundFile {
         this.urlSream = urlSream;
     }
 
-    // It creates file in external memory
+    // It creates file in external memory (It does not work anymore)
     public File createFile(String filename) throws IOException {
         // create folder
             File folder = new File(Environment.getExternalStorageDirectory()+File.separator+FOLDER_NAME);
@@ -107,7 +108,7 @@ public class SoundFile {
         String md5 = null;
         try {
             FileInputStream fis = new FileInputStream(file);
-            md5 = DigestUtils.md5Hex(fis);
+            md5 = new String(Hex.encodeHex(DigestUtils.md5(fis)));
             fis.close();
         }catch (Exception e){
             Log.d(DEBUG_TAG, e.getMessage());
@@ -120,7 +121,7 @@ public class SoundFile {
     public String calculateHashFile(InputStream is){
         String md5 = null;
         try{
-            md5 = DigestUtils.md5Hex(is);
+            md5 = new String(Hex.encodeHex(DigestUtils.md5(is)));
             is.close();
         }catch (Exception e){
             Log.d(DEBUG_TAG, e.getMessage());
