@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/message_dialog_volume_control"
+        android:id="@+id/confirm_Dialog_Message"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="10dp" />
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/voleme_seek_bar"
+            android:max="100"
+            android:progress="50"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/minimum_dialog_volume_control"
+            android:id="@+id/minimum_volume"
+            android:layout_below="@+id/voleme_seek_bar"
+            android:layout_alignLeft="@+id/voleme_seek_bar"
+            android:layout_marginLeft="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text=""
+            android:id="@+id/current_volume"
+            android:layout_below="@+id/voleme_seek_bar"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/maximum_dialog_volume_control"
+            android:id="@+id/maximum_volume"
+            android:layout_below="@+id/voleme_seek_bar"
+            android:layout_alignRight="@+id/voleme_seek_bar"
+            android:layout_marginRight="20dp" />
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:text="@string/ok_dialog_volume_control"
+        android:id="@+id/volume_dialog_ok_button"
+        android:background="@drawable/go_button"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="30dp" />
+
+</LinearLayout>

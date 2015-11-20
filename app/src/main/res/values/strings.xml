@@ -13,6 +13,10 @@
     <string name="password_activity_login">Password</string>
     <string name="collection_id_activity_login">Collection ID</string>
     <string name="go_activity_login">GO</string>
+    <string name="ok_dialog_volume_control">OK</string>
+    <string name="minimum_dialog_volume_control">0</string>
+    <string name="maximum_dialog_volume_control">100</string>
+    <string name="message_dialog_volume_control">VOLUME</string>
     <string name="remember_me_activity_login">Remember Me</string>
     <string name="nologin_activity_login">Login failed: wrong username or password</string>
     <string name="no_internet_connection_activity_login">You are not connected to internet</string>

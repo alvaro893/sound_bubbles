@@ -23,10 +23,11 @@ import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.animations.HorizontalLineAnimation;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
+import metropolia.fi.suondbubbles.dialogFragments.VolumeControlFragment;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 import metropolia.fi.suondbubbles.views.Bubble;
 
-public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener{
+public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener {
 
     private String DEBUG_TAG = "MainSurfaceActivity";
 
@@ -363,6 +364,27 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     }
 
+    private void openVolumeControlDialog(final Bubble bubble){
+        VolumeControlFragment dialogFragment = new VolumeControlFragment();
+        dialogFragment.setmListener(new VolumeControlFragment.VolumeListener() {
+            @Override
+            public void onVolumeChange(int volume) {
+                Log.d(DEBUG_TAG,"Sound volume is:" + volume);
+                bubble.setSoundVolume(volume);
+            }
+
+            @Override
+            public void onOkClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
+        dialogFragment.setVolume(bubble.getSoundVolume());
+        dialogFragment.show(getFragmentManager(), "VolumeControlFragment");
+
+    }
+
+
+
 
     /** Class for controlling touches on FixedLayout(lines)*/
     private class FixedLayoutTouchController extends GestureDetector.SimpleOnGestureListener {
@@ -417,7 +439,13 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
                 receivedFixedLayout = (FixedLayout)findViewById(receivedLayoutId);
 
                 /** bubble view creation, not yet visible */
-                bubble = new Bubble(getBaseContext(), receivedServerFile);
+                bubble = new Bubble(this, receivedServerFile);
+                bubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
+                    @Override
+                    public void onDoubleTapOnBubbleDetected(Bubble bubble) {
+                        openVolumeControlDialog(bubble);
+                    }
+                });
 
 
 
