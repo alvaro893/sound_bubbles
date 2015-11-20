@@ -11,7 +11,17 @@ import android.view.View;
 import metropolia.fi.suondbubbles.views.Bubble;
 
 
-public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListener {
+public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListener{
+
+    public interface BubbleDoubleTapListener {
+        void onBubbleDoubleTap(Bubble bubble);
+    }
+
+    private BubbleDoubleTapListener bubbleDoubleTapListener;
+
+    public void setBubbleDoubleTapListener(BubbleDoubleTapListener bubbleDoubleTapListener) {
+        this.bubbleDoubleTapListener = bubbleDoubleTapListener;
+    }
 
     private Context context;
     private Bubble bubble;
@@ -29,11 +39,11 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
     }
 
 
-
-
     @Override
     public boolean onDoubleTap(MotionEvent e) {
         Log.d(DEBUG_TAG, "double tap on Bubble");
+        bubbleDoubleTapListener.onBubbleDoubleTap(bubble);
+
         return true;
     }
 
@@ -46,6 +56,7 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
 
         bubble.startDrag(data, new View.DragShadowBuilder(bubble), bubble, 0);
     }
+
 
 
 }

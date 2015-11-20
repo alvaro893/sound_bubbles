@@ -22,37 +22,56 @@ import metropolia.fi.suondbubbles.helper.PixelsConverter;
 
 public class Bubble extends View {
 
+    public interface DoubletapOnBubbleDetector{
+        void onDoubleTapOnBubbleDetected(Bubble bubble);
+    }
 
+    private final String DEBUG_TAG = "Bubble class";
+    private final int MAX_VOLUME = 100;
 
     private Paint color, passive_color, active_color;
 
     private GestureDetector mDetector;
-
-
-
     private int bubbleHeight;
     private int color_selection;
     private int bubbleBottomY;
     private int finalfittingYcoordinate = 0;
     private int fitMargin = 0;
+    private DoubletapOnBubbleDetector doubletapOnBubbleDetector;
 
     private int alpha = (int)(0.8 * 255);
     private TypedArray passive_colors, active_colors;
     private ServerFile serverFile;
-    private String DEBUG_TAG = "Bubble class";
+
     private RectF rectCoordinates;
     private MediaPlayer mediaPlayer;
+    private int soundVolume;
+    private float bubbleVolume;
+    private BubbleTouchController bubbleTouchController;
+
 
     private boolean detected = false;
     private boolean active = false;
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
+
         init(serverFile);
         initHeight();
+
+
         initMediaplayer();
 
         createRoundedRectangle();
+    }
+
+    public int getSoundVolume() {
+        return soundVolume;
+    }
+
+    public void setSoundVolume(int soundVolume) {
+        this.soundVolume = soundVolume;
+        setBubbleVolume(soundVolume);
     }
 
     private void initHeight() {
@@ -67,17 +86,24 @@ public class Bubble extends View {
         }
     }
 
+    private void setBubbleVolume(int soundVolume){
+
+        bubbleVolume = (float)(soundVolume * 0.01);
+        mediaPlayer.setVolume(bubbleVolume,bubbleVolume);
+    }
 
     /** Initializes mediaplayer and set listerners **/
     private void initMediaplayer() {
         try {
-
             mediaPlayer = new MediaPlayer();
+
             mediaPlayer.setDataSource(serverFile.getPathLocalFile());
+            setSoundVolume(50);
 
             //setBubbleHeight(mediaPlayer.getDuration());
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 public void onPrepared(MediaPlayer mp) {
+                    setBubbleVolume(soundVolume);
                     mp.start();
 
                 }
@@ -116,6 +142,10 @@ public class Bubble extends View {
     /** return boolean value whether mediaplayer is playing currently **/
     public boolean bubbleIsPlaying(){
         return mediaPlayer.isPlaying();
+    }
+
+    public void setDoubletapOnBubbleDetector(DoubletapOnBubbleDetector doubletapOnBubbleDetector) {
+        this.doubletapOnBubbleDetector = doubletapOnBubbleDetector;
     }
 
     /** returns boolean value whether bubble has collided with horizontal line */
@@ -167,7 +197,17 @@ public class Bubble extends View {
 
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
-        this.mDetector = new GestureDetector(getContext(),new BubbleTouchController(getContext(),this));
+
+        bubbleTouchController = new BubbleTouchController(getContext(),this);
+
+        bubbleTouchController.setBubbleDoubleTapListener(new BubbleTouchController.BubbleDoubleTapListener() {
+            @Override
+            public void onBubbleDoubleTap(Bubble bubble) {
+                doubletapOnBubbleDetector.onDoubleTapOnBubbleDetected(bubble);
+            }
+        });
+
+        this.mDetector = new GestureDetector(getContext(),bubbleTouchController);
     }
 
 
