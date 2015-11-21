@@ -1,5 +1,6 @@
 package metropolia.fi.suondbubbles.Controllers;
 
+import android.content.ClipData;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
@@ -22,8 +23,12 @@ public class BubbleDragController implements View.OnDragListener {
     private String DEBUG_TAG = "dragController";
     private Bubble bubbleView;
     private ImageView removeView;
-    private int viewCenterY = 0;
+    private int droptopY = 0;
     private BubbleRemoveListener bubbleRemoveListener;
+    private ClipData data;
+    private String coord;
+    private int yCoord;
+
 
     public void setBubbleRemoveListener(BubbleRemoveListener bubbleRemoveListener) {
         this.bubbleRemoveListener = bubbleRemoveListener;
@@ -103,8 +108,17 @@ public class BubbleDragController implements View.OnDragListener {
                 } else{
                     owner.removeView(bubbleView);
                     container = (FixedLayout) v;
-                    viewCenterY = (int)(event.getY() - ((bubbleView.getHeight() / 2)));
-                    layoutParams = new FixedLayout.LayoutParams(v.getWidth(), v.getHeight(), 0, bubbleView.returnFittingYcoordinate(container.getBottom(), viewCenterY));
+                    data = event.getClipData();
+                    Log.d(DEBUG_TAG,"data.getItemCount() is " + data.getItemCount());
+
+                    coord = data.getItemAt(0).getText().toString();
+                    Log.d(DEBUG_TAG, " coord is " + coord);
+                     yCoord = Integer.parseInt(coord);
+
+
+
+                    droptopY = (int)(event.getY() -  yCoord);
+                    layoutParams = new FixedLayout.LayoutParams(v.getWidth(), v.getHeight(), 0, bubbleView.returnFittingYcoordinate(container.getBottom(), droptopY));
                     container.addView(bubbleView, layoutParams);
                     bubbleView.setVisibility(View.VISIBLE);
                 }

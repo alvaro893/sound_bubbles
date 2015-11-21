@@ -2,13 +2,14 @@ package metropolia.fi.suondbubbles.Controllers;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.graphics.Point;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
-import android.view.View;
 
 import metropolia.fi.suondbubbles.views.Bubble;
+import metropolia.fi.suondbubbles.views.BubbleShadowBuilder;
 
 
 public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListener{
@@ -26,15 +27,22 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
     private Context context;
     private Bubble bubble;
     private String DEBUG_TAG = "BubbleTouchController";
+    private Point touchPoint;
+    private String coordinates;
+    private int y_coordinate;
 
     public BubbleTouchController(Context context, Bubble bubble){
         this.context = context;
         this.bubble = bubble;
+        touchPoint = new Point();
 
     }
 
     @Override
     public boolean onDown(MotionEvent e) {
+
+        Log.d(DEBUG_TAG,"touch at getY: " + e.getY());
+        Log.d(DEBUG_TAG,"touch at getRawY: " + e.getRawY());
         return true;
     }
 
@@ -52,9 +60,14 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
         Log.d(DEBUG_TAG, "Start dragging bubble");
         bubble.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 
-        ClipData data = ClipData.newPlainText("", "");
+        y_coordinate = (int)e.getY();
+        coordinates = Integer.toString(y_coordinate);
+        ClipData data = ClipData.newPlainText("", coordinates);
 
-        bubble.startDrag(data, new View.DragShadowBuilder(bubble), bubble, 0);
+
+        touchPoint.set((int)e.getX(),(int)e.getY());
+
+        bubble.startDrag(data, new BubbleShadowBuilder(bubble,touchPoint), bubble, 0);
     }
 
 
