@@ -101,7 +101,9 @@ public class BubbleDragController implements View.OnDragListener {
 
 
                 if(v.getId() == R.id.remove_view){
+                    bubbleView.stopPlaying();
                     owner.removeView(bubbleView);
+                    bubbleView.setDetected(false);
                     bubbleRemoveListener.bubbleRemoved(bubbleView);
                     removeView.setSelected(false);
 
