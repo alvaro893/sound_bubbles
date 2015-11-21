@@ -259,6 +259,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     /** called on add button click*/
     public void addNewBubble(View v){
+        stopPlaying();
 
         Log.d(DEBUG_TAG, "Y coordinate is " + scrollView.getScrollY());
 
@@ -277,16 +278,26 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     @Override
     public void onDialogYesClick(DialogFragment dialog) {
         dialog.dismiss();
-        horizontalLine.clearAnimation();
-        animationON = false;
-        stopAllBubblePlaying();
-        resetBubbleDetected();
+        stopPlaying();
 
         for(int index = 0; index < linesList.size(); index++){
             linesList.get(index).removeAllViews();
         }
 
         bubbleList.clear();
+
+    }
+
+    private void stopPlaying(){
+        if(animationON){
+            Log.d(DEBUG_TAG,"Animation was on");
+            horizontalLine.clearAnimation();
+            animationON = false;
+            stopAllBubblePlaying();
+            resetBubbleDetected();
+
+        }else
+            Log.d(DEBUG_TAG,"Animation was off");
 
     }
 
@@ -300,6 +311,14 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     public void startNewSession(View v){
         DialogFragment dialogFragment = new ConfirmDialogFragment();
         dialogFragment.show(getFragmentManager(), "ConfirmDialogFagment");
+
+    }
+
+    /** called on record button click*/
+    public void startRecordActivity(View v){
+        stopPlaying();
+
+        /** TODO: starting record activity */
 
     }
 
