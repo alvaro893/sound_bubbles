@@ -237,14 +237,14 @@ public class Bubble extends View {
 
     }
 
-    public int returnFittingYcoordinate(int containerBottomY, int parentYCoordinates){
+    public int returnFittingYcoordinate(int containerBottomY, int bubbleTopY){
         fitMargin = (int)PixelsConverter.convertDpToPixel(5,getContext());
 
-        if (bubbleHeight + parentYCoordinates <= containerBottomY && parentYCoordinates >= 0) {
-            finalfittingYcoordinate = parentYCoordinates;
-            setBubbleBottomY(parentYCoordinates + bubbleHeight);
+        if (bubbleHeight + bubbleTopY <= containerBottomY && bubbleTopY >= 0) {
+            finalfittingYcoordinate = bubbleTopY;
+            setBubbleBottomY(bubbleTopY + bubbleHeight);
         }
-        else if(parentYCoordinates < 0){
+        else if(bubbleTopY < 0){
             finalfittingYcoordinate = 0;
             setBubbleBottomY(finalfittingYcoordinate + bubbleHeight);
 
@@ -260,7 +260,7 @@ public class Bubble extends View {
 
         Log.d(DEBUG_TAG, "containerBottomY is " + containerBottomY);
         Log.d(DEBUG_TAG, "BubbleHeight is " + bubbleHeight);
-        Log.d(DEBUG_TAG, "parentYCoordinates is " + parentYCoordinates);
+        Log.d(DEBUG_TAG, "bubbleTopY is " + bubbleTopY);
         Log.d(DEBUG_TAG, "finalfittingYcoordinate is " + finalfittingYcoordinate);
         Log.d(DEBUG_TAG, "bubblebottomY is " + getBubbleBottomY());
 
