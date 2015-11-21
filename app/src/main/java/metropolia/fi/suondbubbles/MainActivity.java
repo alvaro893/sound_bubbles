@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         VideoView videoIntro = (VideoView)findViewById(R.id.videoIntro);
         videoIntro.setVideoURI(intro);
         videoIntro.requestFocus();
-        videoIntro.start();
         videoIntro.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
@@ -65,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+        videoIntro.start();
+
+
 
     }
 }
