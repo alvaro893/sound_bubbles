@@ -30,4 +30,5 @@
     <string name="confirm_Dialog_Message">Are you sure you want to start new session?</string>
     <string name="confirm_Dialog_Positive_Button">YES</string>
     <string name="confirm_Dialog_Negative_Button">CANCEL</string>
+    <string name="title_activity_record">Record</string>
 </resources>
