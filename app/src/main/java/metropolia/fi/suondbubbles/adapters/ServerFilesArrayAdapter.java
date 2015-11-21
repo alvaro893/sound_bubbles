@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import pl.droidsonroids.gif.GifImageView;
 
 /**
  * Created by alvarob on 22.10.2015.
@@ -23,6 +24,7 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
     // current view objects from getView method (given by position)
     TextView name, category, soundType;
     ImageButton btn_pause;
+    GifImageView gifImageView;
 
     public ServerFilesArrayAdapter(Activity context, ArrayList <ServerFile> serverFileArray) {
         super(context, R.layout.grid_element, serverFileArray);
@@ -36,6 +38,7 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
         category = (TextView) gridElement.findViewById(R.id.grid_category);
         soundType = (TextView) gridElement.findViewById(R.id.grid_sound_type);
         btn_pause = (ImageButton) gridElement.findViewById(R.id.pause_button);
+        gifImageView = (GifImageView)gridElement.findViewById(R.id.gifView);
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -57,7 +60,21 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
             name.setVisibility(View.GONE);
             category.setVisibility(View.GONE);
             soundType.setVisibility(View.GONE);
+            gifImageView.setVisibility(View.GONE);
             btn_pause.setVisibility(View.VISIBLE);
+            return true;
+        }else
+            return false;
+    }
+
+    public boolean switchToGifImage(View gridElement){
+        if(gridElement != null){
+            setChildViews(gridElement);
+            name.setVisibility(View.GONE);
+            category.setVisibility(View.GONE);
+            soundType.setVisibility(View.GONE);
+            gifImageView.setVisibility(View.VISIBLE);
+            btn_pause.setVisibility(View.GONE);
             return true;
         }else
             return false;
@@ -69,6 +86,7 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
             name.setVisibility(View.VISIBLE);
             category.setVisibility(View.VISIBLE);
             soundType.setVisibility(View.VISIBLE);
+            gifImageView.setVisibility(View.GONE);
             btn_pause.setVisibility(View.GONE);
             return true;
         }else
