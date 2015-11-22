@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
