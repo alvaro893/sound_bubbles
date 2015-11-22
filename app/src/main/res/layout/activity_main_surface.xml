@@ -117,7 +117,8 @@
             android:src="@drawable/record_button"
             android:layout_marginRight="40dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:onClick="startRecordActivity" />
 
         <ImageButton
             android:layout_width="56dp"
