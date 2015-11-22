@@ -336,12 +336,14 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
             Toast.makeText(getBaseContext(),"Playing started", Toast.LENGTH_SHORT).show();
             horizontalLine.startAnimation(horizontalLineAnimation);
             animationON = true;
+            v.setSelected(true);
         }
         else{
             Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             horizontalLine.clearAnimation();
             stopAllBubblePlaying();
             animationON = false;
+            v.setSelected(false);
 
         }
     }
