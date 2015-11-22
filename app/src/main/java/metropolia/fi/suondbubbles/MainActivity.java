@@ -14,15 +14,17 @@ import metropolia.fi.suondbubbles.activities.SoundBubbles;
 
 public class MainActivity extends AppCompatActivity {
     private final String DEBUG_TAG = "MainActivity";
+    private Uri intro;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SoundBubbles.MainContext = this;
-        final Intent intent = new Intent(this, LoginActivity.class);
 
-        Uri intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
+
+        intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -56,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
 
         //startActivity(intent);
 
+
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        intent = new Intent(this, LoginActivity.class);
+
         VideoView videoIntro = (VideoView)findViewById(R.id.videoIntro);
         videoIntro.setVideoURI(intro);
         videoIntro.requestFocus();
@@ -67,8 +81,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         videoIntro.start();
-
-
-
     }
 }
