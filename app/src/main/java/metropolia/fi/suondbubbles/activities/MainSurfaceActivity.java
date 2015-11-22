@@ -23,6 +23,7 @@ import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.animations.HorizontalLineAnimation;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
+import metropolia.fi.suondbubbles.dialogFragments.ConfirmExitDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.VolumeControlFragment;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 import metropolia.fi.suondbubbles.views.Bubble;
@@ -439,6 +440,24 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
             return true;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        ConfirmExitDialogFragment dialogFragment = new ConfirmExitDialogFragment();
+        dialogFragment.setConfirmExitDialogListener(new ConfirmExitDialogFragment.ConfirmExitDialogListener() {
+            @Override
+            public void onDialogYesClick(DialogFragment dialog) {
+                dialog.dismiss();
+                finish();
+            }
+
+            @Override
+            public void onDialogCancelClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
+        dialogFragment.show(getFragmentManager(), "ConfirmExitDialogFagment");
     }
 
     /** method called after SearchActivity return*/
