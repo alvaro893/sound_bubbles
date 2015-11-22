@@ -33,7 +33,7 @@
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
-                    android:layout_height="2000dp"
+                    android:layout_height="1500dp"
                     android:id="@+id/fixedLaytout_1"
                     android:layout_weight="1"
                     android:layout_marginLeft="1dp"
@@ -41,35 +41,35 @@
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
-                    android:layout_height="2000dp"
+                    android:layout_height="1500dp"
                     android:id="@+id/fixedLaytout_2"
                     android:layout_weight="1"
                     android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
-                    android:layout_height="2000dp"
+                    android:layout_height="1500dp"
                     android:id="@+id/fixedLaytout_3"
                     android:layout_weight="1"
                     android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
-                    android:layout_height="2000dp"
+                    android:layout_height="1500dp"
                     android:id="@+id/fixedLaytout_4"
                     android:layout_weight="1"
                     android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
-                    android:layout_height="2000dp"
+                    android:layout_height="1500dp"
                     android:id="@+id/fixedLaytout_5"
                     android:layout_weight="1"
                     android:layout_marginRight="1dp" />
 
                 <metropolia.fi.suondbubbles.layouts.FixedLayout
                     android:layout_width="0dp"
-                    android:layout_height="2000dp"
+                    android:layout_height="1500dp"
                     android:id="@+id/fixedLaytout_6"
                     android:layout_weight="1"
                     android:layout_marginRight="1dp" />

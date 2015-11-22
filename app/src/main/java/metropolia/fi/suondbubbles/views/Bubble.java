@@ -191,7 +191,7 @@ public class Bubble extends View {
     }
 
     public void setBubbleHeight(int bubbleHeight) {
-        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(bubbleHeight * 0.05f,getContext());
+        this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(bubbleHeight * 0.025f,getContext());
 
     }
 

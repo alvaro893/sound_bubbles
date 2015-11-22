@@ -127,7 +127,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
                 0f
         );
 
-        horizontalLineAnimation.setDuration(40000);
+        horizontalLineAnimation.setDuration(60000);
         horizontalLineAnimation.setRepeatCount(Animation.INFINITE);
         horizontalLineAnimation.setInterpolator(new LinearInterpolator());
         horizontalLineAnimation.setUpdateListener(new HorizontalLineAnimation.UpdateListener() {
