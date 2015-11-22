@@ -34,6 +34,7 @@ import metropolia.fi.suondbubbles.apiConnection.tasks.DownloadTask;
 import metropolia.fi.suondbubbles.apiConnection.tasks.SearchTask;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
+    private final String DEBUG_TAG = getClass().getSimpleName();
     private EditText activity_search_et_search;
     private GridView activity_search_grid;
     private TextView warning_text;
@@ -120,9 +121,9 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onItemClick(AdapterView<?> parent, final View currentGridView, int position, long id) {
                 ServerFile serverFile = filesList.get(position);
+                Log.d(DEBUG_TAG, serverFile.getLink());
                 playFile(serverFile);
                 selectLastElement(position, currentGridView);
-                Log.d("adapter", adapter.getName().getText().toString());
                 // set pause button
                 adapter.switchToButtonPause(currentGridView);
                 adapter.getBtn_pause().setOnClickListener(new View.OnClickListener() {

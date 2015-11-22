@@ -26,8 +26,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:design:23.0.1'
+    compile "commons-codec:commons-codec:1.10"
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
-    // Unit testing dependencies
+        // Unit testing dependencies
     testCompile 'junit:junit:4.12'
 
 }

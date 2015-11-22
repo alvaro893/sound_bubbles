@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.VideoView;
 
 import metropolia.fi.suondbubbles.activities.LoginActivity;
+import metropolia.fi.suondbubbles.activities.SoundBubbles;
 
 public class MainActivity extends AppCompatActivity {
     private final String DEBUG_TAG = "MainActivity";
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SoundBubbles.MainContext = this;
         final Intent intent = new Intent(this, LoginActivity.class);
 
         Uri intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
