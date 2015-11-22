@@ -35,10 +35,7 @@ public class SoundFile {
     // It creates file in external memory (It does not work anymore)
     public File createFile(String filename) throws IOException {
         // create folder
-            File folder = new File(Environment.getExternalStorageDirectory()+File.separator+FOLDER_NAME);
-            if(!folder.exists()){
-                folder.mkdir();
-            }
+            createFolder(FOLDER_NAME);
         // create file (if file is already in memory, it won't be downloaded
         // unless the file is older than 24h
         file = new File(Environment.getExternalStorageDirectory()+File.separator+FOLDER_NAME, filename);
@@ -128,6 +125,13 @@ public class SoundFile {
         Log.d(DEBUG_TAG, md5);
 
         return md5;
+    }
+
+    public static void createFolder(String name){
+        File folder = new File(Environment.getExternalStorageDirectory()+File.separator+name);
+        if(!folder.exists()){
+            folder.mkdir();
+        }
     }
 
 

@@ -280,11 +280,21 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         startActivityForResult(intentSearchActivity, secondActivityRequest);
     }
 
+    /** called on record button click **/
+    public void startRecordActivity(View v){
+        startActivity(new Intent(this, RecordActivity.class));
+        stopPlaying();
+    }
+
     /** method called on start new session yes click **/
     @Override
     public void onDialogYesClick(DialogFragment dialog) {
         dialog.dismiss();
         stopPlaying();
+        horizontalLine.clearAnimation();
+        animationON = false;
+        stopAllBubblePlaying();
+        resetBubbleDetected();
 
         for(int index = 0; index < linesList.size(); index++){
             linesList.get(index).removeAllViews();
@@ -320,13 +330,6 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     }
 
-    /** called on record button click*/
-    public void startRecordActivity(View v){
-        stopPlaying();
-
-        /** TODO: starting record activity */
-
-    }
 
     public void startPlay(View v){
         if(!animationON){

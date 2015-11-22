@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +59,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private String[] categories;
     private boolean categoryWasSelected;
     private View lastElementSelected;
+    private DrawerLayout drawerLayout;
+    private NavigationView nav;
     private Bundle bundle;
     private final String viewCoordinates = "viewCoordinates";
     private final String viewID = "viewID";
@@ -82,6 +87,9 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
         // initialize views
         activity_search_et_search = (EditText)findViewById(R.id.search);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        nav = (NavigationView) findViewById(R.id.nav);
+        activity_search_et_search = (EditText) findViewById(R.id.search);
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
         activity_search_grid = (GridView) findViewById(R.id.gridView);
         activity_search_btn_add = (Button) findViewById(R.id.add);
