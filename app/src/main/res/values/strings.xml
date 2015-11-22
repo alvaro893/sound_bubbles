@@ -30,4 +30,16 @@
     <string name="confirm_Dialog_Message">Are you sure you want to start new session?</string>
     <string name="confirm_Dialog_Positive_Button">YES</string>
     <string name="confirm_Dialog_Negative_Button">CANCEL</string>
+    <string name="title_activity_record">Record</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="input_dialog_message">Save recording</string>
+    <string name="input_dialog_placeholder">insert title</string>
+    <string name="insert_Dialog_Negative_Button">CANCEL</string>
+    <string name="insert_Dialog_Positive_Button">SAVE</string>
+    <string name="nature_category">nature</string>
+    <string name="human_category">human</string>
+    <string name="story_category">story</string>
+    <string name="machine_category">machine</string>
 </resources>

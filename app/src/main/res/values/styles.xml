@@ -20,5 +20,7 @@
     <style name="RobotoEditTextStyle" parent="android:Widget.Holo.EditText">
         <item name="android:fontFamily">sans-serif</item>
     </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
