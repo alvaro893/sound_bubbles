@@ -36,7 +36,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:id="@+id/warning_text"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal" />
 
     <GridView
         android:layout_width="match_parent"

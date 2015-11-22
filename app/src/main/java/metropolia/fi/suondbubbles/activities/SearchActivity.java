@@ -201,6 +201,12 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
         Log.d("filesArray", filesList.toString());
 
+        /*if(filesList.isEmpty()){
+            String warning = "No sounds found, verify that Collection ID " + CollectionID.getCollectionID() + " is correct one.";
+            warning_text.setText(warning);
+            warning_text.setVisibility(View.VISIBLE);
+        }*/
+
         adapter = new ServerFilesArrayAdapter(this, filesList);
         this.activity_search_grid.setAdapter(adapter);
 
