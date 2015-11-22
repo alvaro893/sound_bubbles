@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
 
     private Button activity_login_btn;
     private EditText activity_login_et_user, activity_login_et_pass, activity_login_et_collection;
-    private Intent intentMainSurfaceActivity;
+    private Intent welcomeActivity;
     private String collection;
     private CheckBox remember_checkbox;
     private boolean checked = false;
@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
         activity_login_et_pass = (EditText) findViewById(R.id.password);
         activity_login_et_collection = (EditText) findViewById(R.id.collection_id);
         remember_checkbox = (CheckBox)findViewById(R.id.remember_checkBox);
-        intentMainSurfaceActivity = new Intent(this, MainSurfaceActivity.class);
+        welcomeActivity = new Intent(this, WelcomeActivity.class);
 
         loadPreferences();
 
@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
 
         if(SoundBubbles.userIsLogged()){
             CollectionID.setCollectionID(collection);
-            startActivity(intentMainSurfaceActivity);
+            startActivity(welcomeActivity);
             Toast.makeText(this, R.string.logsucess_activity_login, Toast.LENGTH_SHORT).show();
 
         }else{
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
             return;
         }
         if(!SoundBubbles.serverConnection.isLogged){
-            startActivity(this.intentMainSurfaceActivity);
+            startActivity(this.welcomeActivity);
         }
     }
 
