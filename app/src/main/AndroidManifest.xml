@@ -44,6 +44,7 @@
         </activity>
         <activity
             android:name=".activities.RecordActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_record"
             android:theme="@style/AppTheme" >
         </activity>
@@ -51,7 +52,8 @@
             android:name=".activities.WelcomeActivity"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activities.GuideActivity" >
+        <activity android:name=".activities.GuideActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
