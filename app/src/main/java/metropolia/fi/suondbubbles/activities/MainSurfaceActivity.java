@@ -437,6 +437,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
+            stopPlaying();
 
 
             /** adding data relevant for bubble view creation in onActivityResult method */
