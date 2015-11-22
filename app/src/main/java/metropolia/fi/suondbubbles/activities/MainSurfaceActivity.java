@@ -456,7 +456,9 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         dialogFragment.setConfirmExitDialogListener(new ConfirmExitDialogFragment.ConfirmExitDialogListener() {
             @Override
             public void onDialogYesClick(DialogFragment dialog) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 dialog.dismiss();
+                startActivity(intent);
                 finish();
             }
 
