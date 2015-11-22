@@ -8,6 +8,7 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,7 +29,8 @@ import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.dialogFragments.InputDialogFragment;
 import metropolia.fi.suondbubbles.helper.SoundFile;
 import metropolia.fi.suondbubbles.helper.WavConverter;
-
+/** Warning: this activity use multiple threads,
+ *  so it is not possible to touch the UI components (aka buttons and so on) from those.  **/
 public class RecordActivity extends AppCompatActivity implements InputDialogFragment.InputDialogListener {
 
     private boolean recRunning, playRunning, countRuning;
@@ -56,6 +58,8 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         Log.d(DEBUG_TAG, PATH_RAW_FILE);
     }
 
+    /** Start the thread to record
+     * @param v View that represents the button that was clicked **/
     public void clickRecordButton(View v){
         if(!recRunning) {
             recordThread = new Thread() {
@@ -65,6 +69,8 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
                 }
             };
             recordThread.start();
+            addPauseImageToButton(v);
+            addPlayImageToButton(findViewById(R.id.play_fab));
 
             countTread = new Thread(){
                 public void run(){
@@ -76,16 +82,18 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         }else{
             recRunning = false;
             countRuning = false;
+            removePauseImageToButton(v);
         }
     }
 
-    
-
+    /** Start the thread to play the record sound
+     * @param v View that represents the button that was clicked **/
     public void clickPlayButton(View v){
         // stop recording when user attempts to play record
         if(recRunning){
             recRunning = false;
             countRuning = false;
+            removePauseImageToButton(findViewById(R.id.record_fab));
         }
 
         if(!playRunning){
@@ -95,18 +103,23 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
                     playRecord();
                 }
             };
+            addPauseImageToButton(v);
             playThread.start();
         }else{
             playRunning = false;
+            addPlayImageToButton(v);
         }
     }
 
+    /** Starts the process of saving and uploading the record
+     * @param v View that represents the button that was clicked **/
     public void clickUploadButton(View v){
 
         InputDialogFragment inputDialogFragment = new InputDialogFragment();
         inputDialogFragment.show(getFragmentManager(), "inputDialogFragment");
     }
-
+    /** Start the thread that counts the time alongside the recording
+     * @param t the thread that makes the count **/
     private void startCounting(Thread t) {
         // time is in hundredth of a second
         Double count = 0.0;
@@ -126,6 +139,18 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         recRunning = false;
     }
 
+    private void addPauseImageToButton(View v){
+        ((FloatingActionButton)v).setImageResource(R.drawable.pause);
+    }
+
+    private void removePauseImageToButton(View v){
+        ((FloatingActionButton)v).setImageResource(0);
+    }
+
+    private void addPlayImageToButton(View v){
+        ((FloatingActionButton)v).setImageResource(android.R.drawable.ic_media_play);
+    }
+    /** this method lets access an ui component (the time counter) to update it**/
     public Runnable updateTime(final Double count){
         return new Runnable() {
             @Override
@@ -137,7 +162,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             }
         };
     }
-
+    /** called from the record thread **/
     public void startRecord(){
 
         File file = new File(PATH_RAW_FILE);
@@ -178,6 +203,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         }
     }
 
+    /** called from the play thread **/
     public void playRecord(){
         File file = new File(PATH_RAW_FILE);
         FileInputStream inputStream=null;
@@ -209,6 +235,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
 
     }
 
+    /** this is a implementation of the dialog interface when save button is clicked **/
     @Override
     public void onDialogYesClick(String title, String category, DialogFragment dialog) {
         String path = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + title + ".wav";
@@ -228,6 +255,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         dialog.dismiss();
     }
 
+    /** this is a implementation of the dialog interface when cancel button is clicked **/
     @Override
     public void onDialogCancelClick(DialogFragment dialog) {
         dialog.dismiss();

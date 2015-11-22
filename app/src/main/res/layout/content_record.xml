@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:gravity="center">
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab2"
+                android:id="@+id/play_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
@@ -60,7 +60,7 @@
                 android:onClick="clickPlayButton"/>
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab3"
+                android:id="@+id/record_fab"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="@dimen/fab_margin"
@@ -70,7 +70,7 @@
                 app:elevation="6dp"/>
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab22"
+                android:id="@+id/upload_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
