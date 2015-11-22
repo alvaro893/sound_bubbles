@@ -182,6 +182,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         try {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(serverFile.getPathLocalFile());
+            mediaPlayer.setVolume(0.5f,0.5f);
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();
