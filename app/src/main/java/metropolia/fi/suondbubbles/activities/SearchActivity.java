@@ -288,7 +288,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     Toast.makeText(SearchActivity.this, "Select some sound first",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    if (downloadCompleted && invalidFile != true) {
+                    if (downloadCompleted && !invalidFile) {
                         Intent receivedIntent = getIntent();
                         float coordinates = receivedIntent.getFloatExtra(viewCoordinates, 0);
                         int receivedViewId = receivedIntent.getIntExtra(viewID, 0);
@@ -380,7 +380,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         protected String doInBackground(String... params) {
             String urlString = params[0];
             String filename = params[1];
-            File file = null;
+            File file;
             String path = null;
 
             try{
@@ -415,6 +415,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 }
             }else {
                 invalidFile = true;
+                adapter.backToNormal(currentView);
+                Toast.makeText(getBaseContext(),"Corrupted sound", Toast.LENGTH_SHORT).show();
             }
         }
     }
