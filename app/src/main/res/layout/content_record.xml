@@ -33,15 +33,15 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Text"
+            android:text="00:00"
             android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
             android:textSize="20dp"
-            android:id="@+id/textView" />
+            android:id="@+id/time_tv" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Text"
+            android:text="New Recording N#"
             android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
             android:textSize="17dp"
             android:id="@+id/textView2" />
@@ -61,8 +61,8 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_margin="@dimen/fab_margin"
                 android:backgroundTint="@android:color/holo_red_dark"
                 android:onClick="clickRecordButton"
@@ -74,6 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
+                android:onClick="clickUploadButton"
                 android:src="@android:drawable/stat_sys_upload_done" />
         </LinearLayout>
 
