@@ -74,6 +74,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private GifImageView gifImageView;
     private ViewGroup gridLayoutElement;
     private boolean downloadCompleted = false;
+    private boolean invalidFile = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,6 +202,12 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
         Log.d("filesArray", filesList.toString());
 
+        /*if(filesList.isEmpty()){
+            String warning = "No sounds found, verify that Collection ID " + CollectionID.getCollectionID() + " is correct one.";
+            warning_text.setText(warning);
+            warning_text.setVisibility(View.VISIBLE);
+        }*/
+
         adapter = new ServerFilesArrayAdapter(this, filesList);
         this.activity_search_grid.setAdapter(adapter);
 
@@ -281,7 +288,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     Toast.makeText(SearchActivity.this, "Select some sound first",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    if (downloadCompleted) {
+                    if (downloadCompleted && !invalidFile) {
                         Intent receivedIntent = getIntent();
                         float coordinates = receivedIntent.getFloatExtra(viewCoordinates, 0);
                         int receivedViewId = receivedIntent.getIntExtra(viewID, 0);
@@ -298,8 +305,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                         setResult(Activity.RESULT_OK, returnIntent);
                         mediaPlayer.stop();
                         finish();
+                    } else if (invalidFile) {
+                        Toast.makeText(getBaseContext(), "Sound file is corrupted, select another one", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(getBaseContext(),"Sound is not yet available, please wait", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), "Sound is not yet available, please wait", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -371,17 +380,21 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         protected String doInBackground(String... params) {
             String urlString = params[0];
             String filename = params[1];
-            File file = null;
+            File file;
+            String path = null;
 
             try{
                 URL url = new URL(urlString);
                 SoundFile soundFile = new SoundFile(url.openStream());
                 file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
+                path = file.getPath();
             }catch (Exception e){
                 Log.d(DEBUG_TAG, e.getClass().toString() + ":" +e.getMessage());
                 e.printStackTrace();
             }
-            return file.getPath();
+
+
+            return path;
         }
 
         @Override
@@ -393,9 +406,18 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         @Override
         protected void onPostExecute(String path) {
             downloadCompleted = true;
-            Log.d(DEBUG_TAG,"DOWNLOAD COMPLETED");
-            serverFile.setPathLocalFile(path);
-            startPlayingSound();
+            Log.d(DEBUG_TAG, "DOWNLOAD COMPLETED");
+            if(path != null){
+                serverFile.setPathLocalFile(path);
+                startPlayingSound();
+                if(invalidFile){
+                    invalidFile = false;
+                }
+            }else {
+                invalidFile = true;
+                adapter.backToNormal(currentView);
+                Toast.makeText(getBaseContext(),"Corrupted sound", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

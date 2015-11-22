@@ -127,7 +127,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
                 0f
         );
 
-        horizontalLineAnimation.setDuration(40000);
+        horizontalLineAnimation.setDuration(60000);
         horizontalLineAnimation.setRepeatCount(Animation.INFINITE);
         horizontalLineAnimation.setInterpolator(new LinearInterpolator());
         horizontalLineAnimation.setUpdateListener(new HorizontalLineAnimation.UpdateListener() {
@@ -336,12 +336,14 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
             Toast.makeText(getBaseContext(),"Playing started", Toast.LENGTH_SHORT).show();
             horizontalLine.startAnimation(horizontalLineAnimation);
             animationON = true;
+            v.setSelected(true);
         }
         else{
             Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             horizontalLine.clearAnimation();
             stopAllBubblePlaying();
             animationON = false;
+            v.setSelected(false);
 
         }
     }
@@ -437,6 +439,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
+            stopPlaying();
 
 
             /** adding data relevant for bubble view creation in onActivityResult method */

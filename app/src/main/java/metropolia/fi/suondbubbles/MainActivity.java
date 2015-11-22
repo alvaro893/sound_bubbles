@@ -42,15 +42,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(DEBUG_TAG, "DENSITY_HIGH");
                 break;
             case DisplayMetrics.DENSITY_XHIGH:
-                intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
+                intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_720x1280);
                 Log.d(DEBUG_TAG, "DENSITY_XHIGH");
                 break;
             case DisplayMetrics.DENSITY_XXHIGH:
-                intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
+                intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_960x1600);
                 Log.d(DEBUG_TAG,"DENSITY_XXHIGH");
                 break;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
+                intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_960x1600);
                 Log.d(DEBUG_TAG, "DENSITY_XXXHIGH");
                 break;
         }
