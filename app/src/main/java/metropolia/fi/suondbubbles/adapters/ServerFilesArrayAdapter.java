@@ -53,7 +53,12 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
 
         name.setText(serverFileArray.get(position).getTitle());
         category.setText(serverFileArray.get(position).getFileExtension());
-        soundType.setText("" + serverFileArray.get(position).getLength() + " seconds");
+        if(serverFileArray.get(position).getLength()!= 0) {
+            soundType.setText("" + serverFileArray.get(position).getLength() + " seconds");
+        }
+        else {
+            soundType.setText("");
+        }
         return gridElement;
     }
 

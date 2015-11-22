@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -190,6 +189,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         try {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(serverFile.getPathLocalFile());
+            mediaPlayer.setVolume(0.5f,0.5f);
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();

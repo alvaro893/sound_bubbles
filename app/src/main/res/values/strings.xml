@@ -42,4 +42,6 @@
     <string name="human_category">human</string>
     <string name="story_category">story</string>
     <string name="machine_category">machine</string>
+    <string name="confirm_exit_dialog_title">Confirm Exit</string>
+    <string name="confirm_exit_dialog_message">Are you sure you want to exit?</string>
 </resources>

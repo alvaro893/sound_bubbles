@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -25,10 +24,7 @@ import java.io.OutputStream;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.CollectionID;
-import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
-import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
-import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.InputDialogFragment;
 import metropolia.fi.suondbubbles.helper.SoundFile;
 import metropolia.fi.suondbubbles.helper.WavConverter;

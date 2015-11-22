@@ -10,6 +10,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -23,6 +24,7 @@ import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.animations.HorizontalLineAnimation;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
+import metropolia.fi.suondbubbles.dialogFragments.ConfirmExitDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.VolumeControlFragment;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 import metropolia.fi.suondbubbles.views.Bubble;
@@ -79,6 +81,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     /**Animations **/
     private HorizontalLineAnimation horizontalLineAnimation;
+    private Animation alphaAnimation;
+
 
     private Random randomNumber;
     private int bubbleYcoordinate = 0;
@@ -94,6 +98,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         intentSearchActivity = new Intent(this, SearchActivity.class);
 
         horizontalLine = findViewById(R.id.horizontal_line);
+        alphaAnimation = AnimationUtils.loadAnimation(this ,R.anim.alpha);
+
 
         /** scrolling down to bottom*/
         scrollToBottom();
@@ -444,6 +450,24 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        ConfirmExitDialogFragment dialogFragment = new ConfirmExitDialogFragment();
+        dialogFragment.setConfirmExitDialogListener(new ConfirmExitDialogFragment.ConfirmExitDialogListener() {
+            @Override
+            public void onDialogYesClick(DialogFragment dialog) {
+                dialog.dismiss();
+                finish();
+            }
+
+            @Override
+            public void onDialogCancelClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
+        dialogFragment.show(getFragmentManager(), "ConfirmExitDialogFagment");
+    }
+
     /** method called after SearchActivity return*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -484,7 +508,10 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
                 /** bubble view assigned to viewgroup, bubble view is now visible*/
                 receivedFixedLayout.addView(bubble, layoutParams);
                 bubbleList.add(bubble);
-                Log.d(DEBUG_TAG,"bubble bottom:" + bubble.getBubbleBottomY());
+                Log.d(DEBUG_TAG, "bubble bottom:" + bubble.getBubbleBottomY());
+
+
+                bubble.startAnimation(alphaAnimation);
 
             }
         }
