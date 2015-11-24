@@ -5,6 +5,11 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
+import com.googlecode.openbeans.BeanInfo;
+import com.googlecode.openbeans.IntrospectionException;
+import com.googlecode.openbeans.Introspector;
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +36,7 @@ public class ServerConnection {
     private String apiKey = null;
     private String authority = "dev.mw.metropolia.fi";
     private String path = "dianag/AudioResourceSpace/plugins/";
+    private String DEBUG_TAG = getClass().getSimpleName();
 
     public String getMessage() {
         return message;
@@ -165,12 +171,26 @@ public class ServerConnection {
         String builtUrl = uri.build().toString();
         return doHttpGetRequest(builtUrl);
     }
-    public String upload(InputStream in){
-        Log.d("testupdate", "inside upload method");
-        ServerFile file = new ServerFile();
+    public String upload(ServerFile serverFile) {
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_upload/");
         String builtUrl = uri.build().toString();
+
+        // get ServerFile properties dynamically
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(ServerFile.class);
+            for (PropertyDescriptor propertyDesc : beanInfo.getPropertyDescriptors()) {
+                String propertyName = propertyDesc.getName();
+                Object value = propertyDesc.getReadMethod().invoke(serverFile);
+                if(value != null){
+                    Log.d(DEBUG_TAG, "propertyName:"+propertyName+","+"value:"+value.toString());
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        InputStream in = null;
+
 
         // parameters to send
         HashMap<String,String> params = new HashMap<>();
@@ -194,7 +214,8 @@ public class ServerConnection {
 
         // return doHttpPostRequest()
         //return doHttpPostRequest(builtUrl, params);
-        return doHttpPostUpload(builtUrl, in, params);
+        //return doHttpPostUpload(builtUrl, in, params);
+        return null;
     }
 
     private String doHttpPostUpload(String builtUrl, InputStream in, HashMap params){

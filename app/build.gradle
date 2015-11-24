@@ -26,14 +26,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:design:23.0.1'
-    compile "commons-codec:commons-codec:1.10"
+    compile 'commons-codec:commons-codec:1.10'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
-        // Unit testing dependencies
-    testCompile 'junit:junit:4.12'
-
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
-    compile 'commons-codec:commons-codec:1.10'
     compile 'com.github.hiteshsondhi88.libffmpeg:FFmpegAndroid:0.2.5'
     compile 'com.android.support:support-v4:23.1.0'
+    compile files('/home/alvarob/Documents/AndroidStudioProjects/SuondBubbles/libs/openbeans/openbeans-1.0.jar')
 }
