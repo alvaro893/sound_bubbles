@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.CollectionID;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
 import metropolia.fi.suondbubbles.dialogFragments.InputDialogFragment;
 import metropolia.fi.suondbubbles.helper.SoundFile;
 import metropolia.fi.suondbubbles.helper.WavConverter;
@@ -249,8 +250,8 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         serverFile.setFileExtension("wav");
         serverFile.setCollectionID(Integer.parseInt(CollectionID.getCollectionID()));
 
-//        UploadTask uploadTask = new UploadTask();
-//        uploadTask.execute(serverFile);
+        UploadTask uploadTask = new UploadTask();
+        uploadTask.execute(serverFile);
 
         dialog.dismiss();
     }
