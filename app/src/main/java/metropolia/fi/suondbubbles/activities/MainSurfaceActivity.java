@@ -1,5 +1,9 @@
 package metropolia.fi.suondbubbles.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -11,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -21,7 +24,6 @@ import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
-import metropolia.fi.suondbubbles.animations.HorizontalLineAnimation;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmExitDialogFragment;
@@ -80,8 +82,10 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
 
     /**Animations **/
-    private HorizontalLineAnimation horizontalLineAnimation;
     private Animation alphaAnimation;
+
+    /** Animators **/
+    private ObjectAnimator horizontalLineAnimator;
 
 
     private Random randomNumber;
@@ -97,7 +101,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         setContentView(R.layout.activity_main_surface);
         intentSearchActivity = new Intent(this, SearchActivity.class);
 
-        horizontalLine = findViewById(R.id.horizontal_line);
+
         alphaAnimation = AnimationUtils.loadAnimation(this ,R.anim.alpha);
 
 
@@ -107,7 +111,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         /** assigning touchListeners and dragListeners for viewGroups(FixedLayout aKa lines)*/
         initListeners();
         initLineList();
-        initHorizontalLineAnimation();
+
+        initHorizontalLineAnimator();
 
 
         randomNumber = new Random();
@@ -115,49 +120,46 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         bubbleList = new ArrayList<>();
     }
 
-    private void initHorizontalLineAnimation() {
-        horizontalLineAnimation = new HorizontalLineAnimation(
-                Animation.RELATIVE_TO_PARENT,
-                0f,
-                Animation.RELATIVE_TO_PARENT,
-                0f,
-                Animation.RELATIVE_TO_PARENT,
-                1f,
-                Animation.RELATIVE_TO_PARENT,
-                0f
-        );
+    private void initHorizontalLineAnimator() {
+        horizontalLine = findViewById(R.id.horizontal_line);
 
-        horizontalLineAnimation.setDuration(60000);
-        horizontalLineAnimation.setRepeatCount(Animation.INFINITE);
-        horizontalLineAnimation.setInterpolator(new LinearInterpolator());
-        horizontalLineAnimation.setUpdateListener(new HorizontalLineAnimation.UpdateListener() {
+        horizontalLineAnimator = (ObjectAnimator)AnimatorInflater.loadAnimator(this, R.animator.translate_y);
+        horizontalLineAnimator.setTarget(horizontalLine);
+        horizontalLineAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public void onTranslationYUpdate(float y) {
-                getAnimationYvalue(y);
+            public void onAnimationUpdate(ValueAnimator animation) {
+                playDetectedBubble(Float.valueOf(animation.getAnimatedValue("y").toString()));
             }
         });
-
-        horizontalLineAnimation.setAnimationListener(new Animation.AnimationListener() {
+        horizontalLineAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
+            public void onAnimationStart(Animator animation) {
                 horizontalLine.setVisibility(View.VISIBLE);
-
+                animationON = true;
             }
 
             @Override
-            public void onAnimationEnd(Animation animation) {
-
+            public void onAnimationEnd(Animator animation) {
                 horizontalLine.setVisibility(View.INVISIBLE);
-                resetBubbleDetected();
+                animationON = false;
+
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
 
             }
         });
+
     }
 
+
+    /**method that add all fixedLayouts to list */
     private void initLineList() {
 
         linesList = new ArrayList<>();
@@ -259,13 +261,12 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         fixedLayout_5.setOnDragListener(bubbleDragController);
         fixedLayout_6.setOnDragListener(bubbleDragController);
         removeView.setOnDragListener(bubbleDragController);
-
     }
 
 
     /** called on add button click*/
     public void addNewBubble(View v){
-        stopPlaying();
+        stop();
 
         Log.d(DEBUG_TAG, "Y coordinate is " + scrollView.getScrollY());
 
@@ -283,38 +284,36 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     /** called on record button click **/
     public void startRecordActivity(View v){
         startActivity(new Intent(this, RecordActivity.class));
-        stopPlaying();
+        stop();
     }
 
     /** method called on start new session yes click **/
     @Override
     public void onDialogYesClick(DialogFragment dialog) {
         dialog.dismiss();
-        stopPlaying();
-        horizontalLine.clearAnimation();
-        animationON = false;
-        stopAllBubblePlaying();
-        resetBubbleDetected();
 
+        stop();
+        removeAllBubbles();
+    }
+
+    /** Method for removing all visual bubbles on fixedLayouts*/
+    private void removeAllBubbles() {
         for(int index = 0; index < linesList.size(); index++){
             linesList.get(index).removeAllViews();
         }
-
         bubbleList.clear();
-
     }
 
-    private void stopPlaying(){
-        if(animationON){
-            Log.d(DEBUG_TAG,"Animation was on");
-            horizontalLine.clearAnimation();
-            animationON = false;
-            stopAllBubblePlaying();
-            resetBubbleDetected();
 
+    /** method for stopping horizontal line animation and  playing, aswell resets active bubbles to passive*/
+    private void stop(){
+        if(animationON){
+            Log.d(DEBUG_TAG, "Animation was on");
+            horizontalLineAnimator.end();
+            stopAllBubblePlaying();
+            resetBubblesDetected();
         }else
             Log.d(DEBUG_TAG,"Animation was off");
-
     }
 
     /** method called on start new session cancel click **/
@@ -330,24 +329,23 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     }
 
-
+    /**called on play button click*/
     public void startPlay(View v){
         if(!animationON){
-            Toast.makeText(getBaseContext(),"Playing started", Toast.LENGTH_SHORT).show();
-            horizontalLine.startAnimation(horizontalLineAnimation);
-            animationON = true;
             v.setSelected(true);
+
+            Toast.makeText(getBaseContext(), "Playing started", Toast.LENGTH_SHORT).show();
+            horizontalLineAnimator.start();
         }
         else{
-            Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
-            horizontalLine.clearAnimation();
-            stopAllBubblePlaying();
-            animationON = false;
             v.setSelected(false);
 
+            Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
+            stop();
         }
     }
 
+    /** cancels all playing */
     private void stopAllBubblePlaying() {
         for (int i = 0; i < bubbleList.size(); i++){
             calcBubble = bubbleList.get(i);
@@ -357,7 +355,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         }
     }
 
-    private void resetBubbleDetected() {
+    /** changes all active bubbles color back to passive color */
+    private void resetBubblesDetected() {
         for(int i = 0 ; i < bubbleList.size(); i++){
             calcBubble = bubbleList.get(i);
             if(calcBubble.isDetected()){
@@ -368,7 +367,9 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         }
     }
 
-    private void getAnimationYvalue(float y){
+
+    /** Method for playing detected bubble */
+    private void playDetectedBubble(float y){
         for(int i = 0; i < bubbleList.size(); i++){
             calcBubble = bubbleList.get(i);
             calcBubbleHeight = calcBubble.getBubbleHeight();
@@ -394,6 +395,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
     }
 
+
+    /** DialogFragment for adjusting volume */
     private void openVolumeControlDialog(final Bubble bubble){
         VolumeControlFragment dialogFragment = new VolumeControlFragment();
         dialogFragment.setmListener(new VolumeControlFragment.VolumeListener() {
@@ -419,6 +422,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     /** Class for controlling touches on FixedLayout(lines)*/
     private class FixedLayoutTouchController extends GestureDetector.SimpleOnGestureListener {
 
+        private final String DEBUG_TAG = "FixedLayTouchController";
         private FixedLayout container;
 
 
@@ -426,20 +430,16 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
             this.container = container;
         }
 
-        private String DEBUG_TAG = "FixedLayoutTouchController";
-
         @Override
         public boolean onDown(MotionEvent e) {
             /** value must be true, otherwise doubletap event won't accure */
             return true;
         }
 
-
-
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
-            stopPlaying();
+            stop();
 
 
             /** adding data relevant for bubble view creation in onActivityResult method */
