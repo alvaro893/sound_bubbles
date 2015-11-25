@@ -46,6 +46,7 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     private FixedLayout fixedLayout_5;
     private FixedLayout fixedLayout_6;
     private FixedLayout receivedFixedLayout;
+    private ImageView playButton;
     private ScrollView scrollView;
     private ImageView removeView;
     private Bubble bubble;
@@ -108,6 +109,8 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         /** scrolling down to bottom*/
         scrollToBottom();
 
+        initViews();
+
         /** assigning touchListeners and dragListeners for viewGroups(FixedLayout aKa lines)*/
         initListeners();
         initLineList();
@@ -118,6 +121,17 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         randomNumber = new Random();
 
         bubbleList = new ArrayList<>();
+    }
+
+    private void initViews() {
+        playButton = (ImageView)findViewById(R.id.btn_play);
+        fixedLayout_1 = (FixedLayout)findViewById(R.id.fixedLaytout_1);
+        fixedLayout_2 = (FixedLayout)findViewById(R.id.fixedLaytout_2);
+        fixedLayout_3 = (FixedLayout)findViewById(R.id.fixedLaytout_3);
+        fixedLayout_4 = (FixedLayout)findViewById(R.id.fixedLaytout_4);
+        fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
+        fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
+        removeView = (ImageView)findViewById(R.id.remove_view);
     }
 
     private void initHorizontalLineAnimator() {
@@ -134,12 +148,14 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         horizontalLineAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                playButton.setSelected(true);
                 horizontalLine.setVisibility(View.VISIBLE);
                 animationON = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                playButton.setSelected(false);
                 horizontalLine.setVisibility(View.INVISIBLE);
                 animationON = false;
 
@@ -188,13 +204,6 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
 
         BubbleDragController bubbleDragController = new BubbleDragController();
 
-        fixedLayout_1 = (FixedLayout)findViewById(R.id.fixedLaytout_1);
-        fixedLayout_2 = (FixedLayout)findViewById(R.id.fixedLaytout_2);
-        fixedLayout_3 = (FixedLayout)findViewById(R.id.fixedLaytout_3);
-        fixedLayout_4 = (FixedLayout)findViewById(R.id.fixedLaytout_4);
-        fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
-        fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
-        removeView = (ImageView)findViewById(R.id.remove_view);
         bubbleDragController.setRemoveView(removeView);
         bubbleDragController.setBubbleRemoveListener(new BubbleDragController.BubbleRemoveListener() {
             @Override
@@ -332,13 +341,11 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
     /**called on play button click*/
     public void startPlay(View v){
         if(!animationON){
-            v.setSelected(true);
 
             Toast.makeText(getBaseContext(), "Playing started", Toast.LENGTH_SHORT).show();
             horizontalLineAnimator.start();
         }
         else{
-            v.setSelected(false);
 
             Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             stop();
