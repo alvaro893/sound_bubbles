@@ -31,7 +31,7 @@ import metropolia.fi.suondbubbles.dialogFragments.VolumeControlFragment;
 import metropolia.fi.suondbubbles.layouts.FixedLayout;
 import metropolia.fi.suondbubbles.views.Bubble;
 
-public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDialogFragment.ConfirmDialogListener {
+public class MainSurfaceActivity extends AppCompatActivity{
 
     private String DEBUG_TAG = "MainSurfaceActivity";
 
@@ -272,7 +272,6 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         removeView.setOnDragListener(bubbleDragController);
     }
 
-
     /** called on add button click*/
     public void addNewBubble(View v){
         stop();
@@ -296,15 +295,6 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         stop();
     }
 
-    /** method called on start new session yes click **/
-    @Override
-    public void onDialogYesClick(DialogFragment dialog) {
-        dialog.dismiss();
-
-        stop();
-        removeAllBubbles();
-    }
-
     /** Method for removing all visual bubbles on fixedLayouts*/
     private void removeAllBubbles() {
         for(int index = 0; index < linesList.size(); index++){
@@ -312,7 +302,6 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
         }
         bubbleList.clear();
     }
-
 
     /** method for stopping horizontal line animation and  playing, aswell resets active bubbles to passive*/
     private void stop(){
@@ -325,15 +314,23 @@ public class MainSurfaceActivity extends AppCompatActivity implements ConfirmDia
             Log.d(DEBUG_TAG,"Animation was off");
     }
 
-    /** method called on start new session cancel click **/
-    @Override
-    public void onDialogCancelClick(DialogFragment dialog) {
-        dialog.dismiss();
-    }
 
     /** called on new button click*/
     public void startNewSession(View v){
-        DialogFragment dialogFragment = new ConfirmDialogFragment();
+        ConfirmDialogFragment dialogFragment = new ConfirmDialogFragment();
+        dialogFragment.setConfirmDialogListener(new ConfirmDialogFragment.ConfirmDialogListener() {
+            @Override
+            public void onDialogYesClick(DialogFragment dialog) {
+                dialog.dismiss();
+                stop();
+                removeAllBubbles();
+            }
+
+            @Override
+            public void onDialogCancelClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
         dialogFragment.show(getFragmentManager(), "ConfirmDialogFagment");
 
     }
