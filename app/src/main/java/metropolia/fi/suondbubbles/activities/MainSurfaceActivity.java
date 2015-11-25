@@ -84,6 +84,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
     /**Animations **/
     private Animation alphaAnimation;
+    private boolean animationON = false;
 
     /** Animators **/
     private ObjectAnimator horizontalLineAnimator;
@@ -93,37 +94,31 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private int bubbleYcoordinate = 0;
     private int calcBubbleBottomY = 0;
     private int calcBubbleHeight = 0;
-    boolean animationON = false;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_surface);
-        intentSearchActivity = new Intent(this, SearchActivity.class);
 
-
-        alphaAnimation = AnimationUtils.loadAnimation(this ,R.anim.alpha);
-
-
-        /** scrolling down to bottom*/
         scrollToBottom();
 
-        initViews();
+        assignViews();
+        init();
+    }
 
-        /** assigning touchListeners and dragListeners for viewGroups(FixedLayout aKa lines)*/
+    private void init() {
         initListeners();
         initLineList();
+        initAnimations();
 
-        initHorizontalLineAnimator();
-
-
+        intentSearchActivity = new Intent(this, SearchActivity.class);
         randomNumber = new Random();
-
         bubbleList = new ArrayList<>();
     }
 
-    private void initViews() {
+    private void assignViews() {
         playButton = (ImageView)findViewById(R.id.btn_play);
         fixedLayout_1 = (FixedLayout)findViewById(R.id.fixedLaytout_1);
         fixedLayout_2 = (FixedLayout)findViewById(R.id.fixedLaytout_2);
@@ -132,11 +127,13 @@ public class MainSurfaceActivity extends AppCompatActivity{
         fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
         removeView = (ImageView)findViewById(R.id.remove_view);
+
     }
 
-    private void initHorizontalLineAnimator() {
-        horizontalLine = findViewById(R.id.horizontal_line);
+    private void initAnimations() {
+        alphaAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
 
+        horizontalLine = findViewById(R.id.horizontal_line);
         horizontalLineAnimator = (ObjectAnimator)AnimatorInflater.loadAnimator(this, R.animator.translate_y);
         horizontalLineAnimator.setTarget(horizontalLine);
         horizontalLineAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -419,8 +416,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
         dialogFragment.show(getFragmentManager(), "VolumeControlFragment");
 
     }
-
-
 
 
     /** Class for controlling touches on FixedLayout(lines)*/
