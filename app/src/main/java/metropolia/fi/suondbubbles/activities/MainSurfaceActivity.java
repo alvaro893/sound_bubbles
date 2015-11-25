@@ -108,6 +108,76 @@ public class MainSurfaceActivity extends AppCompatActivity{
         init();
     }
 
+    @Override
+    public void onBackPressed() {
+        ConfirmExitDialogFragment dialogFragment = new ConfirmExitDialogFragment();
+        dialogFragment.setConfirmExitDialogListener(new ConfirmExitDialogFragment.ConfirmExitDialogListener() {
+            @Override
+            public void onDialogYesClick(DialogFragment dialog) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                dialog.dismiss();
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onDialogCancelClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
+        dialogFragment.show(getFragmentManager(), "ConfirmExitDialogFagment");
+    }
+
+    /** method called after SearchActivity return*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == secondActivityRequest){
+            if(resultCode == Activity.RESULT_OK){
+
+                /** data assignment to local members*/
+                receivedBundle = data.getBundleExtra(returnBundle);
+                receivedYCoordinates = receivedBundle.getFloat(viewCoordinates);
+                receivedLayoutId = receivedBundle.getInt(viewID);
+                receivedServerFile = (ServerFile)receivedBundle.getSerializable(selectedFile);
+
+
+                /** assignment of double tapped viewGroup received from intent */
+                receivedFixedLayout = (FixedLayout)findViewById(receivedLayoutId);
+
+                /** bubble view creation, not yet visible */
+                bubble = new Bubble(this, receivedServerFile);
+                bubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
+                    @Override
+                    public void onDoubleTapOnBubbleDetected(Bubble bubble) {
+                        openVolumeControlDialog(bubble);
+                    }
+                });
+
+
+
+
+
+                if(receivedYCoordinates == 0){
+                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), scrollView.getScrollY());
+                }else{
+                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), (int) receivedYCoordinates);
+                }
+
+                layoutParams = new FixedLayout.LayoutParams(receivedFixedLayout.getWidth(),0,0,bubbleYcoordinate);
+
+                /** bubble view assigned to viewgroup, bubble view is now visible*/
+                receivedFixedLayout.addView(bubble, layoutParams);
+                bubbleList.add(bubble);
+                Log.d(DEBUG_TAG, "bubble bottom:" + bubble.getBubbleBottomY());
+
+
+                bubble.startAnimation(alphaAnimation);
+
+            }
+        }
+    }
+
+    
     private void init() {
         initListeners();
         initLineList();
@@ -170,7 +240,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
         });
 
     }
-
 
     /**method that add all fixedLayouts to list */
     private void initLineList() {
@@ -311,7 +380,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
             Log.d(DEBUG_TAG,"Animation was off");
     }
 
-
     /** called on new button click*/
     public void startNewSession(View v){
         ConfirmDialogFragment dialogFragment = new ConfirmDialogFragment();
@@ -368,7 +436,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
         }
     }
 
-
     /** Method for playing detected bubble */
     private void playDetectedBubble(float y){
         for(int i = 0; i < bubbleList.size(); i++){
@@ -395,7 +462,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
         }
 
     }
-
 
     /** DialogFragment for adjusting volume */
     private void openVolumeControlDialog(final Bubble bubble){
@@ -449,75 +515,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
             startActivityForResult(intentSearchActivity, secondActivityRequest);
 
             return true;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        ConfirmExitDialogFragment dialogFragment = new ConfirmExitDialogFragment();
-        dialogFragment.setConfirmExitDialogListener(new ConfirmExitDialogFragment.ConfirmExitDialogListener() {
-            @Override
-            public void onDialogYesClick(DialogFragment dialog) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                dialog.dismiss();
-                startActivity(intent);
-                finish();
-            }
-
-            @Override
-            public void onDialogCancelClick(DialogFragment dialog) {
-                dialog.dismiss();
-            }
-        });
-        dialogFragment.show(getFragmentManager(), "ConfirmExitDialogFagment");
-    }
-
-    /** method called after SearchActivity return*/
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == secondActivityRequest){
-            if(resultCode == Activity.RESULT_OK){
-
-                /** data assignment to local members*/
-                receivedBundle = data.getBundleExtra(returnBundle);
-                receivedYCoordinates = receivedBundle.getFloat(viewCoordinates);
-                receivedLayoutId = receivedBundle.getInt(viewID);
-                receivedServerFile = (ServerFile)receivedBundle.getSerializable(selectedFile);
-
-
-                /** assignment of double tapped viewGroup received from intent */
-                receivedFixedLayout = (FixedLayout)findViewById(receivedLayoutId);
-
-                /** bubble view creation, not yet visible */
-                bubble = new Bubble(this, receivedServerFile);
-                bubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
-                    @Override
-                    public void onDoubleTapOnBubbleDetected(Bubble bubble) {
-                        openVolumeControlDialog(bubble);
-                    }
-                });
-
-
-
-
-
-                if(receivedYCoordinates == 0){
-                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), scrollView.getScrollY());
-                }else{
-                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), (int) receivedYCoordinates);
-                }
-
-                layoutParams = new FixedLayout.LayoutParams(receivedFixedLayout.getWidth(),0,0,bubbleYcoordinate);
-
-                /** bubble view assigned to viewgroup, bubble view is now visible*/
-                receivedFixedLayout.addView(bubble, layoutParams);
-                bubbleList.add(bubble);
-                Log.d(DEBUG_TAG, "bubble bottom:" + bubble.getBubbleBottomY());
-
-
-                bubble.startAnimation(alphaAnimation);
-
-            }
         }
     }
 }
