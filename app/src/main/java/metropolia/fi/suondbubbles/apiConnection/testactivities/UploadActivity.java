@@ -88,7 +88,7 @@ public class UploadActivity extends AppCompatActivity implements AsyncResponse {
         Toast. makeText (getApplicationContext(), "Uploading file",
                 Toast. LENGTH_SHORT ).show();
         UploadTask uploadTask = new UploadTask();
-        uploadTask.delegate = this;
+        //uploadTask.delegate = this;
         uploadTask.execute(inResource);
 
     }

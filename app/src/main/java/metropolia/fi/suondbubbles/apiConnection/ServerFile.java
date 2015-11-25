@@ -6,6 +6,8 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * - This is a JavaBean that contains all information related to every file from the server
@@ -87,13 +89,29 @@ public class ServerFile implements Serializable {
             tags, creator, language, publisher, rights, location, source, link, pathLocalFile;
     private int length, collectionID;
     private double fileSize;
+    /** this match the name of the field in the java bean with the name in the remote database **/
+    public static final HashMap<String,String> fieldMap = new HashMap<String,String>()
+    {{      put("title",   "field8");
+            put("category",   "field75");
+            put("collectionID",   "collection");
+            put("soundType",   "field76");
+            put("filename",   "originalfilename");
+            put("description",   "field73");
+            put("length",   "field79");
+            put("creator",   "field81");
+            put("language",   "field82");
+            put("publisher",   "field83");
+            put("rights",   "field84");
+            put("location",   "field78");
+            put("source",   "field80");
+            put("tags",   "field74");
+        }};
 
     public ServerFile(){
 
     }
 
     public ServerFile(JSONObject json){
-        // TODO: add missing fields to constructor ?
         Log.d("checkServerFile", json.toString());
         try {
             if (json.has("Title")) {

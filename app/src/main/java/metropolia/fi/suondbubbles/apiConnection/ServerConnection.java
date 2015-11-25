@@ -5,10 +5,6 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
-import com.googlecode.openbeans.BeanInfo;
-import com.googlecode.openbeans.IntrospectionException;
-import com.googlecode.openbeans.Introspector;
-import com.googlecode.openbeans.PropertyDescriptor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +15,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,6 +25,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class ServerConnection {
@@ -37,6 +37,10 @@ public class ServerConnection {
     private String authority = "dev.mw.metropolia.fi";
     private String path = "dianag/AudioResourceSpace/plugins/";
     private String DEBUG_TAG = getClass().getSimpleName();
+
+    public ServerConnection(){
+
+    }
 
     public String getMessage() {
         return message;
@@ -80,7 +84,6 @@ public class ServerConnection {
         StringBuffer sb;
         String response = "some error happend";
 
-
         try {
             Log.d("uriString", urlString);
             URL url = new URL(urlString);
@@ -88,12 +91,12 @@ public class ServerConnection {
             urlConnection.setDoOutput(true); // This set the request as a post request
 
             // payload to send
-            // TODO: implement upload file in post
             urlConnection.setChunkedStreamingMode(0);
             OutputStream out = urlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-            writer.write(new JSONObject(params).toString());
-            Log.d("payload", writer.toString());
+            String jsonPayload = new JSONObject(params).toString();
+            Log.d(DEBUG_TAG, "json-payload:"+jsonPayload);
+            writer.write(jsonPayload);
             writer.flush();
             writer.close();
             out.close();
@@ -125,10 +128,6 @@ public class ServerConnection {
         }
     }
 
-    public ServerConnection(){
-
-    }
-
     public void auth(String user, String pass) throws NoApiKeyException {
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_auth/auth.php/");
@@ -152,13 +151,11 @@ public class ServerConnection {
             Log.d("ServerConnection", apiKey);
             if(this.apiKey.length() > 35){
                 this.isLogged = true;
-                throw new NoApiKeyException();
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
     public String search(String search){
 
         Uri.Builder uri = setUri();
@@ -172,71 +169,25 @@ public class ServerConnection {
         return doHttpGetRequest(builtUrl);
     }
     public String upload(ServerFile serverFile) {
-        Uri.Builder uri = setUri();
-        uri.appendEncodedPath("api_upload/");
-        String builtUrl = uri.build().toString();
-
-        // get ServerFile properties dynamically
-        try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(ServerFile.class);
-            for (PropertyDescriptor propertyDesc : beanInfo.getPropertyDescriptors()) {
-                String propertyName = propertyDesc.getName();
-                Object value = propertyDesc.getReadMethod().invoke(serverFile);
-                if(value != null){
-                    Log.d(DEBUG_TAG, "propertyName:"+propertyName+","+"value:"+value.toString());
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        InputStream in = null;
-
-
-        // parameters to send
-        HashMap<String,String> params = new HashMap<>();
-        params.put("key", apiKey);
-        params.put("resourcetype", "4");
-//        params.put("collection", Integer.toString(file.getCollectionID()));
-//        params.put("field75", file.getCategory());
-//        params.put("field76", file.getSoundType());
-//        params.put("field73", file.getDescription());
-//        params.put("field74", file.getTags());
-//        params.put("field8", file.getTitle());
-//        params.put("field77", Double.toString(file.getLat()));
-//        params.put("field79", Double.toString(file.getLat()));
-        // for testing
-        params.put("collection", CollectionID.getCollectionID());
-        params.put("field75", "machine");
-        params.put("field76","effects" );
-        params.put("field73","description" );
-        params.put("field8","darth voice" );
-
-
-        // return doHttpPostRequest()
-        //return doHttpPostRequest(builtUrl, params);
-        //return doHttpPostUpload(builtUrl, in, params);
-        return null;
-    }
-
-    private String doHttpPostUpload(String builtUrl, InputStream in, HashMap params){
-        //dummy file
-        String attachmentName = "myfile";
-        Log.d("testupdate", attachmentName);
-        String attachmentFileName = "myfile.mp3";
         String crlf = "\r\n";
         String twoHyphens = "--";
         String boundary =  "*****";
-        URL url = null;
-        try {
-            url = new URL(builtUrl);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        //end dummy file
 
-        //Set up request
+        Uri.Builder uri = setUri();
+        uri.appendEncodedPath("api_upload/");
+
+        // file to submit
+        File file = new File(serverFile.getPathLocalFile());
+        String attachmentFileName = file.getName();
+
+        // create parameters from ServerFile
+        ServerFiletoParameters serverFiletoParameters = new ServerFiletoParameters();
+        HashMap params = serverFiletoParameters.createJSON(serverFile, apiKey);
         HttpURLConnection httpUrlConnection = null;
-        try{
+
+
+        try {
+            URL url = new URL(uri.toString());
             httpUrlConnection = (HttpURLConnection) url.openConnection();
             httpUrlConnection.setUseCaches(false);
             httpUrlConnection.setDoOutput(true);
@@ -246,58 +197,50 @@ public class ServerConnection {
             httpUrlConnection.setRequestProperty("Cache-Control", "no-cache");
             httpUrlConnection.setRequestProperty(
                     "Content-Type", "multipart/form-data;boundary=" + boundary);
-
-            httpUrlConnection.setChunkedStreamingMode(0);
-            OutputStream out = httpUrlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-            writer.write(new JSONObject(params).toString());
-            Log.d("payload", writer.toString());
-            writer. close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        //Start content wrapper
-        DataOutputStream request = null;
-        try{
-            request = new DataOutputStream(
+            DataOutputStream request = new DataOutputStream(
                     httpUrlConnection.getOutputStream());
 
+            // iterate through parameters
+            Iterator it = params.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                String field = (String) pair.getKey();
+                String value = (String) pair.getValue();
+                it.remove(); // avoids a ConcurrentModificationException
+                request.writeBytes(twoHyphens + boundary + crlf);
+                request.writeBytes("Content-Disposition: form-data; name=\"" +
+                        field + crlf);
+                request.writeBytes(crlf);
+                // parameter value
+                Log.d(DEBUG_TAG, "value:" + value + "key:" + field);
+                request.writeBytes(value);
+                // end wrapper
+                request.writeBytes(crlf);
+                request.writeBytes(twoHyphens + boundary +
+                        twoHyphens + crlf);
+            }
+            Log.d(DEBUG_TAG, "requestSoFar:"+request.toString());
+
+            // Add the file
             request.writeBytes(twoHyphens + boundary + crlf);
             request.writeBytes("Content-Disposition: form-data; name=\"" +
-                    attachmentName + "\";filename=\"" +
+                    "userfile" + "\";filename=\"" +
                     attachmentFileName + "\"" + crlf);
             request.writeBytes(crlf);
-
-            // do the upload itself
-            request.write(inputStreamToByteArray(in));
-
-            //End content wrapper
+            // convert file to bytes
+            request.write(inputStreamToByteArray(new FileInputStream(file)));
+            // end wrapper
             request.writeBytes(crlf);
             request.writeBytes(twoHyphens + boundary +
                     twoHyphens + crlf);
 
-            Log.d("testupdate", "start content wrapper");
-
-
+            // flush ouput buffer
+            request.flush();
+            request.close();
         }catch (Exception e){
             e.printStackTrace();
-        }finally {
-
-            //Flush Output buffer and close streams
-            try{
-                request.flush();
-                request.close();
-                in.close();
-                httpUrlConnection.disconnect();
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
         }
-        // response from server
         return getResponse(httpUrlConnection);
-
     }
 
     private byte[] inputStreamToByteArray(InputStream inStream) throws IOException {
@@ -307,6 +250,7 @@ public class ServerConnection {
         while ((bytesRead = inStream.read(buffer)) > 0) {
             baos.write(buffer, 0, bytesRead);
         }
+        inStream.close();
         return baos.toByteArray();
     }
 

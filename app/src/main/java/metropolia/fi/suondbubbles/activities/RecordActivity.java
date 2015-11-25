@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -22,8 +23,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutionException;
 
 import metropolia.fi.suondbubbles.R;
+import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
 import metropolia.fi.suondbubbles.apiConnection.CollectionID;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
@@ -32,7 +35,7 @@ import metropolia.fi.suondbubbles.helper.SoundFile;
 import metropolia.fi.suondbubbles.helper.WavConverter;
 /** Warning: this activity use multiple threads,
  *  so it is not possible to touch the UI components (aka buttons and so on) from those.  **/
-public class RecordActivity extends AppCompatActivity implements InputDialogFragment.InputDialogListener {
+public class RecordActivity extends AppCompatActivity implements InputDialogFragment.InputDialogListener, AsyncResponse {
 
     private boolean recRunning, playRunning, countRuning;
     private Thread recordThread, playThread, countTread;
@@ -247,11 +250,14 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         serverFile.setCategory(category);
         serverFile.setTitle(title);
         serverFile.setPathLocalFile(path);
-        serverFile.setFileExtension("wav");
         serverFile.setCollectionID(Integer.parseInt(CollectionID.getCollectionID()));
+        serverFile.setLength(wavConverter.getTimeInSecs());
+        serverFile.setCreator("SoundBubbles");
+        serverFile.setDescription("Not supported yet");
 
         UploadTask uploadTask = new UploadTask();
         uploadTask.execute(serverFile);
+
 
         dialog.dismiss();
     }
@@ -260,5 +266,14 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     @Override
     public void onDialogCancelClick(DialogFragment dialog) {
         dialog.dismiss();
+    }
+
+    /** this will be executed when the AsyncTask has been finish
+     * @param result the response from UploadAsync task. It should include the response from the server  **/
+    @Override
+    public void processFinish(Object result) {
+        Log.d(DEBUG_TAG, "result:"+result);
+        Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
+
     }
 }
