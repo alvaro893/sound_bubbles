@@ -85,7 +85,11 @@ public class InputDialogFragment extends DialogFragment {
                 String category = rbutton.getText().toString();
 
                 Log.d(DEBUG_TAG, title + "-" + category);
-                mListener.onDialogYesClick(title, category, InputDialogFragment.this);
+                if(input.getText().toString().isEmpty()){
+                    input.setError("Field is empty");
+                }else{
+                    mListener.onDialogYesClick(title, category, InputDialogFragment.this);
+                }
             }
         });
 

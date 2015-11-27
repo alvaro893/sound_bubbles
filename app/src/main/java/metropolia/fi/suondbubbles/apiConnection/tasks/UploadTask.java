@@ -4,26 +4,23 @@ import android.os.AsyncTask;
 
 import java.io.InputStream;
 
+import metropolia.fi.suondbubbles.activities.SoundBubbles;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
 import metropolia.fi.suondbubbles.apiConnection.ServerConnection;
+import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 
 /**
  * Created by alvarob on 11.10.2015.
  */
 public class UploadTask extends AsyncTask<Object, Void, String> {
 
-    public AsyncResponse delegate = null;
 
     protected String doInBackground(Object ...params){
-        //ServerFile file = (ServerFile) params[0];
-        InputStream inputStream = (InputStream) params[0];
+        ServerFile file = (ServerFile) params[0];
 
-        ServerConnection serverConnection = new ServerConnection();
+        ServerConnection serverConnection = SoundBubbles.serverConnection;
 
-        return serverConnection.upload(inputStream);
+        return serverConnection.upload(file);
     }
 
-    protected void onPostExecute(String result){
-        delegate.processFinish(result);
-    }
 }

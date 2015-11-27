@@ -6,6 +6,8 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * - This is a JavaBean that contains all information related to every file from the server
@@ -87,74 +89,28 @@ public class ServerFile implements Serializable {
             tags, creator, language, publisher, rights, location, source, link, pathLocalFile;
     private int length, collectionID;
     private double fileSize;
+    /** this match the name of the field in the java bean with the name in the remote database **/
+    public static final HashMap<String,String> fieldMap = new HashMap<String,String>()
+    {{      put("title",   "field8");
+            put("category",   "field75");
+            put("collectionID",   "collection");
+            put("soundType",   "field76");
+            put("filename",   "originalfilename");
+            put("description",   "field73");
+            put("length",   "field79");
+            put("creator",   "field81");
+            put("language",   "field82");
+            put("publisher",   "field83");
+            put("rights",   "field84");
+            put("location",   "field78");
+            put("source",   "field80");
+            put("tags",   "field74");
+        }};
 
     public ServerFile(){
 
     }
 
-    public ServerFile(JSONObject json){
-        // TODO: add missing fields to constructor ?
-        Log.d("checkServerFile", json.toString());
-        try {
-            if (json.has("Title")) {
-                this.title = json.getString("Title");
-                if(this.title.isEmpty())
-                    this.title = "((No title))";
-            } else {
-                this.title = "((No title))";
-            }
-            if (json.has("Original filename")) {
-                this.filename = json.getString("Original filename");
-            }else{
-                this.filename = null;
-            }
-            if (json.has("Sound Type")) {
-                this.soundType = json.getString("Sound Type");
-            }else{
-                this.soundType = null;
-            }
-            if (json.has("Category")) {
-                this.category = json.getString("Category");
-                if(this.category.isEmpty())
-                    this.category = "((missed category))";
-            }else{
-                this.category = "((missed category))";
-            }
-            if (json.has("File extension")) {
-                this.fileExtension = json.getString("File extension");
-            }else{
-                this.fileExtension = null;
-            }
-            if (json.has("File size(KB))")) {
-                this.fileSize = json.getDouble("File size(KB)");
-            }else{
-                this.fileSize = 0;
-            }
-            if (json.has("Collection name")) {
-                this.collectionName = json.getString("Collection name");
-            }else{
-                this.collectionName = null;
-            }
-            if (json.has("Length (sec)")) {
-                String lenght = json.getString("Length (sec)");
-                if(!lenght.isEmpty())
-                    this.length = Integer.parseInt(lenght);
-                else
-                    this.length = 0;
-            }else{
-                this.length = 0;
-            }
-            if (json.has("Collection ID")) {
-                this.collectionID = json.getInt("Collection ID");
-            }else{
-                this.collectionID = 0;
-            }
-
-
-        }catch (Exception e){
-            Log.e("ServerFile", "error in constructor: "+e.getMessage());
-        }
-    }
 
     @Override
     public String toString() {

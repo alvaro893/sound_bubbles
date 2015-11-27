@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="false">
+        <shape android:shape="rectangle" >
+            <corners
+                android:radius="100dp"
+                />
+            <solid
+                android:color="#00000000"
+                />
+            <size
+                android:width="54dp"
+                android:height="54dp"
+                />
+            <stroke
+                android:width="3dp"
+                android:color="@color/passive_aqua"
+                />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle" >
+            <corners
+                android:radius="100dp"
+                />
+            <solid
+                android:color="#00000000"
+                />
+            <size
+                android:width="55dp"
+                android:height="55dp"
+                />
+            <stroke
+                android:width="3dp"
+                android:color="@color/active_aqua"
+                />
+        </shape>
+    </item>
+</selector>
