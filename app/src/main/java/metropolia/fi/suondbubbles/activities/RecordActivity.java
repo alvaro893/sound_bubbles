@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.ExecutionException;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
@@ -33,14 +33,16 @@ import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
 import metropolia.fi.suondbubbles.dialogFragments.InputDialogFragment;
 import metropolia.fi.suondbubbles.helper.SoundFile;
 import metropolia.fi.suondbubbles.helper.WavConverter;
-/** Warning: this activity use multiple threads,
- *  so it is not possible to touch the UI components (aka buttons and so on) from those.  **/
-public class RecordActivity extends AppCompatActivity implements InputDialogFragment.InputDialogListener, AsyncResponse {
+
+/**
+ * Warning: this activity use multiple threads,
+ * so it is not possible to touch the UI components (aka buttons and so on) from those.
+ **/
+public class RecordActivity extends AppCompatActivity implements InputDialogFragment.InputDialogListener {
 
     private boolean recRunning, playRunning, countRuning;
     private Thread recordThread, playThread, countTread;
     private AudioTrack track;
-    private SoundFile soundFile;
     private TextView time_tv;
     private final String DEBUG_TAG = this.getClass().getSimpleName();
     private final String FOLDER_NAME = "SoundBubbleRecords";
@@ -55,17 +57,18 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         time_tv = (TextView) findViewById(R.id.time_tv);
-        recRunning=false;
-        playRunning=false;
-        countRuning=false;
-
-        Log.d(DEBUG_TAG, PATH_RAW_FILE);
+        recRunning = false;
+        playRunning = false;
+        countRuning = false;
     }
 
-    /** Start the thread to record
-     * @param v View that represents the button that was clicked **/
-    public void clickRecordButton(View v){
-        if(!recRunning) {
+    /**
+     * Start the thread to record
+     *
+     * @param v View that represents the button that was clicked
+     **/
+    public void clickRecordButton(View v) {
+        if (!recRunning) {
             recordThread = new Thread() {
                 public void run() {
                     recRunning = true;
@@ -76,31 +79,34 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             addPauseImageToButton(v);
             addPlayImageToButton(findViewById(R.id.play_fab));
 
-            countTread = new Thread(){
-                public void run(){
+            countTread = new Thread() {
+                public void run() {
                     countRuning = true;
                     startCounting(countTread);
                 }
             };
             countTread.start();
-        }else{
+        } else {
             recRunning = false;
             countRuning = false;
             removePauseImageToButton(v);
         }
     }
 
-    /** Start the thread to play the record sound
-     * @param v View that represents the button that was clicked **/
-    public void clickPlayButton(View v){
+    /**
+     * Start the thread to play the record sound
+     *
+     * @param v View that represents the button that was clicked
+     **/
+    public void clickPlayButton(View v) {
         // stop recording when user attempts to play record
-        if(recRunning){
+        if (recRunning) {
             recRunning = false;
             countRuning = false;
-            removePauseImageToButton(findViewById(R.id.record_fab));
+            removePauseImageToButton(findViewById(R.id.record_button));
         }
 
-        if(!playRunning){
+        if (!playRunning) {
             playThread = new Thread() {
                 public void run() {
                     playRunning = true;
@@ -109,27 +115,34 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             };
             addPauseImageToButton(v);
             playThread.start();
-        }else{
+        } else {
             playRunning = false;
             addPlayImageToButton(v);
         }
     }
 
-    /** Starts the process of saving and uploading the record
-     * @param v View that represents the button that was clicked **/
-    public void clickUploadButton(View v){
+    /**
+     * Starts the process of saving and uploading the record
+     *
+     * @param v View that represents the button that was clicked
+     **/
+    public void clickUploadButton(View v) {
 
         InputDialogFragment inputDialogFragment = new InputDialogFragment();
         inputDialogFragment.show(getFragmentManager(), "inputDialogFragment");
     }
-    /** Start the thread that counts the time alongside the recording
-     * @param t the thread that makes the count **/
+
+    /**
+     * Start the thread that counts the time alongside the recording
+     *
+     * @param t the thread that makes the count
+     **/
     private void startCounting(Thread t) {
         // time is in hundredth of a second
         Double count = 0.0;
         final int limit = 4000;
-        
-        while (count <= limit && countRuning){
+
+        while (count <= limit && countRuning) {
             try {
                 t.sleep(10);
                 // Ui objects cannot be touch in other thread
@@ -143,31 +156,37 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         recRunning = false;
     }
 
-    private void addPauseImageToButton(View v){
-        ((FloatingActionButton)v).setImageResource(R.drawable.pause);
+    private void addPauseImageToButton(View v) {
+        ((Button) v).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_media_pause,0,0,0);
     }
 
-    private void removePauseImageToButton(View v){
-        ((FloatingActionButton)v).setImageResource(0);
+    private void removePauseImageToButton(View v) {
+        ((Button) v).setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
     }
 
-    private void addPlayImageToButton(View v){
-        ((FloatingActionButton)v).setImageResource(android.R.drawable.ic_media_play);
+    private void addPlayImageToButton(View v) {
+        ((Button) v).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_media_play,0,0,0);
     }
-    /** this method lets access an ui component (the time counter) to update it**/
-    public Runnable updateTime(final Double count){
+
+    /**
+     * this method lets access an ui component (the time counter) to update it
+     **/
+    public Runnable updateTime(final Double count) {
         return new Runnable() {
             @Override
             public void run() {
                 int secs = ((Double) Math.floor(count / 100)).intValue();
-                int hundredths = ((Double)(count % 100)).intValue();
+                int hundredths = ((Double) (count % 100)).intValue();
                 String time = String.format("%02d:%02d", secs, hundredths);
                 time_tv.setText(time);
             }
         };
     }
-    /** called from the record thread **/
-    public void startRecord(){
+
+    /**
+     * called from the record thread
+     **/
+    public void startRecord() {
 
         File file = new File(PATH_RAW_FILE);
 
@@ -192,9 +211,9 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
 
             audioRecord.startRecording();
 
-            while(recRunning){
+            while (recRunning) {
                 int numofBytes = audioRecord.read(audioData, 0, minBufferSize);
-                for(int i = 0; i < numofBytes; i++){
+                for (int i = 0; i < numofBytes; i++) {
                     dataOutputStream.write(audioData[i]);
                 }
             }
@@ -207,10 +226,12 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         }
     }
 
-    /** called from the play thread **/
-    public void playRecord(){
+    /**
+     * called from the play thread
+     **/
+    public void playRecord() {
         File file = new File(PATH_RAW_FILE);
-        FileInputStream inputStream=null;
+        FileInputStream inputStream = null;
 
         int minBufferSize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_STEREO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -222,7 +243,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         int i = 0;
         byte[] buffer = new byte[minBufferSize];
         try {
-            inputStream = new FileInputStream( file );
+            inputStream = new FileInputStream(file);
             while ((i = inputStream.read(buffer, 0, minBufferSize)) != -1 && playRunning) {
                 track.write(buffer, 0, i);
             }
@@ -239,41 +260,25 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
 
     }
 
-    /** this is a implementation of the dialog interface when save button is clicked **/
+    /**
+     * this is a implementation of the dialog interface when save button is clicked
+     **/
     @Override
     public void onDialogYesClick(String title, String category, DialogFragment dialog) {
-        String path = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + title + ".wav";
-        WavConverter wavConverter = new WavConverter(this);
-        wavConverter.convWav(PATH_RAW_FILE, path);
-
-        ServerFile serverFile = new ServerFile();
-        serverFile.setCategory(category);
-        serverFile.setTitle(title);
-        serverFile.setPathLocalFile(path);
-        serverFile.setCollectionID(Integer.parseInt(CollectionID.getCollectionID()));
-        serverFile.setLength(wavConverter.getTimeInSecs());
-        serverFile.setCreator("SoundBubbles");
-        serverFile.setDescription("Not supported yet");
-
-        UploadTask uploadTask = new UploadTask();
-        uploadTask.execute(serverFile);
-
-
         dialog.dismiss();
+        final String PATH_WAV_FILE = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + title + ".wav";
+        WavConverter wavConverter = new WavConverter(RecordActivity.this, title, category);
+        String response = wavConverter.convertToWavAndUpload(PATH_RAW_FILE, PATH_WAV_FILE);
+        Log.d(DEBUG_TAG, response);
+        Toast.makeText(this, "done", Toast.LENGTH_LONG).show();
     }
 
-    /** this is a implementation of the dialog interface when cancel button is clicked **/
+    /**
+     * this is a implementation of the dialog interface when cancel button is clicked
+     **/
     @Override
     public void onDialogCancelClick(DialogFragment dialog) {
         dialog.dismiss();
     }
 
-    /** this will be executed when the AsyncTask has been finish
-     * @param result the response from UploadAsync task. It should include the response from the server  **/
-    @Override
-    public void processFinish(Object result) {
-        Log.d(DEBUG_TAG, "result:"+result);
-        Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
-
-    }
 }

@@ -14,18 +14,13 @@ import metropolia.fi.suondbubbles.apiConnection.ServerFile;
  */
 public class UploadTask extends AsyncTask<Object, Void, String> {
 
-    public AsyncResponse delegate = null;
 
     protected String doInBackground(Object ...params){
         ServerFile file = (ServerFile) params[0];
-        //InputStream inputStream = (InputStream) params[0];
 
         ServerConnection serverConnection = SoundBubbles.serverConnection;
 
         return serverConnection.upload(file);
     }
 
-    protected void onPostExecute(String result){
-        delegate.processFinish(result);
-    }
 }

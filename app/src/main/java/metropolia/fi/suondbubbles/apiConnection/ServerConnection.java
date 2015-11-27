@@ -28,7 +28,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
+/**
+ * Class that handles the access to the server using Http requests. The mail actions are
+ * auth -> authentication: it gets the api key
+ * search -> get a list of files
+ * upload -> upload recording file from the phone
+ * getCategories -> get categories dinamicly from the server**/
 public class ServerConnection {
     public String Lastresponse;
     private String message;
@@ -46,87 +51,7 @@ public class ServerConnection {
         return message;
     }
 
-    private Uri.Builder setUri(){
-        Builder uri = new Uri.Builder()
-                .scheme("http")
-                .authority(this.authority)
-                .path(this.path);
-        return uri;
-    }
 
-    private String doHttpGetRequest(String urlString){
-        StringBuffer sb = new StringBuffer();
-
-        try {
-            Log.d("uriString", urlString);
-            URL url = new URL(urlString);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            //readStream(in);
-
-            BufferedReader bf = new BufferedReader(new InputStreamReader(in));
-            sb = new StringBuffer("");
-            String line = "";
-            while ((line = bf.readLine()) != null) {
-                sb.append(line);
-            }
-            bf.close();
-            Log.d("response", sb.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            Lastresponse = sb.toString();
-            return sb.toString();
-        }
-    }
-
-    private String doHttpPostRequest(String urlString, HashMap<String,String> params){
-        StringBuffer sb;
-        String response = "some error happend";
-
-        try {
-            Log.d("uriString", urlString);
-            URL url = new URL(urlString);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setDoOutput(true); // This set the request as a post request
-
-            // payload to send
-            urlConnection.setChunkedStreamingMode(0);
-            OutputStream out = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-            String jsonPayload = new JSONObject(params).toString();
-            Log.d(DEBUG_TAG, "json-payload:"+jsonPayload);
-            writer.write(jsonPayload);
-            writer.flush();
-            writer.close();
-            out.close();
-
-            // response
-            int responseCode=urlConnection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-
-                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
-                sb = new StringBuffer("");
-                String line = "";
-                while ((line = bf.readLine()) != null) {
-                    sb.append(line);
-                }
-                bf.close();
-                response = sb.toString();
-            }else{
-                response = "No response. code: " + responseCode;
-            }
-            Log.d("response", response);
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            Lastresponse = response;
-            return response;
-        }
-    }
 
     public void auth(String user, String pass) throws NoApiKeyException {
         Uri.Builder uri = setUri();
@@ -242,44 +167,6 @@ public class ServerConnection {
         }
         return getResponse(httpUrlConnection);
     }
-
-    private byte[] inputStreamToByteArray(InputStream inStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[8192];
-        int bytesRead;
-        while ((bytesRead = inStream.read(buffer)) > 0) {
-            baos.write(buffer, 0, bytesRead);
-        }
-        inStream.close();
-        return baos.toByteArray();
-    }
-
-    private String getResponse(HttpURLConnection httpUrlConnection){
-        String response = null;
-        try{
-            InputStream responseStream = new
-                    BufferedInputStream(httpUrlConnection.getInputStream());
-
-            BufferedReader responseStreamReader =
-                    new BufferedReader(new InputStreamReader(responseStream));
-
-            String line = "";
-            StringBuilder stringBuilder = new StringBuilder();
-
-            while ((line = responseStreamReader.readLine()) != null) {
-                stringBuilder.append(line).append("\n");
-            }
-            responseStreamReader.close();
-
-            response = stringBuilder.toString();
-            responseStream.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        return response;
-    }
-
     public String[] getCategories(){
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_upload/help_options.php");
@@ -303,6 +190,128 @@ public class ServerConnection {
         return categories.split(",");
     }
 
+    private Uri.Builder setUri(){
+        Builder uri = new Uri.Builder()
+                .scheme("http")
+                .authority(this.authority)
+                .path(this.path);
+        return uri;
+    }
+
+    private String doHttpGetRequest(String urlString){
+        StringBuffer sb = new StringBuffer();
+
+        try {
+            Log.d("uriString", urlString);
+            URL url = new URL(urlString);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            //readStream(in);
+
+            BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+            sb = new StringBuffer("");
+            String line = "";
+            while ((line = bf.readLine()) != null) {
+                sb.append(line);
+            }
+            bf.close();
+            Log.d("response", sb.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            Lastresponse = sb.toString();
+            return sb.toString();
+        }
+    }
+
+    private String doHttpPostRequest(String urlString, HashMap<String,String> params){
+        StringBuffer sb;
+        String response = "some error happend";
+
+        try {
+            Log.d("uriString", urlString);
+            URL url = new URL(urlString);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setDoOutput(true); // This set the request as a post request
+
+            // payload to send
+            urlConnection.setChunkedStreamingMode(0);
+            OutputStream out = urlConnection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+            String jsonPayload = new JSONObject(params).toString();
+            Log.d(DEBUG_TAG, "json-payload:"+jsonPayload);
+            writer.write(jsonPayload);
+            writer.flush();
+            writer.close();
+            out.close();
+
+            // response
+            int responseCode=urlConnection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+                sb = new StringBuffer("");
+                String line = "";
+                while ((line = bf.readLine()) != null) {
+                    sb.append(line);
+                }
+                bf.close();
+                response = sb.toString();
+            }else{
+                response = "No response. code: " + responseCode;
+            }
+            Log.d("response", response);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            Lastresponse = response;
+            return response;
+        }
+    }
+
+    /** converts a file into array of bytes **/
+    private byte[] inputStreamToByteArray(InputStream inStream) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = inStream.read(buffer)) > 0) {
+            baos.write(buffer, 0, bytesRead);
+        }
+        inStream.close();
+        return baos.toByteArray();
+    }
+
+    /** gets the reponse from a request used by HttpURLConnection **/
+    private String getResponse(HttpURLConnection httpUrlConnection){
+        String response = null;
+        try{
+            InputStream responseStream = new
+                    BufferedInputStream(httpUrlConnection.getInputStream());
+
+            BufferedReader responseStreamReader =
+                    new BufferedReader(new InputStreamReader(responseStream));
+
+            String line = "";
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while ((line = responseStreamReader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+            responseStreamReader.close();
+
+            response = stringBuilder.toString();
+            responseStream.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        Log.d(DEBUG_TAG, "response:"+response);
+        return response;
+    }
+
+    /** switches to use the museo url instead the metropolia test one without changing any line code **/
     public void switchToMuseumAPI(){
         this.authority = "resourcespace.tekniikanmuseo.fi";
         this.path = "plugins";
