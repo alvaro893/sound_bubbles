@@ -131,7 +131,7 @@ public class WavConverter {
         if(isDone){
             return response;
         }else{
-            return null;
+            return "an error happened";
         }
     }
 

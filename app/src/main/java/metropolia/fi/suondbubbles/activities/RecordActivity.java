@@ -54,8 +54,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         // creates folder if not exits
         SoundFile.createFolder(FOLDER_NAME);
         setContentView(R.layout.activity_record);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         time_tv = (TextView) findViewById(R.id.time_tv);
         recRunning = false;
         playRunning = false;

@@ -59,17 +59,17 @@
                 android:background="@drawable/small_buttons_record"
                 android:onClick="clickPlayButton"
                 android:color="@color/passive_aqua"
-                android:drawableTint="@color/passive_aqua"
                 android:drawableLeft="@android:drawable/ic_media_play"
-                android:paddingLeft="12dp"
-                android:gravity="center_horizontal|top"/>
+                android:drawableTint="@color/passive_aqua"
+                android:paddingLeft="12dp"/>
 
             <Button
                 android:id="@+id/record_button"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_margin="@dimen/fab_margin"
-                android:background="@drawable/rec_button"
+                android:background="@drawable/big_record_button"
+                android:paddingLeft="25dp"
                 android:onClick="clickRecordButton" />
 
             <Button
