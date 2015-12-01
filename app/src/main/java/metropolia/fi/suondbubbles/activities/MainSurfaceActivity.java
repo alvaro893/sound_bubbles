@@ -33,8 +33,14 @@ import metropolia.fi.suondbubbles.views.Bubble;
 
 public class MainSurfaceActivity extends AppCompatActivity{
 
-    private String DEBUG_TAG = "MainSurfaceActivity";
+    /** Constants */
+    private final String VIEW_COORDINATES = "VIEW_COORDINATES";
+    private final String RETURN_BUNDLE = "RETURN_BUNDLE";
+    private final String VIEW_ID = "VIEW_ID";
+    private final String SELECTED_FILE = "SELECTED_FILE";
+    private final String DEBUG_TAG = "MainSurfaceActivity";
 
+    /** Arrays */
     private ArrayList<FixedLayout> linesList;
     private ArrayList<Bubble> bubbleList;
 
@@ -73,14 +79,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private float receivedYCoordinates;
     private int receivedLayoutId;
     private ServerFile receivedServerFile;
-
-
-    /**Constants for intents */
-    private final String viewCoordinates = "viewCoordinates";
-    private final String returnBundle = "returnBundle";
-    private final String viewID = "viewID";
-    private final String selectedFile = "selectedFile";
-
 
     /**Animations **/
     private Animation alphaAnimation;
@@ -135,10 +133,10 @@ public class MainSurfaceActivity extends AppCompatActivity{
             if(resultCode == Activity.RESULT_OK){
 
                 /** data assignment to local members*/
-                receivedBundle = data.getBundleExtra(returnBundle);
-                receivedYCoordinates = receivedBundle.getFloat(viewCoordinates);
-                receivedLayoutId = receivedBundle.getInt(viewID);
-                receivedServerFile = (ServerFile)receivedBundle.getSerializable(selectedFile);
+                receivedBundle = data.getBundleExtra(RETURN_BUNDLE);
+                receivedYCoordinates = receivedBundle.getFloat(VIEW_COORDINATES);
+                receivedLayoutId = receivedBundle.getInt(VIEW_ID);
+                receivedServerFile = (ServerFile)receivedBundle.getSerializable(SELECTED_FILE);
 
 
                 /** assignment of double tapped viewGroup received from intent */
@@ -346,10 +344,10 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
 
         /** adding Y coordinate of visible screen to intent for activityOnResult*/
-        intentSearchActivity.putExtra(viewCoordinates, 0.0f);
+        intentSearchActivity.putExtra(VIEW_COORDINATES, 0.0f);
 
         /** adding random fixedLayout ID to intent for activityOnResult*/
-        intentSearchActivity.putExtra(viewID, linesList.get(randomNumber.nextInt(linesList.size())).getId());
+        intentSearchActivity.putExtra(VIEW_ID, linesList.get(randomNumber.nextInt(linesList.size())).getId());
 
         /** starting SearchActivity for a result */
         startActivityForResult(intentSearchActivity, secondActivityRequest);
@@ -508,8 +506,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
 
             /** adding data relevant for bubble view creation in onActivityResult method */
-            intentSearchActivity.putExtra(viewCoordinates, e.getY());
-            intentSearchActivity.putExtra(viewID, container.getId());
+            intentSearchActivity.putExtra(VIEW_COORDINATES, e.getY());
+            intentSearchActivity.putExtra(VIEW_ID, container.getId());
 
             /** starting SearchActivity for a result */
             startActivityForResult(intentSearchActivity, secondActivityRequest);

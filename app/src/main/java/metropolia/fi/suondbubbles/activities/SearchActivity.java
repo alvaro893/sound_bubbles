@@ -6,20 +6,14 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -44,37 +38,45 @@ import metropolia.fi.suondbubbles.helper.SoundFile;
 import pl.droidsonroids.gif.GifImageView;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
+
+    /** Constants */
     private final String DEBUG_TAG = "SearchActivity";
+    private final String VIEW_COORDINATES = "VIEW_COORDINATES";
+    private final String VIEW_ID = "VIEW_ID";
+    private final String SELECTED_FILE = "SELECTED_FILE";
+    private final String RETURN_BUNDLE = "RETURN_BUNDLE";
 
-
+    /** Views*/
     private EditText activity_search_et_search;
     private GridView activity_search_grid;
-    private TextView warning_text;
-    private Button activity_search_btn_add;
-    private ServerFile[] filesArray;
-    private ArrayList<ServerFile> filesList;
-    private MediaPlayer mediaPlayer;
-    private Integer lastSelectedId;
-    private String[] categories;
-    private boolean categoryWasSelected;
     private View lastElementSelected;
-    private DrawerLayout drawerLayout;
-    private NavigationView nav;
-    private Bundle bundle;
-    private final String viewCoordinates = "viewCoordinates";
-    private final String viewID = "viewID";
-    private final String selectedFile = "selectedFile";
-    private final String returnBundle = "returnBundle";
     private View previousView;
     private View currentView;
+    private GifImageView gifImageView;
+
+    /** Arrays */
+    private ServerFile[] filesArray;
+    private ArrayList<ServerFile> filesList;
+    private String[] categories;
+    private ServerFilesArrayAdapter adapter;
+
+    /** Integers */
+    private int lastSelectedId = 0;
     private int currPosition = -1;
     private int previousPosition = -1;
-    private ServerFile serverFile;
-    private ServerFilesArrayAdapter adapter;
-    private GifImageView gifImageView;
-    private ViewGroup gridLayoutElement;
+
+    /** Booleans */
+    private boolean categoryWasSelected = false;
     private boolean downloadCompleted = false;
     private boolean invalidFile = false;
+
+
+    private Bundle bundle;
+    private MediaPlayer mediaPlayer;
+
+    private ServerFile serverFile;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,30 +88,25 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             SoundBubbles.openLoginActivity(this);
 
         // initialize views
-        activity_search_et_search = (EditText)findViewById(R.id.search);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        nav = (NavigationView) findViewById(R.id.nav);
-        activity_search_et_search = (EditText) findViewById(R.id.search);
-        activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
-        activity_search_grid = (GridView) findViewById(R.id.gridView);
-        activity_search_btn_add = (Button) findViewById(R.id.add);
-        warning_text = (TextView)findViewById(R.id.warning_text);
-        gifImageView = new GifImageView(getBaseContext());
-        gifImageView.setBackgroundResource(R.drawable.loading);
-
-        previousView = null;
-        currentView = null;
-
-        // broad search in order to show something
-        //performSearch(" ");
-        setAddButton();
+        initViews();
 
         //initilize media player
         initMediaPlayer();
 
         // categories
         showCategoriesList();
-        categoryWasSelected = false;
+
+    }
+
+    private void initViews(){
+        activity_search_et_search = (EditText)findViewById(R.id.search);
+        activity_search_et_search = (EditText) findViewById(R.id.search);
+        activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
+        activity_search_grid = (GridView) findViewById(R.id.gridView);
+        gifImageView = new GifImageView(getBaseContext());
+        gifImageView.setBackgroundResource(R.drawable.loading);
+        previousView = null;
+        currentView = null;
 
     }
 
@@ -142,7 +139,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             }
         });
 
-        // remove button when music is gone
+        // goes back to normal view when music is gone
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -153,6 +150,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         });
     }
 
+    /** Starts playing animation*/
     private void startAnimation(View currentView, MediaPlayer player){
         ProgressBar progressBar = (ProgressBar)currentView.findViewById(R.id.progressBar);
         progressBar.setMax(player.getDuration());
@@ -180,11 +178,9 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             //Download file if not exits in external memory
             download(file);
 
-
         }
 
     }
-
 
     private void startPlayingSound(){
         try {
@@ -202,11 +198,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
         Log.d("filesArray", filesList.toString());
 
-        /*if(filesList.isEmpty()){
-            String warning = "No sounds found, verify that Collection ID " + CollectionID.getCollectionID() + " is correct one.";
-            warning_text.setText(warning);
-            warning_text.setVisibility(View.VISIBLE);
-        }*/
 
         adapter = new ServerFilesArrayAdapter(this, filesList);
         this.activity_search_grid.setAdapter(adapter);
@@ -250,13 +241,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     // processFinish is called after this method automatically
     protected void performSearch(String search) {
-        lastSelectedId = null;
+        lastSelectedId = 0;
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
         Log.d("serverConnection", SoundBubbles.serverConnection.toString());
         searchTask.execute(SoundBubbles.serverConnection, search.trim());
-        Toast. makeText (getBaseContext(), "searching", Toast.LENGTH_SHORT ).show();
+        Toast. makeText(getBaseContext(), "searching", Toast.LENGTH_SHORT ).show();
     }
 
     @Override
@@ -279,63 +270,36 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     }
 
-    private void setAddButton(){
 
-        this.activity_search_btn_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (lastSelectedId == null) {
-                    Toast.makeText(SearchActivity.this, "Select some sound first",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    if (downloadCompleted && !invalidFile) {
-                        Intent receivedIntent = getIntent();
-                        float coordinates = receivedIntent.getFloatExtra(viewCoordinates, 0);
-                        int receivedViewId = receivedIntent.getIntExtra(viewID, 0);
+    public void selectBubbles(View v){
+        if (lastSelectedId == 0) {
+            Toast.makeText(SearchActivity.this, "Select some sound first",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            if (downloadCompleted && !invalidFile) {
+                Intent receivedIntent = getIntent();
+                float coordinates = receivedIntent.getFloatExtra(VIEW_COORDINATES, 0);
+                int receivedViewId = receivedIntent.getIntExtra(VIEW_ID, 0);
 
 
-                        bundle = new Bundle();
-                        bundle.putSerializable(selectedFile, filesList.get(lastSelectedId));
-                        bundle.putFloat(viewCoordinates, coordinates);
-                        bundle.putInt(viewID, receivedViewId);
+                bundle = new Bundle();
+                bundle.putSerializable(SELECTED_FILE, filesList.get(lastSelectedId));
+                bundle.putFloat(VIEW_COORDINATES, coordinates);
+                bundle.putInt(VIEW_ID, receivedViewId);
 
 
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra(returnBundle, bundle);
-                        setResult(Activity.RESULT_OK, returnIntent);
-                        mediaPlayer.stop();
-                        finish();
-                    } else if (invalidFile) {
-                        Toast.makeText(getBaseContext(), "Sound file is corrupted, select another one", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getBaseContext(), "Sound is not yet available, please wait", Toast.LENGTH_SHORT).show();
-                    }
-                }
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(RETURN_BUNDLE, bundle);
+                setResult(Activity.RESULT_OK, returnIntent);
+                mediaPlayer.stop();
+                finish();
+
+            } else if (invalidFile) {
+                Toast.makeText(getBaseContext(), "Sound file is corrupted, select another one", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), "Sound is not yet available, please wait", Toast.LENGTH_SHORT).show();
             }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            SoundBubbles.logout();
-            SoundBubbles.openLoginActivity(this);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void getCategories(){
