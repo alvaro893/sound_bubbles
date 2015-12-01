@@ -16,6 +16,7 @@
     <color name="active_red">#FF1744</color>
     <color name="passive_orange">#CE9B36</color>
     <color name="active_orange">#ffb000</color>
+    <color name="text_color">#231F20</color>
     
     
     <array name="passive_colors">

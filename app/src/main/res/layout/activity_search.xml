@@ -5,30 +5,31 @@
     android:orientation="vertical"
     tools:context="metropolia.fi.suondbubbles.activities.SearchActivity">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:imeOptions="actionSearch"
-        android:background="@drawable/rounded"
-        android:inputType="text"
-        android:id="@+id/search"
-        android:drawableRight="@android:drawable/ic_menu_search"
-        android:hint="@string/searchhint_activity_search"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="45dp"
-        android:layout_marginRight="45dp" />
-
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/warning_text"
-        android:visibility="gone"
+        android:text="@string/categories"
+        android:textColor="@color/text_color"
+        android:id="@+id/textView_categories"
         android:gravity="center"
-        android:layout_gravity="center_horizontal" />
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:id="@+id/search"
+        android:drawableStart="@drawable/ic_search"
+        android:drawableLeft="@drawable/ic_search"
+        android:hint="@string/searchhint_activity_search"
+        android:singleLine="true"
+        android:background="@drawable/search_box"
+        android:textColorHint="@color/passive_aqua" />
+
 
     <GridView
         android:layout_width="match_parent"
@@ -51,5 +52,5 @@
         android:gravity="center"
         android:onClick="selectBubbles"/>
 
-    </LinearLayout>
+</LinearLayout>
 
