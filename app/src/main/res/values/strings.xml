@@ -51,4 +51,6 @@
     <string name="guide_text">To add sound bubble, doubetap empty screen or tap + button.\n\n To adjust volume, doubletap bubble. \n\n To move bubble, hold finger steady on bubble for 1 sec. \n\n To remove bubble, hold finger steady on bubble for 1 sec and drag finger into appeared recycle bin.</string>
     <string name="btn_understood">Understood</string>
     <string name="categories">CATEGORIES</string>
+    <string name="filename">File name</string>
+    <string name="length">length</string>
 </resources>

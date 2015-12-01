@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -327,13 +326,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     // make visible the clicked element
     private void selectLastElement(int position, View currentGridView){
-        if(lastElementSelected != null){
-            lastElementSelected.setBackground(ContextCompat.getDrawable(SearchActivity.this, R.drawable.grid_border));
-        }
+
         lastSelectedId = position;
         lastElementSelected = currentGridView;
-        currentGridView.setBackground(ContextCompat.getDrawable(
-                SearchActivity.this, R.drawable.grid_border_selected));
+
     }
 
     /** copied from DownloadTask */

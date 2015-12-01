@@ -9,9 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import metropolia.fi.suondbubbles.R;
 
-/**
- * Created by Alvaro on 03/11/2015.
- */
 public class CategoriesAdapter extends ArrayAdapter<String> {
     Activity context;
     String[] categoriesArray;
@@ -32,8 +29,7 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         category = (TextView) gridElement.findViewById(R.id.grid_name);
         category.setText(categoriesArray[position]);
         // delete placeholders
-        ((TextView) gridElement.findViewById(R.id.grid_category)).setText("");
-        ((TextView) gridElement.findViewById(R.id.grid_sound_type)).setText("");
+        ((TextView) gridElement.findViewById(R.id.grid_sound_length)).setText("");
         return gridElement;
     }
 }
