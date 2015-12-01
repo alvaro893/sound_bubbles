@@ -32,6 +32,8 @@
     <string name="confirm_Dialog_Positive_Button">YES</string>
     <string name="confirm_Dialog_Negative_Button">CANCEL</string>
     <string name="title_activity_record">Record</string>
+    <string name="btn_search_activity_cancel">CANCEL</string>
+    <string name="btn_search_activity_add_sounds">ADD SOUNDS</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -54,4 +56,5 @@
     <string name="categories">CATEGORIES</string>
     <string name="filename">File name</string>
     <string name="length">length</string>
+    <string name="search_result">SEARCH RESULT</string>
 </resources>

@@ -14,6 +14,7 @@
         android:textColor="@color/text_color"
         android:id="@+id/textView_categories"
         android:gravity="center"
+        android:textAllCaps="true"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp" />
 
@@ -57,7 +58,8 @@
             android:textSize="16sp"
             android:gravity="center"
             android:onClick="backToBubbles"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="visible"/>
 
         <Button
             android:layout_width="0dp"
@@ -69,6 +71,32 @@
             android:textColor="@android:color/white"
             android:gravity="center"
             android:onClick="selectBubbles"
+            android:layout_weight="1"
+            android:visibility="visible" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_search_activity_cancel"
+            android:id="@+id/search_activity_cancel"
+            android:background="@drawable/pink_button"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:onClick="cancelAdding"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_search_activity_add_sounds"
+            android:textSize="16sp"
+            android:id="@+id/search_activity_add_sounds"
+            android:background="@drawable/aqua_button"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:onClick="addSounds"
             android:layout_weight="1"
             android:visibility="gone" />
     </LinearLayout>

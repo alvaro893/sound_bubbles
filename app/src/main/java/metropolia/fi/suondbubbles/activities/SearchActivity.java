@@ -3,9 +3,11 @@ package metropolia.fi.suondbubbles.activities;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -53,13 +55,16 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private View previousView;
     private View currentView;
     private GifImageView gifImageView;
-    private Button selectSounds;
+    private TextView category;
+    private Button selectSounds, backToBubbles, cancel, addSounds;
 
     /** Arrays */
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
     private String[] categories;
     private ServerFilesArrayAdapter adapter;
+    private boolean[] selectedViews;
+    private ArrayList<View> gridArray;
 
     /** Integers */
     private int lastSelectedId = 0;
@@ -70,6 +75,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private boolean categoryWasSelected = false;
     private boolean downloadCompleted = false;
     private boolean invalidFile = false;
+    private boolean modeAddSounds = false;
 
 
     private Bundle bundle;
@@ -94,6 +100,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         //initilize media player
         initMediaPlayer();
 
+
         // categories
         showCategoriesList();
 
@@ -104,7 +111,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         activity_search_et_search = (EditText) findViewById(R.id.search);
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
         activity_search_grid = (GridView) findViewById(R.id.gridView);
+        backToBubbles = (Button)findViewById(R.id.back_to_bubbles);
         selectSounds = (Button)findViewById(R.id.select_sounds);
+        cancel = (Button)findViewById(R.id.search_activity_cancel);
+        addSounds = (Button)findViewById(R.id.search_activity_add_sounds);
+        category = (TextView)findViewById(R.id.textView_categories);
         gifImageView = new GifImageView(getBaseContext());
         gifImageView.setBackgroundResource(R.drawable.loading);
         previousView = null;
@@ -120,6 +131,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 SoundBubbles.hideKeyboard(SearchActivity.this, v);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     performSearch(v.getText().toString());
+                    category.setText(R.string.search_result);
                     return true;
                 }
                 return false;
@@ -195,91 +207,36 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         }
     }
 
-
-    private void showServerFileList() {
-        filesList = new ArrayList<>(Arrays.asList(filesArray));
-        Log.d("filesArray", filesList.toString());
-
-
-        adapter = new ServerFilesArrayAdapter(this, filesList);
-        this.activity_search_grid.setAdapter(adapter);
-
-        // set click for every item
-        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View currentGridView, int position, long id) {
-                currentView = currentGridView;
-                currPosition = position;
-                Log.d(DEBUG_TAG, "clicked element");
-
-                serverFile = filesList.get(position);
-                Log.d(DEBUG_TAG, serverFile.getLink());
-
-                playFile(serverFile, currentGridView);
-
-                selectLastElement(position, currentGridView);
-
-
-                previousView = currentView;
-                previousPosition = currPosition;
-            }
-
-        });
+    private void changeToModeAdd(){
+        modeAddSounds = true;
+        backToBubbles.setVisibility(View.GONE);
+        selectSounds.setVisibility(View.GONE);
+        cancel.setVisibility(View.VISIBLE);
+        addSounds.setVisibility(View.VISIBLE);
     }
 
-    private void showCategoriesList(){
-        getCategories();
-        CategoriesAdapter adapter = new CategoriesAdapter(this, this.categories);
-        this.activity_search_grid.setAdapter(adapter);
-
-        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long l) {
-                performSearch(categories[itemPosition]);
-                categoryWasSelected = true;
-                selectSounds.setVisibility(View.VISIBLE);
-            }
-        });
+    private void changeToModeNormal(){
+        modeAddSounds = false;
+        backToBubbles.setVisibility(View.VISIBLE);
+        selectSounds.setVisibility(View.VISIBLE);
+        cancel.setVisibility(View.GONE);
+        addSounds.setVisibility(View.GONE);
     }
 
-    // processFinish is called after this method automatically
-    protected void performSearch(String search) {
-        lastSelectedId = 0;
-        search = search.trim();
-        SearchTask searchTask = new SearchTask();
-        searchTask.delegate = this;
-        Log.d("serverConnection", SoundBubbles.serverConnection.toString());
-        searchTask.execute(SoundBubbles.serverConnection, search.trim());
-        Toast. makeText(getBaseContext(), "searching", Toast.LENGTH_SHORT ).show();
+    public void cancelAdding(View v){
+        changeToModeNormal();
+        Arrays.fill(selectedViews, Boolean.FALSE);
+        resetViews();
     }
 
-    @Override
-    public void processFinish(Object result) {
-        filesArray = (ServerFile[]) result;
-        showServerFileList();
-    }
-
-    private void download(ServerFile serverFile){
-        SoundDownloadTask downloadTask = new SoundDownloadTask();
-
-
-        // filename is not set, a timestamp will be used instead
-        if(serverFile.getFilename() == null){
-            String filename = Calendar.getInstance().getTimeInMillis() + "";
-            downloadTask.execute(serverFile.getLink(), filename);
-        }else{
-            downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
+    private void resetViews(){
+        for(int i = 0; i < gridArray.size(); i++){
+            gridArray.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
         }
-
+        gridArray.clear();
     }
 
-    public void backToBubbles(View v){
-        mediaPlayer.stop();
-        finish();
-    }
-
-
-    public void selectBubbles(View v){
+    public void addSounds(View v){
         if (lastSelectedId == 0) {
             Toast.makeText(SearchActivity.this, "Select some sound first",
                     Toast.LENGTH_SHORT).show();
@@ -310,6 +267,113 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         }
     }
 
+    private void showServerFileList() {
+        filesList = new ArrayList<>(Arrays.asList(filesArray));
+        gridArray = new ArrayList<>();
+        Log.d("filesArray", filesList.toString());
+        selectedViews = new boolean[filesList.size()];
+
+        adapter = new ServerFilesArrayAdapter(this, filesList);
+        this.activity_search_grid.setAdapter(adapter);
+
+        // set click for every item
+        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View currentGridView, int position, long id) {
+
+                if(!modeAddSounds) {
+                    currentView = currentGridView;
+                    currPosition = position;
+                    Log.d(DEBUG_TAG, "clicked element");
+
+                    serverFile = filesList.get(position);
+                    Log.d(DEBUG_TAG, serverFile.getLink());
+
+                    playFile(serverFile, currentGridView);
+
+                    selectLastElement(position, currentGridView);
+
+                    previousView = currentView;
+                    previousPosition = currPosition;
+                } else{
+                    if(selectedViews[position]) {
+                        selectedViews[position] = false;
+                        gridArray.remove(currentGridView);
+                        currentGridView.setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
+                    }else{
+                        selectedViews[position] = true;
+                        gridArray.add(currentGridView);
+                        currentGridView.setBackgroundColor(Color.parseColor("#abcecb"));
+
+                    }
+                }
+            }
+
+        });
+    }
+
+    private void showCategoriesList(){
+        getCategories();
+        CategoriesAdapter adapter = new CategoriesAdapter(this, this.categories);
+        this.activity_search_grid.setAdapter(adapter);
+
+        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long l) {
+                performSearch(categories[itemPosition]);
+                category.setText(categories[itemPosition]);
+                categoryWasSelected = true;
+                selectSounds.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    // processFinish is called after this method automatically
+    protected void performSearch(String search) {
+        lastSelectedId = 0;
+        search = search.trim();
+        SearchTask searchTask = new SearchTask();
+        searchTask.delegate = this;
+        Log.d("serverConnection", SoundBubbles.serverConnection.toString());
+        searchTask.execute(SoundBubbles.serverConnection, search.trim());
+        Toast. makeText(getBaseContext(), "searching", Toast.LENGTH_SHORT ).show();
+    }
+
+    @Override
+    public void processFinish(Object result) {
+        filesArray = (ServerFile[]) result;
+
+        showServerFileList();
+    }
+
+    private void download(ServerFile serverFile){
+        SoundDownloadTask downloadTask = new SoundDownloadTask();
+
+
+        // filename is not set, a timestamp will be used instead
+        if(serverFile.getFilename() == null){
+            String filename = Calendar.getInstance().getTimeInMillis() + "";
+            downloadTask.execute(serverFile.getLink(), filename);
+        }else{
+            downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
+        }
+
+    }
+
+    public void backToBubbles(View v){
+        mediaPlayer.stop();
+        finish();
+    }
+
+
+    public void selectBubbles(View v){
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            adapter.backToNormal(currentView);
+        }
+        changeToModeAdd();
+    }
+
     private void getCategories(){
         categories = new String[0];
         CategoryTask categoryTask = new CategoryTask();
@@ -328,9 +392,14 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void onBackPressed() {
         if(categoryWasSelected){
-            showCategoriesList();
-            categoryWasSelected = false;
-            selectSounds.setVisibility(View.GONE);
+            if(!modeAddSounds) {
+                showCategoriesList();
+                categoryWasSelected = false;
+                category.setText(R.string.categories);
+                selectSounds.setVisibility(View.GONE);
+            }else {
+                changeToModeNormal();
+            }
         }else{
             super.onBackPressed();
         }
