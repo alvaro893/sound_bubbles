@@ -42,15 +42,36 @@
         android:gravity="center"
         android:layout_weight="1"/>
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/addbtn_activity_search"
-        android:id="@+id/add"
-        android:background="@drawable/aqua_button"
-        android:textColor="@android:color/white"
-        android:gravity="center"
-        android:onClick="selectBubbles"/>
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_back_to_bubbles"
+            android:id="@+id/back_to_bubbles"
+            android:background="@drawable/pink_button"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:onClick="backToBubbles"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_select_sounds"
+            android:textSize="16sp"
+            android:id="@+id/select_sounds"
+            android:background="@drawable/aqua_button"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:onClick="selectBubbles"
+            android:layout_weight="1"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>
 

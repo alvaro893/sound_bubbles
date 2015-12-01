@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -52,6 +53,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private View previousView;
     private View currentView;
     private GifImageView gifImageView;
+    private Button selectSounds;
 
     /** Arrays */
     private ServerFile[] filesArray;
@@ -102,6 +104,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         activity_search_et_search = (EditText) findViewById(R.id.search);
         activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
         activity_search_grid = (GridView) findViewById(R.id.gridView);
+        selectSounds = (Button)findViewById(R.id.select_sounds);
         gifImageView = new GifImageView(getBaseContext());
         gifImageView.setBackgroundResource(R.drawable.loading);
         previousView = null;
@@ -234,6 +237,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long l) {
                 performSearch(categories[itemPosition]);
                 categoryWasSelected = true;
+                selectSounds.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -267,6 +271,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
         }
 
+    }
+
+    public void backToBubbles(View v){
+        mediaPlayer.stop();
+        finish();
     }
 
 
@@ -314,11 +323,14 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         Log.d("categories", Arrays.deepToString(categories));
     }
 
+
+
     @Override
     public void onBackPressed() {
         if(categoryWasSelected){
             showCategoriesList();
             categoryWasSelected = false;
+            selectSounds.setVisibility(View.GONE);
         }else{
             super.onBackPressed();
         }

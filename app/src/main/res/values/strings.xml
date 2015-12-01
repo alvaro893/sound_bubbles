@@ -25,7 +25,8 @@
     <string name="logsucess_activity_login">Login successful</string>
     <string name="searchhint_activity_search">Search</string>
     <string name="cancelbtn_activity_search">Cancel</string>
-    <string name="addbtn_activity_search">Select</string>
+    <string name="btn_select_sounds">SELECT SOUNDS</string>
+    <string name="btn_back_to_bubbles">BACK TO BUBBLES</string>
     <string name="action_logout">Log out</string>
     <string name="confirm_Dialog_Message">Are you sure you want to start new session?</string>
     <string name="confirm_Dialog_Positive_Button">YES</string>
