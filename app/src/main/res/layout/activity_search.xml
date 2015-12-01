@@ -72,7 +72,7 @@
             android:gravity="center"
             android:onClick="selectBubbles"
             android:layout_weight="1"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:layout_width="0dp"

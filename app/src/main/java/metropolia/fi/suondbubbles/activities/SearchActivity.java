@@ -67,15 +67,15 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private ArrayList<View> gridArray;
 
     /** Integers */
-    private int lastSelectedId = 0;
-    private int currPosition = -1;
-    private int previousPosition = -1;
+    private int lastSelectedId;
+    private int currPosition;
+    private int previousPosition;
 
     /** Booleans */
-    private boolean categoryWasSelected = false;
-    private boolean downloadCompleted = false;
-    private boolean invalidFile = false;
-    private boolean modeAddSounds = false;
+    private boolean categoryWasSelected;
+    private boolean downloadCompleted;
+    private boolean invalidFile;
+    private boolean modeAddSounds;
 
 
     private Bundle bundle;
@@ -94,6 +94,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         if(!SoundBubbles.userIsLogged())
             SoundBubbles.openLoginActivity(this);
 
+        init();
         // initialize views
         initViews();
 
@@ -104,6 +105,17 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         // categories
         showCategoriesList();
 
+    }
+
+    private void init() {
+        categoryWasSelected = false;
+        downloadCompleted = false;
+        invalidFile = false;
+        modeAddSounds = false;
+
+        lastSelectedId = 0;
+        currPosition = -1;
+        previousPosition = -1;
     }
 
     private void initViews(){
@@ -225,8 +237,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     public void cancelAdding(View v){
         changeToModeNormal();
-        Arrays.fill(selectedViews, Boolean.FALSE);
-        resetViews();
+        if(selectedViews != null) {
+            Arrays.fill(selectedViews, Boolean.FALSE);
+            resetViews();
+        }
+
     }
 
     private void resetViews(){
@@ -361,7 +376,9 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     public void backToBubbles(View v){
-        mediaPlayer.stop();
+        if(mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
         finish();
     }
 
