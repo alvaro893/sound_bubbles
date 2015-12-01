@@ -47,6 +47,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private final String VIEW_ID = "VIEW_ID";
     private final String SELECTED_FILE = "SELECTED_FILE";
     private final String RETURN_BUNDLE = "RETURN_BUNDLE";
+    private final int MAXIMUM_AMOUNT = 5;
 
     /** Views*/
     private EditText activity_search_et_search;
@@ -64,12 +65,14 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private String[] categories;
     private ServerFilesArrayAdapter adapter;
     private boolean[] selectedViews;
-    private ArrayList<View> gridArray;
+    private ArrayList<View> viewsArray;
+    private ArrayList<ServerFile> serverFileArray;
 
     /** Integers */
     private int lastSelectedId;
     private int currPosition;
     private int previousPosition;
+    private int currentSelectedSounds;
 
     /** Booleans */
     private boolean categoryWasSelected;
@@ -113,9 +116,12 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         invalidFile = false;
         modeAddSounds = false;
 
+        serverFileArray = new ArrayList<>();
+
         lastSelectedId = 0;
         currPosition = -1;
         previousPosition = -1;
+        currentSelectedSounds = 0;
     }
 
     private void initViews(){
@@ -240,15 +246,16 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         if(selectedViews != null) {
             Arrays.fill(selectedViews, Boolean.FALSE);
             resetViews();
+            currentSelectedSounds = 0;
         }
 
     }
 
     private void resetViews(){
-        for(int i = 0; i < gridArray.size(); i++){
-            gridArray.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
+        for(int i = 0; i < viewsArray.size(); i++){
+            viewsArray.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
         }
-        gridArray.clear();
+        viewsArray.clear();
     }
 
     public void addSounds(View v){
@@ -284,7 +291,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     private void showServerFileList() {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
-        gridArray = new ArrayList<>();
+        viewsArray = new ArrayList<>();
+        serverFileArray = new ArrayList<>();
         Log.d("filesArray", filesList.toString());
         selectedViews = new boolean[filesList.size()];
 
@@ -313,12 +321,18 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 } else{
                     if(selectedViews[position]) {
                         selectedViews[position] = false;
-                        gridArray.remove(currentGridView);
+                        currentSelectedSounds -= 1;
+                        viewsArray.remove(currentGridView);
                         currentGridView.setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
                     }else{
-                        selectedViews[position] = true;
-                        gridArray.add(currentGridView);
-                        currentGridView.setBackgroundColor(Color.parseColor("#abcecb"));
+                        if(currentSelectedSounds < MAXIMUM_AMOUNT) {
+                            selectedViews[position] = true;
+                            currentSelectedSounds += 1;
+                            viewsArray.add(currentGridView);
+                            currentGridView.setBackgroundColor(Color.parseColor("#abcecb"));
+                        }else {
+                            Toast.makeText(getBaseContext(),"Maximum amount sounds selected", Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 }
@@ -362,7 +376,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     private void download(ServerFile serverFile){
-        SoundDownloadTask downloadTask = new SoundDownloadTask();
+        DownLoadAndPlayTask downloadTask = new DownLoadAndPlayTask();
 
 
         // filename is not set, a timestamp will be used instead
@@ -431,8 +445,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     /** copied from DownloadTask */
-    private class SoundDownloadTask extends AsyncTask<String, Void, String> {
-        private final String DEBUG_TAG = "SoundDownloadTask";
+    private class DownLoadAndPlayTask extends AsyncTask<String, Void, String> {
+        private final String DEBUG_TAG = "DownLoadAndPlayTask";
 
         @Override
         protected String doInBackground(String... params) {
