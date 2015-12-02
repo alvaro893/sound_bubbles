@@ -99,12 +99,12 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             SoundBubbles.openLoginActivity(this);
 
         init();
+
         // initialize views
         initViews();
 
         //initilize media player
         initMediaPlayer();
-
 
         // categories
         showCategoriesList();
@@ -253,8 +253,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     public void cancelAdding(View v){
         changeToModeNormal();
-
-
     }
 
     private void resetViews(){
@@ -336,6 +334,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                             selectedViews[position] = true;
                             currentSelectedSounds += 1;
                             viewsArray.add(currentGridView);
+
+                            // passive aqua color with 60% alpha
                             currentGridView.setBackgroundColor(Color.argb(153,171,206,203));
                         }else {
                             Toast.makeText(getBaseContext(),"Maximum amount sounds selected", Toast.LENGTH_SHORT).show();
@@ -378,13 +378,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void processFinish(Object result) {
         filesArray = (ServerFile[]) result;
-
         showServerFileList();
     }
 
     private void download(ServerFile serverFile){
         DownLoadAndPlayTask downloadTask = new DownLoadAndPlayTask();
-
 
         // filename is not set, a timestamp will be used instead
         if(serverFile.getFilename() == null){
@@ -402,7 +400,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         }
         finish();
     }
-
 
     public void selectBubbles(View v){
         if(mediaPlayer.isPlaying()){
@@ -425,8 +422,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         Log.d("categories", Arrays.deepToString(categories));
     }
 
-
-
+    
     @Override
     public void onBackPressed() {
         if(categoryWasSelected | modeSearchSounds){
