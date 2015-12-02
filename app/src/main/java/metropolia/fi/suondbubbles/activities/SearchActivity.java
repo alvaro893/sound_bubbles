@@ -79,6 +79,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private boolean downloadCompleted;
     private boolean invalidFile;
     private boolean modeAddSounds;
+    private boolean modeSearchSounds;
 
 
     private Bundle bundle;
@@ -115,6 +116,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         downloadCompleted = false;
         invalidFile = false;
         modeAddSounds = false;
+        modeSearchSounds = false;
 
         serverFileArray = new ArrayList<>();
 
@@ -150,6 +152,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     performSearch(v.getText().toString());
                     category.setText(R.string.search_result);
+                    changeToModeNormal();
+                    modeSearchSounds = true;
                     return true;
                 }
                 return false;
@@ -239,21 +243,24 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         selectSounds.setVisibility(View.VISIBLE);
         cancel.setVisibility(View.GONE);
         addSounds.setVisibility(View.GONE);
-    }
 
-    public void cancelAdding(View v){
-        changeToModeNormal();
         if(selectedViews != null) {
             Arrays.fill(selectedViews, Boolean.FALSE);
             resetViews();
             currentSelectedSounds = 0;
         }
+    }
+
+    public void cancelAdding(View v){
+        changeToModeNormal();
+
 
     }
 
     private void resetViews(){
         for(int i = 0; i < viewsArray.size(); i++){
             viewsArray.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
+
         }
         viewsArray.clear();
     }
@@ -329,7 +336,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                             selectedViews[position] = true;
                             currentSelectedSounds += 1;
                             viewsArray.add(currentGridView);
-                            currentGridView.setBackgroundColor(Color.parseColor("#abcecb"));
+                            currentGridView.setBackgroundColor(Color.argb(153,171,206,203));
                         }else {
                             Toast.makeText(getBaseContext(),"Maximum amount sounds selected", Toast.LENGTH_SHORT).show();
                         }
@@ -422,7 +429,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void onBackPressed() {
-        if(categoryWasSelected){
+        if(categoryWasSelected | modeSearchSounds){
+            if(modeSearchSounds && !modeAddSounds) {
+                modeSearchSounds = false;
+            }
             if(!modeAddSounds) {
                 showCategoriesList();
                 categoryWasSelected = false;

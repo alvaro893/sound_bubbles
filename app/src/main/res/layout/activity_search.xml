@@ -29,7 +29,7 @@
         android:hint="@string/searchhint_activity_search"
         android:singleLine="true"
         android:background="@drawable/search_box"
-        android:textColorHint="@color/passive_aqua" />
+        android:textColorHint="@color/passive_aqua"/>
 
 
     <GridView
