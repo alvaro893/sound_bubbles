@@ -64,8 +64,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private ArrayList<ServerFile> filesList;
     private String[] categories;
     private ServerFilesArrayAdapter adapter;
-    private boolean[] selectedViews;
-    private ArrayList<View> viewsArray;
+    private boolean[] isSelected;
+    private ArrayList<View> selectedViews;
     private ArrayList<ServerFile> serverFileArray;
 
     /** Integers */
@@ -244,8 +244,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         cancel.setVisibility(View.GONE);
         addSounds.setVisibility(View.GONE);
 
-        if(selectedViews != null) {
-            Arrays.fill(selectedViews, Boolean.FALSE);
+        if(isSelected != null) {
+            Arrays.fill(isSelected, Boolean.FALSE);
             resetViews();
             currentSelectedSounds = 0;
         }
@@ -256,11 +256,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     private void resetViews(){
-        for(int i = 0; i < viewsArray.size(); i++){
-            viewsArray.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
+        for(int i = 0; i < selectedViews.size(); i++){
+            selectedViews.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
 
         }
-        viewsArray.clear();
+        selectedViews.clear();
     }
 
     public void addSounds(View v){
@@ -296,10 +296,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     private void showServerFileList() {
         filesList = new ArrayList<>(Arrays.asList(filesArray));
-        viewsArray = new ArrayList<>();
+        selectedViews = new ArrayList<>();
         serverFileArray = new ArrayList<>();
         Log.d("filesArray", filesList.toString());
-        selectedViews = new boolean[filesList.size()];
+        isSelected = new boolean[filesList.size()];
 
         adapter = new ServerFilesArrayAdapter(this, filesList);
         this.activity_search_grid.setAdapter(adapter);
@@ -324,16 +324,16 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     previousView = currentView;
                     previousPosition = currPosition;
                 } else{
-                    if(selectedViews[position]) {
-                        selectedViews[position] = false;
+                    if(isSelected[position]) {
+                        isSelected[position] = false;
                         currentSelectedSounds -= 1;
-                        viewsArray.remove(currentGridView);
+                        selectedViews.remove(currentGridView);
                         currentGridView.setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
                     }else{
                         if(currentSelectedSounds < MAXIMUM_AMOUNT) {
-                            selectedViews[position] = true;
+                            isSelected[position] = true;
                             currentSelectedSounds += 1;
-                            viewsArray.add(currentGridView);
+                            selectedViews.add(currentGridView);
 
                             // passive aqua color with 60% alpha
                             currentGridView.setBackgroundColor(Color.argb(153,171,206,203));
@@ -422,7 +422,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         Log.d("categories", Arrays.deepToString(categories));
     }
 
-    
     @Override
     public void onBackPressed() {
         if(categoryWasSelected | modeSearchSounds){
