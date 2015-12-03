@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +36,7 @@ import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.apiConnection.tasks.CategoryTask;
 import metropolia.fi.suondbubbles.apiConnection.tasks.SearchTask;
 import metropolia.fi.suondbubbles.helper.SoundFile;
+import metropolia.fi.suondbubbles.media.SoundPlayer;
 import pl.droidsonroids.gif.GifImageView;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
@@ -82,9 +82,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private boolean modeSearchSounds;
 
 
+    private SoundPlayer player;
     private Bundle bundle;
-    private MediaPlayer mediaPlayer;
-
     private ServerFile serverFile;
 
 
@@ -104,7 +103,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         initViews();
 
         //initilize media player
-        initMediaPlayer();
+        initSoundPlayer();
 
         // categories
         showCategoriesList();
@@ -150,10 +149,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 SoundBubbles.hideKeyboard(SearchActivity.this, v);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    performSearch(v.getText().toString());
-                    category.setText(R.string.search_result);
-                    changeToModeNormal();
                     modeSearchSounds = true;
+                    category.setText(R.string.search_result);
+                    performSearch(v.getText().toString());
+                    player.stopIfPlaying();
+
                     return true;
                 }
                 return false;
@@ -161,25 +161,24 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         };
     }
 
-    private void initMediaPlayer(){
+    private void initSoundPlayer(){
 
-        //set up MediaPlayer
-        mediaPlayer = new MediaPlayer();
+        player = new SoundPlayer();
 
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        player.setSoundPlayerListener(new SoundPlayer.SoundPlayerListener() {
             @Override
-            public void onPrepared(MediaPlayer mp) {
-                startAnimation(currentView, mp);
+            public void onStarting() {
+                startAnimation(currentView, player);
                 adapter.switchToProgressBarWithPause(currentView);
-                mp.start();
             }
-        });
 
-        // goes back to normal view when music is gone
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.stop();
+            public void onPausing() {
+                adapter.backToNormal(currentView);
+            }
+
+            @Override
+            public void onStopping() {
                 adapter.backToNormal(currentView);
 
             }
@@ -187,7 +186,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     /** Starts playing animation*/
-    private void startAnimation(View currentView, MediaPlayer player){
+    private void startAnimation(View currentView, SoundPlayer player){
         ProgressBar progressBar = (ProgressBar)currentView.findViewById(R.id.progressBar);
         progressBar.setMax(player.getDuration());
         ObjectAnimator animation = ObjectAnimator.ofInt (progressBar, "progress", 0, progressBar.getMax()); // see this max value coming back here, we animale towards that value
@@ -196,19 +195,18 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         animation.start();
     }
 
-    private void playFile(ServerFile file, View currectGridView){
+    private void playFile(ServerFile file){
 
-        if(currPosition == previousPosition && mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            adapter.backToNormal(currectGridView);
-
-        }else {
+        if(currPosition == previousPosition){
+            player.stopIfPlaying();
+        }
+        else {
 
             if(previousView != null){
                 adapter.backToNormal(previousView);
             }
-            if(mediaPlayer.isPlaying()){
-                mediaPlayer.stop();
+            if(player.isSoundPlayerPlaying()){
+                player.stopIfPlaying();
             }
 
             //Download file if not exits in external memory
@@ -216,17 +214,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
         }
 
-    }
-
-    private void startPlayingSound(){
-        try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(serverFile.getPathLocalFile());
-            mediaPlayer.setVolume(0.5f,0.5f);
-            mediaPlayer.prepareAsync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void changeToModeAdd(){
@@ -258,7 +245,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private void resetViews(){
         for(int i = 0; i < selectedViews.size(); i++){
             selectedViews.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
-
         }
         selectedViews.clear();
     }
@@ -283,7 +269,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(RETURN_BUNDLE, bundle);
                 setResult(Activity.RESULT_OK, returnIntent);
-                mediaPlayer.stop();
+                player.stopIfPlaying();
                 finish();
 
             } else if (invalidFile) {
@@ -317,7 +303,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     serverFile = filesList.get(position);
                     Log.d(DEBUG_TAG, serverFile.getLink());
 
-                    playFile(serverFile, currentGridView);
+                    playFile(serverFile);
 
                     selectLastElement(position, currentGridView);
 
@@ -395,17 +381,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     public void backToBubbles(View v){
-        if(mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-        }
+        player.stopIfPlaying();
+        player.releaseSoundPlayer();
         finish();
     }
 
     public void selectBubbles(View v){
-        if(mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            adapter.backToNormal(currentView);
-        }
+        player.stopIfPlaying();
         changeToModeAdd();
     }
 
@@ -424,6 +406,8 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void onBackPressed() {
+        player.stopIfPlaying();
+
         if(categoryWasSelected | modeSearchSounds){
             if(modeSearchSounds && !modeAddSounds) {
                 modeSearchSounds = false;
@@ -485,11 +469,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             downloadCompleted = true;
             Log.d(DEBUG_TAG, "DOWNLOAD COMPLETED");
             if(path != null){
+                invalidFile = false;
                 serverFile.setPathLocalFile(path);
-                startPlayingSound();
-                if(invalidFile){
-                    invalidFile = false;
-                }
+                player.setSound(serverFile.getPathLocalFile());
+                player.playIfNotPlaying();
+
             }else {
                 invalidFile = true;
                 adapter.backToNormal(currentView);
