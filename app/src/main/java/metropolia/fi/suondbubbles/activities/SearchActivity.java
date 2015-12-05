@@ -44,16 +44,12 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     /** Constants*/
     private final String DEBUG_TAG = "SearchActivity";
-    private final String VIEW_COORDINATES = "VIEW_COORDINATES";
-    private final String VIEW_ID = "VIEW_ID";
     private final String SELECTED_FILE = "SELECTED_FILE";
-    private final String RETURN_BUNDLE = "RETURN_BUNDLE";
     private final int MAXIMUM_AMOUNT = 5;
 
     /** Views */
     private EditText activity_search_et_search;
     private GridView gridView;
-    private View lastElementSelected;
     private GifImageView gifImageView;
     private TextView categoryTextView;
     private Button selectSoundsButton, backToBubbles, cancel, addSounds;
@@ -71,11 +67,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private ArrayList<ServerFile> selectedViewsServerFileArray;
 
     /** Integers */
-    private int lastSelectedViewIndex;
     private int currentSelectedSounds;
 
     /** Booleans*/
-    private boolean categoryWasSelected;
+    private boolean outsideCategoryScreen;
     private boolean downloadCompleted;
     private boolean invalidFile;
     private boolean modeAddSounds;
@@ -84,7 +79,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     private GridTouchController gridTouchController;
     private SoundPlayer player;
-    private Bundle bundle;
     private ServerFile serverFile;
 
 
@@ -108,7 +102,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     private void init() {
-        categoryWasSelected = false;
+        outsideCategoryScreen = false;
         downloadCompleted = false;
         invalidFile = false;
         modeAddSounds = false;
@@ -119,7 +113,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
         gridTouchController = new GridTouchController();
 
-        lastSelectedViewIndex = 0;
         currentSelectedSounds = 0;
 
         initViews();
@@ -171,7 +164,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 SoundBubbles.hideKeyboard(SearchActivity.this, v);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     modeSearchSounds = true;
-                    categoryWasSelected = true;
+                    outsideCategoryScreen = true;
                     player.stopIfPlaying();
                     categoryTextView.setText(R.string.search_result);
                     performSearch(v.getText().toString());
@@ -184,14 +177,15 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View currentGridView, int position, long id) {
-                if (!categoryWasSelected) {
+                if (!outsideCategoryScreen) {
                     performSearch(categories[position]);
                     categoryTextView.setText(categories[position]);
-                    categoryWasSelected = true;
+                    outsideCategoryScreen = true;
                     selectSoundsButton.setVisibility(View.VISIBLE);
                 } else {
 
                     if (!modeAddSounds) {
+                        Log.d(DEBUG_TAG, "View position is: " + position);
                         gridTouchController.setTouchedView(currentGridView, position);
 
                         serverFile = filesList.get(position);
@@ -199,7 +193,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
                         playFile(serverFile);
 
-                        selectLastElement(position, currentGridView);
 
 
                     } else {
@@ -252,13 +245,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     // processFinish is called after this method automatically
     protected void performSearch(String search) {
-        lastSelectedViewIndex = 0;
+        gridTouchController.resetAll();
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
         Log.d(DEBUG_TAG, "serverConnection: " + SoundBubbles.serverConnection.toString());
         searchTask.execute(SoundBubbles.serverConnection, search.trim());
-        Toast.makeText(getBaseContext(), "searching", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), "Searching", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -333,29 +326,21 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             selectedViews.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
         }
         selectedViews.clear();
+        selectedViewsServerFileArray.clear();
     }
 
     public void addSounds(View v) {
-        if (lastSelectedViewIndex == 0) {
+        player.stopIfPlaying();
+
+        if (gridTouchController.getCurrentTouchedViewIndex() == -1) {
             Toast.makeText(SearchActivity.this, "Select some sound first",
                     Toast.LENGTH_SHORT).show();
         } else {
             if (downloadCompleted && !invalidFile) {
-                Intent receivedIntent = getIntent();
-                float coordinates = receivedIntent.getFloatExtra(VIEW_COORDINATES, 0);
-                int receivedViewId = receivedIntent.getIntExtra(VIEW_ID, 0);
 
-
-                bundle = new Bundle();
-                bundle.putSerializable(SELECTED_FILE, filesList.get(lastSelectedViewIndex));
-                bundle.putFloat(VIEW_COORDINATES, coordinates);
-                bundle.putInt(VIEW_ID, receivedViewId);
-
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra(RETURN_BUNDLE, bundle);
-                setResult(Activity.RESULT_OK, returnIntent);
-                player.stopIfPlaying();
+                Intent intent = new Intent();
+                intent.putExtra(SELECTED_FILE, filesList.get(gridTouchController.getCurrentTouchedViewIndex()));
+                setResult(Activity.RESULT_OK, intent);
                 finish();
 
             } else if (invalidFile) {
@@ -414,13 +399,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         player.stopIfPlaying();
         gridTouchController.resetAll();
 
-        if (categoryWasSelected | modeSearchSounds) {
+        if (outsideCategoryScreen | modeSearchSounds) {
             if (modeSearchSounds && !modeAddSounds) {
                 modeSearchSounds = false;
             }
             if (!modeAddSounds) {
                 showCategoriesList();
-                categoryWasSelected = false;
+                outsideCategoryScreen = false;
                 categoryTextView.setText(R.string.categories);
                 selectSoundsButton.setVisibility(View.GONE);
             } else {
@@ -431,13 +416,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         }
     }
 
-    // make visible the clicked element
-    private void selectLastElement(int position, View currentGridView) {
 
-        lastSelectedViewIndex = position;
-        lastElementSelected = currentGridView;
-
-    }
 
 
     private class DownLoadAndPlayTask extends AsyncTask<String, Void, String> {

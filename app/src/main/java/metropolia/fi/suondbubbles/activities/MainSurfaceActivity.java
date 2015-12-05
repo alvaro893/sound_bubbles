@@ -25,6 +25,7 @@ import java.util.Random;
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.bubble.BubblePosition;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmExitDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.VolumeControlFragment;
@@ -34,9 +35,6 @@ import metropolia.fi.suondbubbles.views.Bubble;
 public class MainSurfaceActivity extends AppCompatActivity{
 
     /** Constants */
-    private final String VIEW_COORDINATES = "VIEW_COORDINATES";
-    private final String RETURN_BUNDLE = "RETURN_BUNDLE";
-    private final String VIEW_ID = "VIEW_ID";
     private final String SELECTED_FILE = "SELECTED_FILE";
     private final String DEBUG_TAG = "MainSurfaceActivity";
 
@@ -51,7 +49,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private FixedLayout fixedLayout_4;
     private FixedLayout fixedLayout_5;
     private FixedLayout fixedLayout_6;
-    private FixedLayout receivedFixedLayout;
+    private FixedLayout bubbleParentLayout;
     private ImageView playButton;
     private ScrollView scrollView;
     private ImageView removeView;
@@ -71,13 +69,11 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private GestureDetector mDetector_6;
 
 
+    private BubblePosition bubblePosition;
     private Intent intentSearchActivity;
     private int secondActivityRequest = 542;
 
     /** data received from intent will be in these */
-    private Bundle receivedBundle;
-    private float receivedYCoordinates;
-    private int receivedLayoutId;
     private ServerFile receivedServerFile;
 
     /**Animations **/
@@ -132,50 +128,55 @@ public class MainSurfaceActivity extends AppCompatActivity{
         if(requestCode == secondActivityRequest){
             if(resultCode == Activity.RESULT_OK){
 
-                /** data assignment to local members*/
-                receivedBundle = data.getBundleExtra(RETURN_BUNDLE);
-                receivedYCoordinates = receivedBundle.getFloat(VIEW_COORDINATES);
-                receivedLayoutId = receivedBundle.getInt(VIEW_ID);
-                receivedServerFile = (ServerFile)receivedBundle.getSerializable(SELECTED_FILE);
-
-
-                /** assignment of double tapped viewGroup received from intent */
-                receivedFixedLayout = (FixedLayout)findViewById(receivedLayoutId);
-
-                /** bubble view creation, not yet visible */
-                bubble = new Bubble(this, receivedServerFile);
-                bubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
-                    @Override
-                    public void onDoubleTapOnBubbleDetected(Bubble bubble) {
-                        openVolumeControlDialog(bubble);
-                    }
-                });
-
-
-
-
-
-                if(receivedYCoordinates == 0){
-                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), scrollView.getScrollY());
-                }else{
-                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), (int) receivedYCoordinates);
-                }
-
-                layoutParams = new FixedLayout.LayoutParams(receivedFixedLayout.getWidth(),0,0,bubbleYcoordinate);
-
-                /** bubble view assigned to viewgroup, bubble view is now visible*/
-                receivedFixedLayout.addView(bubble, layoutParams);
+                receivedServerFile = (ServerFile)data.getSerializableExtra(SELECTED_FILE);
+                bubble = createBubble(receivedServerFile);
                 bubbleList.add(bubble);
-                Log.d(DEBUG_TAG, "bubble bottom:" + bubble.getBubbleBottomY());
-
-
                 bubble.startAnimation(alphaAnimation);
-
             }
         }
     }
 
-    
+    private Bubble createBubble(ServerFile receivedServerFile) {
+        Bubble localBubble;
+        localBubble = initBubble(receivedServerFile);
+        bubbleParentLayout = getBubbleParentLayout();
+        bubbleYcoordinate = getBubbleY(localBubble);
+        layoutParams = new FixedLayout.LayoutParams(bubbleParentLayout.getWidth(),0,0,bubbleYcoordinate);
+
+        /** bubble view assigned to viewgroup, bubble view is now visible*/
+        bubbleParentLayout.addView(localBubble, layoutParams);
+        return localBubble;
+    }
+
+    private Bubble initBubble(ServerFile serverfile) {
+        /** bubble view creation, not yet visible */
+        Bubble initBubble = new Bubble(this, serverfile);
+        initBubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
+            @Override
+            public void onDoubleTapOnBubbleDetected(Bubble initBubble) {
+                openVolumeControlDialog(initBubble);
+            }
+        });
+
+        return initBubble;
+    }
+
+    public FixedLayout getBubbleParentLayout() {
+
+        if(bubblePosition.getParentLayoutID() == 0)
+            return (FixedLayout)findViewById(linesList.get(randomNumber.nextInt(linesList.size())).getId());
+        else
+            return (FixedLayout)findViewById(bubblePosition.getParentLayoutID());
+    }
+
+    public int getBubbleY(Bubble localBubble) {
+        if(bubblePosition.getyCoordinate() == 0)
+            return localBubble.returnFittingYcoordinate(bubbleParentLayout.getBottom(), scrollView.getScrollY());
+        else
+            return localBubble.returnFittingYcoordinate(bubbleParentLayout.getBottom(), (int)bubblePosition.getyCoordinate());
+    }
+
+
     private void init() {
         initListeners();
         initLineList();
@@ -184,6 +185,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
         intentSearchActivity = new Intent(this, SearchActivity.class);
         randomNumber = new Random();
         bubbleList = new ArrayList<>();
+        bubblePosition = new BubblePosition();
+
     }
 
     private void assignViews() {
@@ -340,14 +343,15 @@ public class MainSurfaceActivity extends AppCompatActivity{
     public void addNewBubble(View v){
         stop();
 
-        Log.d(DEBUG_TAG, "Y coordinate is " + scrollView.getScrollY());
+        bubblePosition.setyCoordinate(0f);
+        bubblePosition.setParentLayoutID(0);
 
 
-        /** adding Y coordinate of visible screen to intent for activityOnResult*/
-        intentSearchActivity.putExtra(VIEW_COORDINATES, 0.0f);
-
-        /** adding random fixedLayout ID to intent for activityOnResult*/
-        intentSearchActivity.putExtra(VIEW_ID, linesList.get(randomNumber.nextInt(linesList.size())).getId());
+//        /** adding Y coordinate of visible screen to intent for activityOnResult*/
+//        intentSearchActivity.putExtra(VIEW_COORDINATES, 0.0f);
+//
+//        /** adding random fixedLayout ID to intent for activityOnResult*/
+//        intentSearchActivity.putExtra(VIEW_ID, );
 
         /** starting SearchActivity for a result */
         startActivityForResult(intentSearchActivity, secondActivityRequest);
@@ -482,6 +486,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
     }
 
 
+
+
     /** Class for controlling touches on FixedLayout(lines)*/
     private class FixedLayoutTouchController extends GestureDetector.SimpleOnGestureListener {
 
@@ -504,10 +510,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
             Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
             stop();
 
-
-            /** adding data relevant for bubble view creation in onActivityResult method */
-            intentSearchActivity.putExtra(VIEW_COORDINATES, e.getY());
-            intentSearchActivity.putExtra(VIEW_ID, container.getId());
+            bubblePosition.setParentLayoutID(container.getId());
+            bubblePosition.setyCoordinate(e.getY());
 
             /** starting SearchActivity for a result */
             startActivityForResult(intentSearchActivity, secondActivityRequest);
