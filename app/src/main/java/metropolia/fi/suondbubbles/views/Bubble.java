@@ -3,10 +3,13 @@ package metropolia.fi.suondbubbles.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,10 +32,13 @@ public class Bubble extends View {
     private final String DEBUG_TAG = "Bubble class";
     private final int MAX_VOLUME = 100;
 
-    private Paint color, passive_color, active_color;
+
+
+    private Paint color, passive_color, active_color, textPaint;
 
     private GestureDetector mDetector;
     private int bubbleHeight;
+    private int bubbleWidth;
     private int color_selection;
     private int bubbleBottomY;
     private int finalfittingYcoordinate = 0;
@@ -49,6 +55,7 @@ public class Bubble extends View {
     private float bubbleVolume;
     private BubbleTouchController bubbleTouchController;
 
+    private Rect textBounds;
 
     private boolean detected = false;
     private boolean active = false;
@@ -63,7 +70,23 @@ public class Bubble extends View {
         initMediaplayer();
 
         createRoundedRectangle();
+        initText();
     }
+
+    private void initText() {
+        textBounds = new Rect();
+
+        int spValue = 12;
+
+        int pixel= (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                spValue, getResources().getDisplayMetrics());
+
+        textPaint = new Paint();
+        textPaint.setTextSize(pixel);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setStyle(Paint.Style.FILL);
+    }
+
 
     public int getSoundVolume() {
         return soundVolume;
@@ -195,8 +218,11 @@ public class Bubble extends View {
 
     }
 
+
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
+
+
 
         bubbleTouchController = new BubbleTouchController(getContext(),this);
 
@@ -277,23 +303,34 @@ public class Bubble extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.d(DEBUG_TAG, "Filename is " + serverFile.getFilename());
         rectCoordinates.right = canvas.getWidth();
-        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertDpToPixel(100,getContext()),PixelsConverter.convertDpToPixel(100,getContext()),color);
+        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertDpToPixel(100, getContext()), PixelsConverter.convertDpToPixel(100, getContext()), color);
+        canvas.save();
+        canvas.rotate(90, bubbleWidth / 2, bubbleHeight / 2);
+        drawTextCentred(canvas, textPaint, serverFile.getTitle(), bubbleWidth / 2, bubbleHeight / 2);
+        canvas.restore();
+
     }
 
+    public void drawTextCentred(Canvas canvas, Paint paint, String text, float cx, float cy){
+        paint.getTextBounds(text, 0, text.length(), textBounds);
+        canvas.drawText(text, cx - textBounds.exactCenterX(), cy - textBounds.exactCenterY(), paint);
+    }
 
     /** handles bubble bound size*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        bubbleWidth = MeasureSpec.getSize(widthMeasureSpec);
         /** set bubble width bound to be same as parent view width */
         int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.EXACTLY);
 
         /** set bubble height bound */
         int heightSpec = MeasureSpec.makeMeasureSpec(bubbleHeight,MeasureSpec.EXACTLY);
 
-        setMeasuredDimension(widthSpec,heightSpec);
+        setMeasuredDimension(widthSpec, heightSpec);
     }
 
 }
