@@ -25,6 +25,7 @@ import java.util.Random;
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.bubble.BubbleParentLayoutRandomizer;
 import metropolia.fi.suondbubbles.bubble.BubblePosition;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmExitDialogFragment;
@@ -41,6 +42,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     /** Arrays */
     private ArrayList<FixedLayout> linesList;
     private ArrayList<Bubble> bubbleList;
+    private BubbleParentLayoutRandomizer bubbleParentLayoutRandomizer;
 
     /** Views*/
     private FixedLayout fixedLayout_1;
@@ -162,11 +164,13 @@ public class MainSurfaceActivity extends AppCompatActivity{
     }
 
     public FixedLayout getBubbleParentLayout() {
+//        bubbleParentLayoutRandomizer.generateRandomIDs(1, 0)
 
-        if(bubblePosition.getParentLayoutID() == 0)
+        if(bubblePosition.getDoubleTappedLayoutIndex() == -1)
             return (FixedLayout)findViewById(linesList.get(randomNumber.nextInt(linesList.size())).getId());
         else
-            return (FixedLayout)findViewById(bubblePosition.getParentLayoutID());
+            return (FixedLayout)findViewById(linesList.get(bubblePosition.getDoubleTappedLayoutIndex()).getId());
+
     }
 
     public int getBubbleY(Bubble localBubble) {
@@ -186,6 +190,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         randomNumber = new Random();
         bubbleList = new ArrayList<>();
         bubblePosition = new BubblePosition();
+        bubbleParentLayoutRandomizer = new BubbleParentLayoutRandomizer(linesList);
 
     }
 
@@ -344,14 +349,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         stop();
 
         bubblePosition.setyCoordinate(0f);
-        bubblePosition.setParentLayoutID(0);
-
-
-//        /** adding Y coordinate of visible screen to intent for activityOnResult*/
-//        intentSearchActivity.putExtra(VIEW_COORDINATES, 0.0f);
-//
-//        /** adding random fixedLayout ID to intent for activityOnResult*/
-//        intentSearchActivity.putExtra(VIEW_ID, );
+        bubblePosition.setDoubleTappedLayoutIndex(-1);
 
         /** starting SearchActivity for a result */
         startActivityForResult(intentSearchActivity, secondActivityRequest);
@@ -507,10 +505,11 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
+            Log.d(DEBUG_TAG, "Double tapped Y: " + e.getY());
             stop();
+            Log.d(DEBUG_TAG, "Double Tapped line index is " + linesList.indexOf(container));
 
-            bubblePosition.setParentLayoutID(container.getId());
+            bubblePosition.setDoubleTappedLayoutIndex(linesList.indexOf(container));
             bubblePosition.setyCoordinate(e.getY());
 
             /** starting SearchActivity for a result */

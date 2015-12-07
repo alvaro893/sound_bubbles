@@ -4,7 +4,7 @@ package metropolia.fi.suondbubbles.bubble;
 public class BubblePosition {
 
     private float yCoordinate;
-    private int parentLayoutID;
+    private int doubleTappedLayoutIndex;
 
     public BubblePosition(){
         init();
@@ -12,7 +12,7 @@ public class BubblePosition {
 
     private void init() {
         yCoordinate = 0;
-        parentLayoutID = 0;
+        doubleTappedLayoutIndex = -1;
     }
 
     public float getyCoordinate() {
@@ -23,11 +23,11 @@ public class BubblePosition {
         this.yCoordinate = yCoordinate;
     }
 
-    public int getParentLayoutID() {
-        return parentLayoutID;
+    public int getDoubleTappedLayoutIndex() {
+        return doubleTappedLayoutIndex;
     }
 
-    public void setParentLayoutID(int parentLayoutID) {
-        this.parentLayoutID = parentLayoutID;
+    public void setDoubleTappedLayoutIndex(int doubleTappedLayoutIndex) {
+        this.doubleTappedLayoutIndex = doubleTappedLayoutIndex;
     }
 }
