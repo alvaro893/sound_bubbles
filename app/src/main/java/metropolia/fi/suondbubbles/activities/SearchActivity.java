@@ -68,6 +68,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     /** Integers */
     private int currentSelectedSounds;
+    private int downloadedSounds;
 
     /** Booleans*/
     private boolean outsideCategoryScreen;
@@ -194,18 +195,19 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                         playFile(serverFile);
 
 
-
                     } else {
                         if (isSelected[position]) {
                             isSelected[position] = false;
                             currentSelectedSounds -= 1;
                             selectedViews.remove(currentGridView);
+                            selectedViewsServerFileArray.remove(filesList.get(position));
                             currentGridView.setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
                         } else {
                             if (currentSelectedSounds < MAXIMUM_AMOUNT) {
                                 isSelected[position] = true;
                                 currentSelectedSounds += 1;
                                 selectedViews.add(currentGridView);
+                                selectedViewsServerFileArray.add(filesList.get(position));
 
                                 // passive aqua color with 60% alpha
                                 currentGridView.setBackgroundColor(Color.argb(153, 171, 206, 203));
@@ -288,7 +290,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             }
 
             //Download file if not exits in external memory
-            download(file);
+            downloadAndPlay(file);
 
         }
 
@@ -331,24 +333,25 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     public void addSounds(View v) {
         player.stopIfPlaying();
+        downloadedSounds = 0;
 
-        if (gridTouchController.getCurrentTouchedViewIndex() == -1) {
+        if (selectedViewsServerFileArray.size() == 0) {
             Toast.makeText(SearchActivity.this, "Select some sound first",
                     Toast.LENGTH_SHORT).show();
         } else {
-            if (downloadCompleted && !invalidFile) {
-
-                Intent intent = new Intent();
-                intent.putExtra(SELECTED_FILE, filesList.get(gridTouchController.getCurrentTouchedViewIndex()));
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-
-            } else if (invalidFile) {
-                Toast.makeText(getBaseContext(), "Sound file is corrupted, select another one", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getBaseContext(), "Sound is not yet available, please wait", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), "Downloading", Toast.LENGTH_SHORT).show();
+            Log.d(DEBUG_TAG, "number of selected: " + selectedViewsServerFileArray.size());
+            for(int i = 0; i < selectedViewsServerFileArray.size(); i++){
+                download(selectedViewsServerFileArray.get(i), i);
             }
         }
+    }
+
+    private void finishActivity(){
+        Intent intent = new Intent();
+        intent.putExtra(SELECTED_FILE, selectedViewsServerFileArray);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
     }
 
     private void showServerFileList(ServerFile[] result) {
@@ -368,7 +371,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
 
 
-    private void download(ServerFile serverFile) {
+    private void downloadAndPlay(ServerFile serverFile) {
         DownLoadAndPlayTask downloadTask = new DownLoadAndPlayTask();
 
         // filename is not set, a timestamp will be used instead
@@ -377,6 +380,20 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             downloadTask.execute(serverFile.getLink(), filename);
         } else {
             downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
+        }
+
+    }
+
+    private void download(ServerFile serverFile , int index) {
+        DownLoadTask downloadTask = new DownLoadTask();
+
+
+        // filename is not set, a timestamp will be used instead
+        if (serverFile.getFilename() == null) {
+            String filename = Calendar.getInstance().getTimeInMillis() + "";
+            downloadTask.execute(serverFile.getLink(), filename);
+        } else {
+            downloadTask.execute(serverFile.getLink(), serverFile.getFilename(), Integer.toString(index));
         }
 
     }
@@ -415,8 +432,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             super.onBackPressed();
         }
     }
-
-
 
 
     private class DownLoadAndPlayTask extends AsyncTask<String, Void, String> {
@@ -463,6 +478,58 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 invalidFile = true;
                 adapter.backToNormal(gridTouchController.getCurrentTouchedView());
                 Toast.makeText(getBaseContext(), "Corrupted sound", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class DownLoadTask extends AsyncTask<String, Void, String> {
+        private final String DEBUG_TAG = "DownLoadTask";
+        private String name;
+        private String index;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String urlString = params[0];
+            String filename = params[1];
+            name = filename;
+            index = params[2];
+            File file;
+            String path = null;
+
+            try {
+                URL url = new URL(urlString);
+                SoundFile soundFile = new SoundFile(url.openStream());
+                file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
+                path = file.getPath();
+            } catch (Exception e) {
+                Log.d(DEBUG_TAG, e.getClass().toString() + ":" + e.getMessage());
+                e.printStackTrace();
+            }
+
+
+            return path;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onPostExecute(String path) {
+            Log.d(DEBUG_TAG, "DOWNLOAD COMPLETED");
+            if (path != null) {
+                downloadedSounds += 1;
+                selectedViewsServerFileArray.get(Integer.parseInt(index)).setPathLocalFile(path);
+                Log.d(DEBUG_TAG, "Path is " + path);
+                if(downloadedSounds == selectedViewsServerFileArray.size()){
+                    Log.d(DEBUG_TAG, "ALL SOUNDS COMPLETED");
+                    Toast.makeText(getBaseContext(), "Download complete", Toast.LENGTH_SHORT).show();
+                    finishActivity();
+                }
+
+            } else {
+                Toast.makeText(getBaseContext(), "Corrupted sound: " + name, Toast.LENGTH_SHORT).show();
             }
         }
     }

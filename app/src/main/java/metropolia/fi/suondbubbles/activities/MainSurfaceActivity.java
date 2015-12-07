@@ -20,7 +20,6 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
@@ -43,6 +42,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private ArrayList<FixedLayout> linesList;
     private ArrayList<Bubble> bubbleList;
     private BubbleParentLayoutRandomizer bubbleParentLayoutRandomizer;
+    private int[] parentLayoutIndexes;
 
     /** Views*/
     private FixedLayout fixedLayout_1;
@@ -76,7 +76,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private int secondActivityRequest = 542;
 
     /** data received from intent will be in these */
-    private ServerFile receivedServerFile;
+    private ArrayList<ServerFile> receivedServerFiles;
 
     /**Animations **/
     private Animation alphaAnimation;
@@ -86,7 +86,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private ObjectAnimator horizontalLineAnimator;
 
 
-    private Random randomNumber;
     private int bubbleYcoordinate = 0;
     private int calcBubbleBottomY = 0;
     private int calcBubbleHeight = 0;
@@ -124,24 +123,35 @@ public class MainSurfaceActivity extends AppCompatActivity{
         dialogFragment.show(getFragmentManager(), "ConfirmExitDialogFagment");
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stop();
+    }
+
     /** method called after SearchActivity return*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == secondActivityRequest){
             if(resultCode == Activity.RESULT_OK){
 
-                receivedServerFile = (ServerFile)data.getSerializableExtra(SELECTED_FILE);
-                bubble = createBubble(receivedServerFile);
-                bubbleList.add(bubble);
-                bubble.startAnimation(alphaAnimation);
+                receivedServerFiles = (ArrayList<ServerFile>)data.getSerializableExtra(SELECTED_FILE);
+                parentLayoutIndexes = new int[receivedServerFiles.size()];
+                parentLayoutIndexes = bubbleParentLayoutRandomizer.generateRandomIDs(receivedServerFiles.size(), bubblePosition.getDoubleTappedLayoutIndex());
+
+                for(int i = 0; i < receivedServerFiles.size(); i++){
+                    bubble = createBubble(receivedServerFiles.get(i), parentLayoutIndexes[i]);
+                    bubbleList.add(bubble);
+                    bubble.startAnimation(alphaAnimation);
+                }
             }
         }
     }
 
-    private Bubble createBubble(ServerFile receivedServerFile) {
+    private Bubble createBubble(ServerFile receivedServerFile, int index) {
         Bubble localBubble;
         localBubble = initBubble(receivedServerFile);
-        bubbleParentLayout = getBubbleParentLayout();
+        bubbleParentLayout = getBubbleParentLayout(index);
         bubbleYcoordinate = getBubbleY(localBubble);
         layoutParams = new FixedLayout.LayoutParams(bubbleParentLayout.getWidth(),0,0,bubbleYcoordinate);
 
@@ -163,14 +173,9 @@ public class MainSurfaceActivity extends AppCompatActivity{
         return initBubble;
     }
 
-    public FixedLayout getBubbleParentLayout() {
-//        bubbleParentLayoutRandomizer.generateRandomIDs(1, 0)
+    public FixedLayout getBubbleParentLayout(int index) {
 
-        if(bubblePosition.getDoubleTappedLayoutIndex() == -1)
-            return (FixedLayout)findViewById(linesList.get(randomNumber.nextInt(linesList.size())).getId());
-        else
-            return (FixedLayout)findViewById(linesList.get(bubblePosition.getDoubleTappedLayoutIndex()).getId());
-
+        return (FixedLayout)findViewById(linesList.get(index).getId());
     }
 
     public int getBubbleY(Bubble localBubble) {
@@ -187,7 +192,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
         initAnimations();
 
         intentSearchActivity = new Intent(this, SearchActivity.class);
-        randomNumber = new Random();
+        parentLayoutIndexes = null;
+
         bubbleList = new ArrayList<>();
         bubblePosition = new BubblePosition();
         bubbleParentLayoutRandomizer = new BubbleParentLayoutRandomizer(linesList);
