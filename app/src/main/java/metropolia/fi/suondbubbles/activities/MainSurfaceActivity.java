@@ -518,22 +518,20 @@ public class MainSurfaceActivity extends AppCompatActivity{
                         calcBubble.invalidate();
                         Log.d(DEBUG_TAG, "bubble detected");
                         calcBubble.startPlaying();
-
                     }
-                } else {
-                    if (calcBubbleBottomY - calcBubbleHeight >= y) {
-                        if(calcBubble.bubbleIsPlaying()){
-                            calcBubble.stopPlaying();
-                        }
+
+                }
+                else if(y > calcBubbleBottomY || calcBubbleBottomY - calcBubbleHeight  > y){
+                        calcBubble.stopPlaying();
                         calcBubble.setColor(calcBubble.getPassive_color());
                         calcBubble.invalidate();
                         calcBubble.setDetected(false);
-                    }
                 }
             }
         }
-
     }
+
+
 
     /** DialogFragment for adjusting volume */
     private void openVolumeControlDialog(final Bubble bubble){
