@@ -38,6 +38,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private final String SELECTED_FILE = "SELECTED_FILE";
     private final String DEBUG_TAG = "MainSurfaceActivity";
 
+
     /** Arrays */
     private ArrayList<FixedLayout> linesList;
     private ArrayList<Bubble> bubbleList;

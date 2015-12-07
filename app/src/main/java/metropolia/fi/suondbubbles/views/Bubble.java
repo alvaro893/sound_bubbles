@@ -31,6 +31,7 @@ public class Bubble extends View {
 
     private final String DEBUG_TAG = "Bubble class";
     private final int MAX_VOLUME = 100;
+    private final int MINIUM_ALLOWED_SIZE = 3000;
 
 
 
@@ -214,6 +215,10 @@ public class Bubble extends View {
     }
 
     public void setBubbleHeight(int bubbleHeight) {
+        Log.d(DEBUG_TAG,"HEIGHT IS : " + bubbleHeight);
+        if(bubbleHeight < MINIUM_ALLOWED_SIZE){
+            bubbleHeight = MINIUM_ALLOWED_SIZE;
+        }
         this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(bubbleHeight * 0.025f,getContext());
 
     }
@@ -308,6 +313,9 @@ public class Bubble extends View {
         canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertDpToPixel(100, getContext()), PixelsConverter.convertDpToPixel(100, getContext()), color);
         canvas.save();
         canvas.rotate(90, bubbleWidth / 2, bubbleHeight / 2);
+        if(textPaint.measureText(serverFile.getTitle()) > canvas.getHeight()){
+            calibrateTextSize(serverFile.getTitle(), canvas.getHeight() - PixelsConverter.convertDpToPixel(5,getContext()));
+        }
         drawTextCentred(canvas, textPaint, serverFile.getTitle(), bubbleWidth / 2, bubbleHeight / 2);
         canvas.restore();
 
@@ -316,6 +324,17 @@ public class Bubble extends View {
     public void drawTextCentred(Canvas canvas, Paint paint, String text, float cx, float cy){
         paint.getTextBounds(text, 0, text.length(), textBounds);
         canvas.drawText(text, cx - textBounds.exactCenterX(), cy - textBounds.exactCenterY(), paint);
+    }
+
+    private int calibrateTextSize(String str, float maxWidth)
+    {
+        int size = 0;
+
+        do {
+            textPaint.setTextSize(++size);
+        } while(textPaint.measureText(str) < maxWidth);
+
+        return size;
     }
 
     /** handles bubble bound size*/
