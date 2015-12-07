@@ -21,6 +21,7 @@ import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.helper.PixelsConverter;
+import metropolia.fi.suondbubbles.media.SoundPlayer;
 
 
 public class Bubble extends View {
@@ -30,7 +31,6 @@ public class Bubble extends View {
     }
 
     private final String DEBUG_TAG = "Bubble class";
-    private final int MAX_VOLUME = 100;
     private final int MINIUM_ALLOWED_SIZE = 3000;
 
 
@@ -51,7 +51,7 @@ public class Bubble extends View {
     private ServerFile serverFile;
 
     private RectF rectCoordinates;
-    private MediaPlayer mediaPlayer;
+    private SoundPlayer soundPlayer;
     private int soundVolume;
     private float bubbleVolume;
     private BubbleTouchController bubbleTouchController;
@@ -59,7 +59,8 @@ public class Bubble extends View {
     private Rect textBounds;
 
     private boolean detected = false;
-    private boolean active = false;
+    private boolean paused = false;
+
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
@@ -67,12 +68,12 @@ public class Bubble extends View {
         init(serverFile);
         initHeight();
 
-
-        initMediaplayer();
+        initSoundPlayer();
 
         createRoundedRectangle();
         initText();
     }
+
 
     private void initText() {
         textBounds = new Rect();
@@ -113,59 +114,47 @@ public class Bubble extends View {
     private void setBubbleVolume(int soundVolume){
 
         bubbleVolume = (float)(soundVolume * 0.01);
-        mediaPlayer.setVolume(bubbleVolume,bubbleVolume);
+        soundPlayer.setSoundVolume(bubbleVolume);
     }
 
-    /** Initializes mediaplayer and set listerners **/
-    private void initMediaplayer() {
-        try {
-            mediaPlayer = new MediaPlayer();
+    private void initSoundPlayer(){
+        soundPlayer = new SoundPlayer();
+        soundPlayer.setSound(serverFile.getPathLocalFile());
+        setSoundVolume(50);
+        soundPlayer.setSoundPlayerListener(new SoundPlayer.SoundPlayerListener() {
+            @Override
+            public void onStarting() {
+                if (paused)
+                    paused = false;
 
-            mediaPlayer.setDataSource(serverFile.getPathLocalFile());
-            setSoundVolume(50);
+            }
 
-            //setBubbleHeight(mediaPlayer.getDuration());
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                public void onPrepared(MediaPlayer mp) {
-                    setBubbleVolume(soundVolume);
-                    mp.start();
+            @Override
+            public void onPausing() {
+                paused = true;
+            }
 
-                }
-            });
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.stop();
-                }
-            });
-        }catch (Exception e){
-            Log.e(DEBUG_TAG,"ERROR: " + e.getMessage());
-        }
+            @Override
+            public void onStopping() {
+
+            }
+        });
 
     }
 
-    /** starts mediaplayer with async prepering*/
+
     public void startPlaying(){
-        try {
-            mediaPlayer.prepareAsync();
-
-        }catch(Exception e){
-            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
-        }
+        soundPlayer.playIfNotPlaying();
     }
 
-    /** stops mediaplayer*/
     public void stopPlaying(){
-        try {
-            mediaPlayer.stop();
-        } catch (Exception e) {
-            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
-        }
+        soundPlayer.stopIfPlaying();
     }
-
-    /** return boolean value whether mediaplayer is playing currently **/
+    public void pausePlaying(){
+        soundPlayer.pauseIfPlaying();
+    }
     public boolean bubbleIsPlaying(){
-        return mediaPlayer.isPlaying();
+        return soundPlayer.isSoundPlayerPlaying();
     }
 
     public void setDoubletapOnBubbleDetector(DoubletapOnBubbleDetector doubletapOnBubbleDetector) {
@@ -177,17 +166,14 @@ public class Bubble extends View {
         return detected;
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
     public void setDetected(boolean detected) {
         this.detected = detected;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     /** returns bubble bottom line Y coordinate (int) */
     public int getBubbleBottomY() {
@@ -239,6 +225,10 @@ public class Bubble extends View {
         });
 
         this.mDetector = new GestureDetector(getContext(),bubbleTouchController);
+    }
+
+    public void disableDragging(boolean value){
+        bubbleTouchController.setDragDisabled(value);
     }
 
 

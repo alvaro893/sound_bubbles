@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import metropolia.fi.suondbubbles.views.Bubble;
 import metropolia.fi.suondbubbles.views.BubbleShadowBuilder;
@@ -30,12 +31,22 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
     private Point touchPoint;
     private String coordinates;
     private int y_coordinate;
+    private boolean dragDisabled;
 
     public BubbleTouchController(Context context, Bubble bubble){
         this.context = context;
         this.bubble = bubble;
         touchPoint = new Point();
+        dragDisabled = false;
 
+    }
+
+    public boolean isDragDisabled() {
+        return dragDisabled;
+    }
+
+    public void setDragDisabled(boolean dragDisabled) {
+        this.dragDisabled = dragDisabled;
     }
 
     @Override
@@ -57,19 +68,21 @@ public class BubbleTouchController extends  GestureDetector.SimpleOnGestureListe
 
     @Override
     public void onLongPress(MotionEvent e) {
-        Log.d(DEBUG_TAG, "Start dragging bubble");
-        bubble.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        if(!isDragDisabled()) {
+            Log.d(DEBUG_TAG, "Start dragging bubble");
+            bubble.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 
-        y_coordinate = (int)e.getY();
-        coordinates = Integer.toString(y_coordinate);
-        ClipData data = ClipData.newPlainText("", coordinates);
+            y_coordinate = (int) e.getY();
+            coordinates = Integer.toString(y_coordinate);
+            ClipData data = ClipData.newPlainText("", coordinates);
 
 
-        touchPoint.set((int)e.getX(),(int)e.getY());
+            touchPoint.set((int) e.getX(), (int) e.getY());
 
-        bubble.startDrag(data, new BubbleShadowBuilder(bubble,touchPoint), bubble, 0);
+            bubble.startDrag(data, new BubbleShadowBuilder(bubble, touchPoint), bubble, 0);
+        }
+        else {
+            Toast.makeText(context, "Cannot move bubble while playing", Toast.LENGTH_SHORT).show();
+        }
     }
-
-
-
 }

@@ -102,32 +102,43 @@
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_marginRight="30dp"
             android:id="@+id/btn_new"
             android:src="@drawable/new_doc_button"
             android:onClick="startNewSession"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:layout_marginRight="20dp" />
 
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:id="@+id/btn_record"
             android:src="@drawable/record_button"
-            android:layout_marginRight="40dp"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:onClick="startRecordActivity" />
+            android:onClick="startRecordActivity"
+            android:layout_marginRight="20dp" />
 
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:id="@+id/btn_play"
             android:src="@drawable/play_button"
-            android:layout_marginRight="30dp"
+            android:layout_marginRight="20dp"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
             android:onClick="startPlay"/>
+
+        <ImageButton
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:id="@+id/btn_pause"
+            android:src="@drawable/pause_button"
+            android:layout_marginRight="20dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:onClick="pauseButtonClick" />
 
         <ImageButton
             android:layout_width="56dp"

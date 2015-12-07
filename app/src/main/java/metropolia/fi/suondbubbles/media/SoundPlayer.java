@@ -13,6 +13,8 @@ public class SoundPlayer {
     private boolean soundSourceSet, paused;
     private String soundPath;
     private SoundPlayerListener soundPlayerListener;
+    private float volume;
+    private int length;
 
     public interface SoundPlayerListener{
         void onStarting();
@@ -31,6 +33,8 @@ public class SoundPlayer {
     private void init() {
         soundSourceSet = false;
         paused = false;
+        length = 0;
+        volume = 0.5f;
         mediaPlayer = new MediaPlayer();
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -58,7 +62,7 @@ public class SoundPlayer {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(soundPath);
             soundSourceSet = true;
-            mediaPlayer.setVolume(0.5f, 0.5f);
+            setSoundVolume(volume);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +81,9 @@ public class SoundPlayer {
                     e.printStackTrace();
                 }
             }
-            else if(!mediaPlayer.isPlaying()){
+            else if(paused){
+                Log.d(DEBUG_TAG, "resuming playing");
+                paused = false;
                 mediaPlayer.start();
                 soundPlayerListener.onStarting();
             }
@@ -107,6 +113,9 @@ public class SoundPlayer {
             if(mediaPlayer.isPlaying()){
                 soundPlayerListener.onPausing();
                 mediaPlayer.pause();
+                paused = true;
+                length = mediaPlayer.getCurrentPosition();
+                mediaPlayer.seekTo(length);
             }
         } else {
             Log.d(DEBUG_TAG, "No sound file assigned");
@@ -122,6 +131,10 @@ public class SoundPlayer {
             mediaPlayer.release();
         }
 
+    }
+    public void setSoundVolume(float volume){
+        this.volume = volume;
+        mediaPlayer.setVolume(volume,volume);
     }
 
     public int getDuration(){

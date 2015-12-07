@@ -2,6 +2,7 @@ package metropolia.fi.suondbubbles.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -56,6 +58,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private ImageView playButton;
     private ScrollView scrollView;
     private ImageView removeView;
+    private ImageButton pauseButton;
     private Bubble bubble;
     private View horizontalLine;
     private Bubble calcBubble;
@@ -82,6 +85,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     /**Animations **/
     private Animation alphaAnimation;
     private boolean animationON = false;
+    private boolean horizontalLinePaused = false;
 
     /** Animators **/
     private ObjectAnimator horizontalLineAnimator;
@@ -194,6 +198,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
         intentSearchActivity = new Intent(this, SearchActivity.class);
         parentLayoutIndexes = null;
+        pauseButton = (ImageButton)findViewById(R.id.btn_pause);
 
         bubbleList = new ArrayList<>();
         bubblePosition = new BubblePosition();
@@ -225,12 +230,23 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 playDetectedBubble(Float.valueOf(animation.getAnimatedValue("y").toString()));
             }
         });
+        horizontalLineAnimator.addPauseListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationPause(Animator animation) {
+                horizontalLinePaused = true;
+                playButton.setSelected(false);
+                pausePlaying();
+            }
+        });
+
         horizontalLineAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
                 playButton.setSelected(true);
                 horizontalLine.setVisibility(View.VISIBLE);
                 animationON = true;
+                pauseButton.setVisibility(View.VISIBLE);
+                disableBubbleDragging();
             }
 
             @Override
@@ -238,12 +254,13 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 playButton.setSelected(false);
                 horizontalLine.setVisibility(View.INVISIBLE);
                 animationON = false;
-
+                pauseButton.setVisibility(View.GONE);
+                enableBubbleDragging();
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                Log.d(DEBUG_TAG, "AnimationON changed onAnimationCancel ");
             }
 
             @Override
@@ -381,6 +398,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         if(animationON){
             Log.d(DEBUG_TAG, "Animation was on");
             horizontalLineAnimator.end();
+            horizontalLinePaused = false;
             stopAllBubblePlaying();
             resetBubblesDetected();
         }else
@@ -409,15 +427,54 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
     /**called on play button click*/
     public void startPlay(View v){
-        if(!animationON){
+        if(!animationON && !horizontalLinePaused){
 
             Toast.makeText(getBaseContext(), "Playing started", Toast.LENGTH_SHORT).show();
             horizontalLineAnimator.start();
+
+        }
+        else if(animationON && horizontalLinePaused){
+            horizontalLinePaused = false;
+            horizontalLineAnimator.resume();
+            pauseButton.setVisibility(View.VISIBLE);
+            disableBubbleDragging();
+            playButton.setSelected(true);
         }
         else{
 
             Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             stop();
+        }
+    }
+
+    public void pauseButtonClick(View v){
+        Toast.makeText(getBaseContext(),"Playing paused", Toast.LENGTH_SHORT).show();
+        horizontalLineAnimator.pause();
+        v.setVisibility(View.GONE);
+        enableBubbleDragging();
+
+    }
+
+    private void pausePlaying(){
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            if(calcBubble.bubbleIsPlaying()){
+                calcBubble.pausePlaying();
+            }
+        }
+    }
+
+    private void disableBubbleDragging(){
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            calcBubble.disableDragging(true);
+        }
+    }
+
+    private void enableBubbleDragging(){
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            calcBubble.disableDragging(false);
         }
     }
 
@@ -450,20 +507,28 @@ public class MainSurfaceActivity extends AppCompatActivity{
             calcBubbleHeight = calcBubble.getBubbleHeight();
             calcBubbleBottomY = calcBubble.getBubbleBottomY();
 
-            if(!calcBubble.isDetected()){
-                if(y <= calcBubbleBottomY && calcBubbleBottomY - calcBubbleHeight <= y){
-                    calcBubble.setDetected(true);
-                    calcBubble.setColor(calcBubble.getActive_color());
-                    calcBubble.invalidate();
-                    Log.d(DEBUG_TAG, "bubble detected");
-                    calcBubble.startPlaying();
+            if(calcBubble.isPaused()){
+                calcBubble.startPlaying();
+            }
+            else {
+                if (!calcBubble.isDetected()) {
+                    if (y <= calcBubbleBottomY && calcBubbleBottomY - calcBubbleHeight <= y) {
+                        calcBubble.setDetected(true);
+                        calcBubble.setColor(calcBubble.getActive_color());
+                        calcBubble.invalidate();
+                        Log.d(DEBUG_TAG, "bubble detected");
+                        calcBubble.startPlaying();
 
-                }
-            }else{
-                if(calcBubbleBottomY - calcBubbleHeight >= y){
-                    calcBubble.setColor(calcBubble.getPassive_color());
-                    calcBubble.invalidate();
-                    calcBubble.setDetected(false);
+                    }
+                } else {
+                    if (calcBubbleBottomY - calcBubbleHeight >= y) {
+                        if(calcBubble.bubbleIsPlaying()){
+                            calcBubble.stopPlaying();
+                        }
+                        calcBubble.setColor(calcBubble.getPassive_color());
+                        calcBubble.invalidate();
+                        calcBubble.setDetected(false);
+                    }
                 }
             }
         }
