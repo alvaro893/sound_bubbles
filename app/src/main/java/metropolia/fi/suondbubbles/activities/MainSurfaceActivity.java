@@ -16,8 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,11 +59,11 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private ImageView playButton;
     private ScrollView scrollView;
     private ImageView removeView;
-    private ImageButton pauseButton;
     private Bubble bubble;
     private View horizontalLine;
     private Bubble calcBubble;
     private TextView emptyTimeLineView;
+    private LinearLayout parentView;
 
     /** Layout parameter */
     private FixedLayout.LayoutParams layoutParams;
@@ -97,6 +97,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private int calcBubbleBottomY = 0;
     private int calcBubbleHeight = 0;
 
+    private float horizontalLineY;
 
 
     @Override
@@ -201,7 +202,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
         intentSearchActivity = new Intent(this, SearchActivity.class);
         parentLayoutIndexes = null;
-        pauseButton = (ImageButton)findViewById(R.id.btn_pause);
+
 
         bubbleList = new ArrayList<>();
         bubblePosition = new BubblePosition();
@@ -219,6 +220,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
         removeView = (ImageView)findViewById(R.id.remove_view);
         emptyTimeLineView = (TextView)findViewById(R.id.emptyTimeline);
+        parentView = (LinearLayout)findViewById(R.id.parentView);
 
     }
 
@@ -226,14 +228,18 @@ public class MainSurfaceActivity extends AppCompatActivity{
         alphaAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
 
         horizontalLine = findViewById(R.id.horizontal_line);
+
+
         horizontalLineAnimator = (ObjectAnimator)AnimatorInflater.loadAnimator(this, R.animator.translate_y);
         horizontalLineAnimator.setTarget(horizontalLine);
+
         horizontalLineAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 playDetectedBubble(Float.valueOf(animation.getAnimatedValue("y").toString()));
             }
         });
+
         horizontalLineAnimator.addPauseListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationPause(Animator animation) {
@@ -247,19 +253,16 @@ public class MainSurfaceActivity extends AppCompatActivity{
             @Override
             public void onAnimationStart(Animator animation) {
                 playButton.setSelected(true);
-                horizontalLine.setVisibility(View.VISIBLE);
                 animationON = true;
-                pauseButton.setVisibility(View.VISIBLE);
                 disableBubbleDragging();
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 playButton.setSelected(false);
-                horizontalLine.setVisibility(View.INVISIBLE);
                 animationON = false;
-                pauseButton.setVisibility(View.GONE);
                 enableBubbleDragging();
+                resetAnimation();
             }
 
             @Override
@@ -272,6 +275,22 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
             }
         });
+
+    }
+
+    private void resetAnimation() {
+        horizontalLine.setY(parentView.getBottom() - horizontalLine.getHeight());
+    }
+
+    public void goBackToBeginning(View v){
+        if(!horizontalLinePaused && animationON){
+            stop();
+            horizontalLineAnimator.start();
+            Log.d(DEBUG_TAG, "!horizontalLinePaused && animationON");
+        }else if(horizontalLinePaused) {
+            Log.d(DEBUG_TAG, "horizontalLinePaused");
+            stop();
+        }
 
     }
 
@@ -377,8 +396,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
     /** called on add button click*/
     public void addNewBubble(View v){
-        stop();
-
         bubblePosition.setyCoordinate(0f);
         bubblePosition.setDoubleTappedLayoutIndex(-1);
 
@@ -389,7 +406,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     /** called on record button click **/
     public void startRecordActivity(View v){
         startActivity(new Intent(this, RecordActivity.class));
-        stop();
+
     }
 
     /** Method for removing all visual bubbles on fixedLayouts*/
@@ -445,25 +462,18 @@ public class MainSurfaceActivity extends AppCompatActivity{
         }
         else if(animationON && horizontalLinePaused){
             horizontalLinePaused = false;
-            horizontalLineAnimator.resume();
-            pauseButton.setVisibility(View.VISIBLE);
-            disableBubbleDragging();
             playButton.setSelected(true);
+            horizontalLineAnimator.resume();
+            disableBubbleDragging();
         }
         else{
 
-            Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
-            stop();
+            Toast.makeText(getBaseContext(),"Playing paused", Toast.LENGTH_SHORT).show();
+            horizontalLineAnimator.pause();
+            enableBubbleDragging();
         }
     }
 
-    public void pauseButtonClick(View v){
-        Toast.makeText(getBaseContext(),"Playing paused", Toast.LENGTH_SHORT).show();
-        horizontalLineAnimator.pause();
-        v.setVisibility(View.GONE);
-        enableBubbleDragging();
-
-    }
 
     private void pausePlaying(){
         for (int i = 0; i < bubbleList.size(); i++){

@@ -14,6 +14,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
+            android:id="@+id/parentView"
             android:layout_height="wrap_content">
 
 
@@ -75,7 +76,7 @@
                 android:layout_height="2dp"
                 android:id="@+id/horizontal_line"
                 android:background="@android:color/holo_green_dark"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
         </LinearLayout>
     </ScrollView>
@@ -132,13 +133,13 @@
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:id="@+id/btn_pause"
-            android:src="@drawable/pause_button"
+            android:id="@+id/btn_back_to_beginning"
+            android:src="@drawable/back_to_beginning_button"
             android:layout_marginRight="20dp"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:visibility="gone"
-            android:onClick="pauseButtonClick" />
+            android:onClick="goBackToBeginning"/>
+
 
         <ImageButton
             android:layout_width="56dp"
