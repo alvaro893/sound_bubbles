@@ -59,14 +59,10 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private ImageView playButton;
     private ScrollView scrollView;
     private ImageView removeView;
-    private Bubble bubble;
     private View horizontalLine;
     private Bubble calcBubble;
     private TextView emptyTimeLineView;
     private LinearLayout parentView;
-
-    /** Layout parameter */
-    private FixedLayout.LayoutParams layoutParams;
 
     /** Detectors of gestures */
     private GestureDetector mDetector_1;
@@ -81,9 +77,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private Intent intentSearchActivity;
     private int secondActivityRequest = 542;
 
-    /** data received from intent will be in these */
-    private ArrayList<ServerFile> receivedServerFiles;
-
     /**Animations **/
     private Animation alphaAnimation;
     private boolean animationON = false;
@@ -91,13 +84,6 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
     /** Animators **/
     private ObjectAnimator horizontalLineAnimator;
-
-
-    private int bubbleYcoordinate = 0;
-    private int calcBubbleBottomY = 0;
-    private int calcBubbleHeight = 0;
-
-    private float horizontalLineY;
 
 
     @Override
@@ -143,12 +129,13 @@ public class MainSurfaceActivity extends AppCompatActivity{
         if(requestCode == secondActivityRequest){
             if(resultCode == Activity.RESULT_OK){
 
-                receivedServerFiles = (ArrayList<ServerFile>)data.getSerializableExtra(SELECTED_FILE);
+                /* data received from intent will be in these */
+                ArrayList<ServerFile> receivedServerFiles = (ArrayList<ServerFile>) data.getSerializableExtra(SELECTED_FILE);
                 parentLayoutIndexes = new int[receivedServerFiles.size()];
                 parentLayoutIndexes = bubbleParentLayoutRandomizer.generateRandomIDs(receivedServerFiles.size(), bubblePosition.getDoubleTappedLayoutIndex());
 
                 for(int i = 0; i < receivedServerFiles.size(); i++){
-                    bubble = createBubble(receivedServerFiles.get(i), parentLayoutIndexes[i]);
+                    Bubble bubble = createBubble(receivedServerFiles.get(i), parentLayoutIndexes[i]);
                     bubbleList.add(bubble);
                     emptyTimeLineView.setVisibility(View.GONE);
                     bubble.startAnimation(alphaAnimation);
@@ -161,8 +148,9 @@ public class MainSurfaceActivity extends AppCompatActivity{
         Bubble localBubble;
         localBubble = initBubble(receivedServerFile);
         bubbleParentLayout = getBubbleParentLayout(index);
-        bubbleYcoordinate = getBubbleY(localBubble);
-        layoutParams = new FixedLayout.LayoutParams(bubbleParentLayout.getWidth(),0,0,bubbleYcoordinate);
+        int bubbleYCoordinate = getBubbleY(localBubble);
+        /* Layout parameter */
+        FixedLayout.LayoutParams layoutParams = new FixedLayout.LayoutParams(bubbleParentLayout.getWidth(), 0, 0, bubbleYCoordinate);
 
         /** bubble view assigned to viewgroup, bubble view is now visible*/
         bubbleParentLayout.addView(localBubble, layoutParams);
@@ -524,8 +512,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private void playDetectedBubble(float y){
         for(int i = 0; i < bubbleList.size(); i++){
             calcBubble = bubbleList.get(i);
-            calcBubbleHeight = calcBubble.getBubbleHeight();
-            calcBubbleBottomY = calcBubble.getBubbleBottomY();
+            int calcBubbleHeight = calcBubble.getBubbleHeight();
+            int calcBubbleBottomY = calcBubble.getBubbleBottomY();
 
             if(calcBubble.isPaused()){
                 calcBubble.startPlaying();
@@ -541,7 +529,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
                     }
 
                 }
-                else if(y > calcBubbleBottomY || calcBubbleBottomY - calcBubbleHeight  > y){
+                else if(y > calcBubbleBottomY || calcBubbleBottomY - calcBubbleHeight > y){
                         calcBubble.stopPlaying();
                         calcBubble.setColor(calcBubble.getPassive_color());
                         calcBubble.invalidate();
