@@ -19,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private Bubble bubble;
     private View horizontalLine;
     private Bubble calcBubble;
+    private TextView emptyTimeLineView;
 
     /** Layout parameter */
     private FixedLayout.LayoutParams layoutParams;
@@ -147,6 +149,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 for(int i = 0; i < receivedServerFiles.size(); i++){
                     bubble = createBubble(receivedServerFiles.get(i), parentLayoutIndexes[i]);
                     bubbleList.add(bubble);
+                    emptyTimeLineView.setVisibility(View.GONE);
                     bubble.startAnimation(alphaAnimation);
                 }
             }
@@ -215,6 +218,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
         removeView = (ImageView)findViewById(R.id.remove_view);
+        emptyTimeLineView = (TextView)findViewById(R.id.emptyTimeline);
 
     }
 
@@ -305,6 +309,9 @@ public class MainSurfaceActivity extends AppCompatActivity{
             @Override
             public void bubbleRemoved(Bubble bubble) {
                 bubbleList.remove(bubble);
+                if(bubbleList.isEmpty()){
+                    emptyTimeLineView.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -391,6 +398,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
             linesList.get(index).removeAllViews();
         }
         bubbleList.clear();
+        emptyTimeLineView.setVisibility(View.VISIBLE);
     }
 
     /** method for stopping horizontal line animation and  playing, aswell resets active bubbles to passive*/
@@ -408,6 +416,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     /** called on new button click*/
     public void startNewSession(View v){
         ConfirmDialogFragment dialogFragment = new ConfirmDialogFragment();
+
         dialogFragment.setConfirmDialogListener(new ConfirmDialogFragment.ConfirmDialogListener() {
             @Override
             public void onDialogYesClick(DialogFragment dialog) {
@@ -421,6 +430,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 dialog.dismiss();
             }
         });
+
         dialogFragment.show(getFragmentManager(), "ConfirmDialogFagment");
 
     }

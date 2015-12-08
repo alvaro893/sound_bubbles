@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
+    android:background="@drawable/rounded"
     android:orientation="vertical">
 
     <TextView
@@ -66,7 +67,7 @@
         android:id="@+id/volume_dialog_ok_button"
         android:background="@drawable/go_button"
         android:layout_marginTop="20dp"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp" />
 
