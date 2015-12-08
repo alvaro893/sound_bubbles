@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,13 +25,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import metropolia.fi.suondbubbles.R;
+import metropolia.fi.suondbubbles.adapters.RecordingsAdapter;
 import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
 import metropolia.fi.suondbubbles.apiConnection.CollectionID;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
 import metropolia.fi.suondbubbles.dialogFragments.InputDialogFragment;
+import metropolia.fi.suondbubbles.helper.Record;
 import metropolia.fi.suondbubbles.helper.SoundFile;
 import metropolia.fi.suondbubbles.helper.WavConverter;
 
@@ -44,6 +48,8 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     private Thread recordThread, playThread, countTread;
     private AudioTrack track;
     private TextView time_tv;
+    private ListView recordings_lv;
+    private RecordingsAdapter recordingsAdapter;
     private final String DEBUG_TAG = this.getClass().getSimpleName();
     private final String FOLDER_NAME = "SoundBubbleRecords";
     private final String PATH_RAW_FILE = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + "testrec.raw";
@@ -51,14 +57,43 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        recordings_lv = (ListView) findViewById(R.id.recordings_list_view);
         // creates folder if not exits
         SoundFile.createFolder(FOLDER_NAME);
+        // populates the slide menu if there are recordings
+        initRecordingListView();
+
         setContentView(R.layout.activity_record);
 
         time_tv = (TextView) findViewById(R.id.time_tv);
         recRunning = false;
         playRunning = false;
         countRuning = false;
+    }
+
+    private void initRecordingListView(){
+        ArrayList<Record> recordsArray = new ArrayList<>();
+        boolean noFiles = false;
+
+        // Get all files in the folder
+        File recordingsFolder = new File(Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME);
+        if(recordingsFolder.listFiles().length < 0){
+            noFiles = true;
+        }
+        for (final File fileEntry : recordingsFolder.listFiles()) {
+            Record record = new Record();
+            record.setPath(fileEntry.getPath());
+            record.setName(fileEntry.getName());
+            recordsArray.add(record);
+        }
+        Log.d(DEBUG_TAG, "recordings found:" + recordsArray.size());
+//        if(noFiles){
+//            recordingsAdapter.setNoFilesView();
+//        }else{
+//
+//        }
+        recordingsAdapter = new RecordingsAdapter(this, recordsArray);
+        recordings_lv.setAdapter(recordingsAdapter);
     }
 
     /**

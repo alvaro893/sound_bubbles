@@ -12,6 +12,14 @@
     tools:context="metropolia.fi.suondbubbles.activities.RecordActivity"
     tools:showIn="@layout/activity_record">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:gravity="center|top"
+        android:text="@string/title_activity_record"
+        android:autoText="false" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
