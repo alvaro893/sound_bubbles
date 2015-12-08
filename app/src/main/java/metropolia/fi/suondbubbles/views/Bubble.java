@@ -327,6 +327,7 @@ public class Bubble extends View {
         return size;
     }
 
+
     /** handles bubble bound size*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

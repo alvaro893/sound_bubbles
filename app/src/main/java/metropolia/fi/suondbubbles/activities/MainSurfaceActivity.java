@@ -123,6 +123,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         stop();
     }
 
+
     /** method called after SearchActivity return*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

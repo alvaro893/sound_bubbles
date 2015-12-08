@@ -251,6 +251,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
+        changeToModeNormal();
         Log.d(DEBUG_TAG, "serverConnection: " + SoundBubbles.serverConnection.toString());
         searchTask.execute(SoundBubbles.serverConnection, search.trim());
         Toast.makeText(getBaseContext(), "Searching", Toast.LENGTH_SHORT).show();
@@ -400,7 +401,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     public void backToBubbles(View v) {
         player.stopIfPlaying();
-        player.releaseSoundPlayer();
         finish();
     }
 
@@ -410,6 +410,11 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        player.releaseSoundPlayer();
+    }
 
     @Override
     public void onBackPressed() {
