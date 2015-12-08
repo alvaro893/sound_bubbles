@@ -106,7 +106,7 @@
             android:src="@drawable/new_doc_button"
             android:onClick="startNewSession"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
+            android:scaleType="center"
             android:layout_marginRight="20dp" />
 
         <ImageButton
@@ -115,7 +115,7 @@
             android:id="@+id/btn_record"
             android:src="@drawable/record_button"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
+            android:scaleType="center"
             android:onClick="startRecordActivity"
             android:layout_marginRight="20dp" />
 
@@ -126,7 +126,7 @@
             android:src="@drawable/play_button"
             android:layout_marginRight="20dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
+            android:scaleType="center"
             android:onClick="startPlay"/>
 
         <ImageButton
@@ -136,7 +136,7 @@
             android:src="@drawable/pause_button"
             android:layout_marginRight="20dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
+            android:scaleType="center"
             android:visibility="gone"
             android:onClick="pauseButtonClick" />
 
@@ -147,7 +147,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/add_button"
             android:onClick="addNewBubble"
-            android:scaleType="fitCenter" />
+            android:scaleType="center" />
     </LinearLayout>
 
 </RelativeLayout>

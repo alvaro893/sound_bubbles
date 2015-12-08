@@ -59,4 +59,19 @@
     <string name="filename">File name</string>
     <string name="length">length</string>
     <string name="search_result">SEARCH RESULT</string>
+    <string name="guide_1_line_1">To add a sound press</string>
+    <string name="guide_1_line_2">or double-tap an empty space on the display.</string>
+    <string name="guide_1_step">step 1 out of 5</string>
+    <string name="guide_2_line_1">In the sounds collection tap a sound to listen to it. If you want to add sounds, press \'select sounds\' button.</string>
+    <string name="guide_2_step">step 2 out of 5</string>
+    <string name="guide_3_line_1">To move a bubble, tap and hold the bubble for one seconds, after you can move it on the screen.</string>
+    <string name="guide_3_step">step 3 out of 5</string>
+    <string name="guide_4_line_1">Press</string>
+    <string name="guide_4_line_2">to listen to your mix.</string>
+    <string name="guide_4_step">step 4 out of 5</string>
+    <string name="guide_5_line_1">You can also record your own sound </string>
+    <string name="guide_5_line_2">by tapping the</string>
+    <string name="guide_5_line_3">button.</string>
+    <string name="guide_5_step">step 5 out of 5</string>
+    <string name="guide_5_button">GOT IT!</string>
 </resources>
