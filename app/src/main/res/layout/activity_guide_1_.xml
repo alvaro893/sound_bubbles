@@ -9,56 +9,71 @@
     android:layout_marginRight="40dp"
     android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:text="@string/guide_1_line_1"
-        android:gravity="center"
-        android:drawableRight="@drawable/ic_add_passive" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:text="@string/guide_1_line_2"
-        android:gravity="center"
-        android:layout_marginBottom="100dp" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small"
-        android:text="@string/guide_1_step"
-        android:gravity="center"
-        android:textColor="@color/text_gray"
-        android:layout_marginBottom="10dp"/>
-
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1.20"
+        android:gravity="center">
 
-        <Button
-
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_skip"
-            android:id="@+id/btn_skip"
-            android:background="@drawable/pink_button"
-            android:textColor="@android:color/white"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:onClick="onSkipClick"/>
-
-        <Button
-            android:layout_width="0dp"
+            android:textSize="18sp"
+            android:text="@string/guide_1_line_1"
+            android:gravity="center"
+            android:drawableRight="@drawable/ic_add_passive" />
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_next"
-            android:background="@drawable/aqua_button"
-            android:textColor="@android:color/white"
-            android:id="@+id/btn_next"
-            android:textSize="16sp"
-            android:onClick="onNextClick"
-            android:layout_weight="1" />
+            android:textSize="18sp"
+            android:text="@string/guide_1_line_2"
+            android:gravity="center" />
+
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="0.80"
+        android:gravity="center_horizontal">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:text="@string/guide_1_step"
+            android:gravity="center"
+            android:textColor="@color/text_gray"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_skip"
+                android:id="@+id/btn_skip"
+                android:background="@drawable/pink_button"
+                android:textColor="@android:color/white"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:onClick="onSkipClick"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_next"
+                android:background="@drawable/aqua_button"
+                android:textColor="@android:color/white"
+                android:id="@+id/btn_next"
+                android:textSize="14sp"
+                android:onClick="onNextClick"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
