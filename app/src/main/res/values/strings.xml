@@ -17,7 +17,7 @@
     <string name="minimum_dialog_volume_control">0</string>
     <string name="maximum_dialog_volume_control">100</string>
     <string name="message_dialog_volume_control">VOLUME</string>
-    <string name="remember_me_activity_login">Remember Me</string>
+    <string name="remember_me_activity_login">Remember me</string>
     <string name="nologin_activity_login">Login failed: wrong username or password</string>
     <string name="no_internet_connection_activity_login">You are not connected to internet</string>
     <string name="emptyfiled_activity_login">Field is empty</string>
@@ -47,9 +47,11 @@
     <string name="machine_category">machine</string>
     <string name="confirm_exit_dialog_title">Confirm Exit</string>
     <string name="confirm_exit_dialog_message">Are you sure you want to exit?</string>
-    <string name="btn_skip">Skip</string>
-    <string name="btn_next">Next</string>
-    <string name="welcome_text">Welcome to Sound Bubbles App! \n\n Here you can make your own soundscape mixes.\n\n\n Tap Next to check out how to use app.</string>
+    <string name="btn_skip">SKIP</string>
+    <string name="btn_next">NEXT</string>
+    <string name="welcome_text_title">Welcome to Sound Bubbles App!</string>
+    <string name="welcome_text_paragraph_1">Here you can make your own mixes.</string>
+    <string name="welcome_text_paragraph_2">Tap next to check how the app works.</string>
     <string name="do_not_show_again">Don\'t show again</string>
     <string name="guide_text">To add sound bubble, doubetap empty screen or tap + button.\n\n To adjust volume, doubletap bubble. \n\n To move bubble, hold finger steady on bubble for 1 sec. \n\n To remove bubble, hold finger steady on bubble for 1 sec and drag finger into appeared recycle bin.</string>
     <string name="btn_understood">Understood</string>
