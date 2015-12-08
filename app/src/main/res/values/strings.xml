@@ -74,5 +74,5 @@
     <string name="guide_5_line_3">button.</string>
     <string name="guide_5_step">step 5 out of 5</string>
     <string name="guide_5_button">GOT IT!</string>
-    <string name="empty_timeline">Your timeline is empty,\n tap twice to add sounds!</string>
+    <string name="empty_timeline">Your timeline is empty, tap twice to add sounds!</string>
 </resources>
