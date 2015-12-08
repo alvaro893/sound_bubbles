@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="metropolia.fi.suondbubbles.activities.LoginActivity">
+    tools:context="metropolia.fi.suondbubbles.activities.LoginActivity"
+    android:gravity="center">
 
     <TextView
         android:layout_width="wrap_content"
@@ -11,7 +12,7 @@
 
         android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
         android:text="@string/title_activity_login"
-        android:textSize="40sp"
+        android:textSize="32sp"
         android:id="@+id/title_login"
 
 
@@ -22,24 +23,25 @@
         android:layout_marginBottom="40dp" />
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
         android:ems="10"
         android:id="@+id/username"
         android:hint="@string/username_activity_login"
+        android:background="@drawable/rounded"
         android:inputType="textPersonName"
         android:maxLines="1"
-        android:background="@drawable/rounded"
         android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="20dp" />
+        android:gravity="center" />
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
         android:inputType="textPassword"
-        android:gravity="center_horizontal"
         android:ems="10"
         android:id="@+id/password"
         android:background="@drawable/rounded"
@@ -49,12 +51,15 @@
         android:layout_alignParentBottom="false"
         android:layout_below="@+id/username"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center" />
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:gravity="center"
         android:inputType="numberDecimal"
         android:ems="10"
         android:id="@+id/collection_id"
@@ -64,19 +69,20 @@
         android:layout_gravity="center"
         android:layout_alignParentBottom="false"
         android:layout_below="@+id/password"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp" />
 
     <Button
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
+        android:layout_width="110dp"
+        android:layout_height="35dp"
         android:text="@string/go_activity_login"
-        android:textStyle="bold"
         android:id="@+id/go_button"
         android:background="@drawable/go_button"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
-        android:textSize="24sp"
-        android:layout_below="@+id/remember_checkBox" />
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/collection_id"
+        android:layout_centerInParent="true"
+        android:textSize="18sp" />
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -85,7 +91,7 @@
         android:id="@+id/remember_checkBox"
         android:checked="false"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/collection_id"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@+id/go_button"
+        android:layout_marginTop="30dp" />
 
 </RelativeLayout>

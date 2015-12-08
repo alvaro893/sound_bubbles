@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,15 +15,11 @@ import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import pl.droidsonroids.gif.GifImageView;
 
-/**
- * Created by alvarob on 22.10.2015.
- */
 public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
     private Activity context;
     private ArrayList<ServerFile> serverFileArray;
     // current view objects from getView method (given by position)
-    private TextView name, category, soundType;
-    private ImageButton btn_pause;
+    private TextView name, soundLength;
     private GifImageView gifImageView;
     private ProgressBar progressBarWithPause;
 
@@ -37,9 +32,7 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
 
     private void setChildViews(View gridElement){
         name = (TextView) gridElement.findViewById(R.id.grid_name);
-        category = (TextView) gridElement.findViewById(R.id.grid_category);
-        soundType = (TextView) gridElement.findViewById(R.id.grid_sound_type);
-        btn_pause = (ImageButton) gridElement.findViewById(R.id.pause_button);
+        soundLength = (TextView) gridElement.findViewById(R.id.grid_sound_length);
         gifImageView = (GifImageView)gridElement.findViewById(R.id.gifView);
         progressBarWithPause = (ProgressBar)gridElement.findViewById(R.id.progressBar);
     }
@@ -52,38 +45,23 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
         setChildViews(gridElement);
 
         name.setText(serverFileArray.get(position).getTitle());
-        category.setText(serverFileArray.get(position).getFileExtension());
         if(serverFileArray.get(position).getLength()!= 0) {
-            soundType.setText("" + serverFileArray.get(position).getLength() + " seconds");
+            soundLength.setText("" + serverFileArray.get(position).getLength() + " sec");
         }
         else {
-            soundType.setText("");
+            soundLength.setText("");
         }
         return gridElement;
     }
 
-    public boolean switchToButtonPause(View gridElement){
-        if(gridElement != null){
-            setChildViews(gridElement);
-            name.setVisibility(View.GONE);
-            category.setVisibility(View.GONE);
-            soundType.setVisibility(View.GONE);
-            gifImageView.setVisibility(View.GONE);
-            progressBarWithPause.setVisibility(View.GONE);
-            btn_pause.setVisibility(View.VISIBLE);
-            return true;
-        }else
-            return false;
-    }
+
 
     public boolean switchToProgressBarWithPause(View gridElement){
         if(gridElement != null){
             setChildViews(gridElement);
             name.setVisibility(View.GONE);
-            category.setVisibility(View.GONE);
-            soundType.setVisibility(View.GONE);
+            soundLength.setVisibility(View.GONE);
             gifImageView.setVisibility(View.GONE);
-            btn_pause.setVisibility(View.GONE);
             progressBarWithPause.setVisibility(View.VISIBLE);
             return true;
         }else
@@ -94,10 +72,8 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
         if(gridElement != null){
             setChildViews(gridElement);
             name.setVisibility(View.GONE);
-            category.setVisibility(View.GONE);
-            soundType.setVisibility(View.GONE);
+            soundLength.setVisibility(View.GONE);
             gifImageView.setVisibility(View.VISIBLE);
-            btn_pause.setVisibility(View.GONE);
             progressBarWithPause.setVisibility(View.GONE);
             return true;
         }else
@@ -108,18 +84,12 @@ public class ServerFilesArrayAdapter extends ArrayAdapter<ServerFile> {
         if(gridElement != null){
             setChildViews(gridElement);
             name.setVisibility(View.VISIBLE);
-            category.setVisibility(View.VISIBLE);
-            soundType.setVisibility(View.VISIBLE);
+            soundLength.setVisibility(View.VISIBLE);
             gifImageView.setVisibility(View.GONE);
-            btn_pause.setVisibility(View.GONE);
             progressBarWithPause.setVisibility(View.GONE);
             return true;
         }else
             return false;
-    }
-
-    public ImageButton getBtn_pause() {
-        return btn_pause;
     }
 
     public ProgressBar getProgressBarWithPause() {

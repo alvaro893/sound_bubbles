@@ -57,7 +57,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     public void onNextClick(View view){
-        Intent intent = new Intent(this, GuideActivity.class);
+        Intent intent = new Intent(this, Guide_1_Activity.class);
         checkCheckBoxStatus();
         startActivity(intent);
     }

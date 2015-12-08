@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "metropolia.fi.suondbubbles"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -33,4 +33,5 @@ dependencies {
     compile 'com.github.hiteshsondhi88.libffmpeg:FFmpegAndroid:0.2.5'
     compile 'com.android.support:support-v4:23.1.0'
     compile files('libs/openbeans-1.0.jar')
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

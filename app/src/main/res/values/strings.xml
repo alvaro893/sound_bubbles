@@ -17,7 +17,7 @@
     <string name="minimum_dialog_volume_control">0</string>
     <string name="maximum_dialog_volume_control">100</string>
     <string name="message_dialog_volume_control">VOLUME</string>
-    <string name="remember_me_activity_login">Remember Me</string>
+    <string name="remember_me_activity_login">Remember me</string>
     <string name="nologin_activity_login">Login failed: wrong username or password</string>
     <string name="no_internet_connection_activity_login">You are not connected to internet</string>
     <string name="emptyfiled_activity_login">Field is empty</string>
@@ -25,12 +25,15 @@
     <string name="logsucess_activity_login">Login successful</string>
     <string name="searchhint_activity_search">Search</string>
     <string name="cancelbtn_activity_search">Cancel</string>
-    <string name="addbtn_activity_search">Select</string>
+    <string name="btn_select_sounds">SELECT SOUNDS</string>
+    <string name="btn_back_to_bubbles">BACK TO BUBBLES</string>
     <string name="action_logout">Log out</string>
     <string name="confirm_Dialog_Message">Are you sure you want to start new session?</string>
     <string name="confirm_Dialog_Positive_Button">YES</string>
     <string name="confirm_Dialog_Negative_Button">CANCEL</string>
     <string name="title_activity_record">Record</string>
+    <string name="btn_search_activity_cancel">CANCEL</string>
+    <string name="btn_search_activity_add_sounds">ADD SOUNDS</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -44,10 +47,32 @@
     <string name="machine_category">machine</string>
     <string name="confirm_exit_dialog_title">Confirm Exit</string>
     <string name="confirm_exit_dialog_message">Are you sure you want to exit?</string>
-    <string name="btn_skip">Skip</string>
-    <string name="btn_next">Next</string>
-    <string name="welcome_text">Welcome to Sound Bubbles App! \n\n Here you can make your own soundscape mixes.\n\n\n Tap Next to check out how to use app.</string>
+    <string name="btn_skip">SKIP</string>
+    <string name="btn_next">NEXT</string>
+    <string name="welcome_text_title">Welcome to Sound Bubbles App!</string>
+    <string name="welcome_text_paragraph_1">Here you can make your own mixes.</string>
+    <string name="welcome_text_paragraph_2">Tap next to check how the app works.</string>
     <string name="do_not_show_again">Don\'t show again</string>
     <string name="guide_text">To add sound bubble, doubetap empty screen or tap + button.\n\n To adjust volume, doubletap bubble. \n\n To move bubble, hold finger steady on bubble for 1 sec. \n\n To remove bubble, hold finger steady on bubble for 1 sec and drag finger into appeared recycle bin.</string>
     <string name="btn_understood">Understood</string>
+    <string name="categories">CATEGORIES</string>
+    <string name="filename">File name</string>
+    <string name="length">length</string>
+    <string name="search_result">SEARCH RESULT</string>
+    <string name="guide_1_line_1">To add a sound press</string>
+    <string name="guide_1_line_2">or double-tap an empty space on the display.</string>
+    <string name="guide_1_step">step 1 out of 5</string>
+    <string name="guide_2_line_1">In the sounds collection tap a sound to listen to it. If you want to add sounds, press \'select sounds\' button.</string>
+    <string name="guide_2_step">step 2 out of 5</string>
+    <string name="guide_3_line_1">To move a bubble, tap and hold the bubble for one seconds, after you can move it on the screen.</string>
+    <string name="guide_3_step">step 3 out of 5</string>
+    <string name="guide_4_line_1">Press</string>
+    <string name="guide_4_line_2">to listen to your mix.</string>
+    <string name="guide_4_step">step 4 out of 5</string>
+    <string name="guide_5_line_1">You can also record your own sound </string>
+    <string name="guide_5_line_2">by tapping the</string>
+    <string name="guide_5_line_3">button.</string>
+    <string name="guide_5_step">step 5 out of 5</string>
+    <string name="guide_5_button">GOT IT!</string>
+    <string name="empty_timeline">Your timeline is empty,\n tap twice to add sounds!</string>
 </resources>

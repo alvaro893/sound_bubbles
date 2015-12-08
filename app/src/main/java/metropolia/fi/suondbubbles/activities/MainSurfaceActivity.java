@@ -2,6 +2,7 @@ package metropolia.fi.suondbubbles.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -15,16 +16,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import metropolia.fi.suondbubbles.Controllers.BubbleDragController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
+import metropolia.fi.suondbubbles.bubble.BubbleParentLayoutRandomizer;
+import metropolia.fi.suondbubbles.bubble.BubblePosition;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.ConfirmExitDialogFragment;
 import metropolia.fi.suondbubbles.dialogFragments.VolumeControlFragment;
@@ -33,10 +37,16 @@ import metropolia.fi.suondbubbles.views.Bubble;
 
 public class MainSurfaceActivity extends AppCompatActivity{
 
-    private String DEBUG_TAG = "MainSurfaceActivity";
+    /** Constants */
+    private final String SELECTED_FILE = "SELECTED_FILE";
+    private final String DEBUG_TAG = "MainSurfaceActivity";
 
+
+    /** Arrays */
     private ArrayList<FixedLayout> linesList;
     private ArrayList<Bubble> bubbleList;
+    private BubbleParentLayoutRandomizer bubbleParentLayoutRandomizer;
+    private int[] parentLayoutIndexes;
 
     /** Views*/
     private FixedLayout fixedLayout_1;
@@ -45,13 +55,15 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private FixedLayout fixedLayout_4;
     private FixedLayout fixedLayout_5;
     private FixedLayout fixedLayout_6;
-    private FixedLayout receivedFixedLayout;
+    private FixedLayout bubbleParentLayout;
     private ImageView playButton;
     private ScrollView scrollView;
     private ImageView removeView;
+    private ImageButton pauseButton;
     private Bubble bubble;
     private View horizontalLine;
     private Bubble calcBubble;
+    private TextView emptyTimeLineView;
 
     /** Layout parameter */
     private FixedLayout.LayoutParams layoutParams;
@@ -65,32 +77,22 @@ public class MainSurfaceActivity extends AppCompatActivity{
     private GestureDetector mDetector_6;
 
 
+    private BubblePosition bubblePosition;
     private Intent intentSearchActivity;
     private int secondActivityRequest = 542;
 
     /** data received from intent will be in these */
-    private Bundle receivedBundle;
-    private float receivedYCoordinates;
-    private int receivedLayoutId;
-    private ServerFile receivedServerFile;
-
-
-    /**Constants for intents */
-    private final String viewCoordinates = "viewCoordinates";
-    private final String returnBundle = "returnBundle";
-    private final String viewID = "viewID";
-    private final String selectedFile = "selectedFile";
-
+    private ArrayList<ServerFile> receivedServerFiles;
 
     /**Animations **/
     private Animation alphaAnimation;
     private boolean animationON = false;
+    private boolean horizontalLinePaused = false;
 
     /** Animators **/
     private ObjectAnimator horizontalLineAnimator;
 
 
-    private Random randomNumber;
     private int bubbleYcoordinate = 0;
     private int calcBubbleBottomY = 0;
     private int calcBubbleHeight = 0;
@@ -128,64 +130,83 @@ public class MainSurfaceActivity extends AppCompatActivity{
         dialogFragment.show(getFragmentManager(), "ConfirmExitDialogFagment");
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stop();
+    }
+
     /** method called after SearchActivity return*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == secondActivityRequest){
             if(resultCode == Activity.RESULT_OK){
 
-                /** data assignment to local members*/
-                receivedBundle = data.getBundleExtra(returnBundle);
-                receivedYCoordinates = receivedBundle.getFloat(viewCoordinates);
-                receivedLayoutId = receivedBundle.getInt(viewID);
-                receivedServerFile = (ServerFile)receivedBundle.getSerializable(selectedFile);
+                receivedServerFiles = (ArrayList<ServerFile>)data.getSerializableExtra(SELECTED_FILE);
+                parentLayoutIndexes = new int[receivedServerFiles.size()];
+                parentLayoutIndexes = bubbleParentLayoutRandomizer.generateRandomIDs(receivedServerFiles.size(), bubblePosition.getDoubleTappedLayoutIndex());
 
-
-                /** assignment of double tapped viewGroup received from intent */
-                receivedFixedLayout = (FixedLayout)findViewById(receivedLayoutId);
-
-                /** bubble view creation, not yet visible */
-                bubble = new Bubble(this, receivedServerFile);
-                bubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
-                    @Override
-                    public void onDoubleTapOnBubbleDetected(Bubble bubble) {
-                        openVolumeControlDialog(bubble);
-                    }
-                });
-
-
-
-
-
-                if(receivedYCoordinates == 0){
-                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), scrollView.getScrollY());
-                }else{
-                    bubbleYcoordinate = bubble.returnFittingYcoordinate(receivedFixedLayout.getBottom(), (int) receivedYCoordinates);
+                for(int i = 0; i < receivedServerFiles.size(); i++){
+                    bubble = createBubble(receivedServerFiles.get(i), parentLayoutIndexes[i]);
+                    bubbleList.add(bubble);
+                    emptyTimeLineView.setVisibility(View.GONE);
+                    bubble.startAnimation(alphaAnimation);
                 }
-
-                layoutParams = new FixedLayout.LayoutParams(receivedFixedLayout.getWidth(),0,0,bubbleYcoordinate);
-
-                /** bubble view assigned to viewgroup, bubble view is now visible*/
-                receivedFixedLayout.addView(bubble, layoutParams);
-                bubbleList.add(bubble);
-                Log.d(DEBUG_TAG, "bubble bottom:" + bubble.getBubbleBottomY());
-
-
-                bubble.startAnimation(alphaAnimation);
-
             }
         }
     }
 
-    
+    private Bubble createBubble(ServerFile receivedServerFile, int index) {
+        Bubble localBubble;
+        localBubble = initBubble(receivedServerFile);
+        bubbleParentLayout = getBubbleParentLayout(index);
+        bubbleYcoordinate = getBubbleY(localBubble);
+        layoutParams = new FixedLayout.LayoutParams(bubbleParentLayout.getWidth(),0,0,bubbleYcoordinate);
+
+        /** bubble view assigned to viewgroup, bubble view is now visible*/
+        bubbleParentLayout.addView(localBubble, layoutParams);
+        return localBubble;
+    }
+
+    private Bubble initBubble(ServerFile serverfile) {
+        /** bubble view creation, not yet visible */
+        Bubble initBubble = new Bubble(this, serverfile);
+        initBubble.setDoubletapOnBubbleDetector(new Bubble.DoubletapOnBubbleDetector() {
+            @Override
+            public void onDoubleTapOnBubbleDetected(Bubble initBubble) {
+                openVolumeControlDialog(initBubble);
+            }
+        });
+
+        return initBubble;
+    }
+
+    public FixedLayout getBubbleParentLayout(int index) {
+
+        return (FixedLayout)findViewById(linesList.get(index).getId());
+    }
+
+    public int getBubbleY(Bubble localBubble) {
+        if(bubblePosition.getyCoordinate() == 0)
+            return localBubble.returnFittingYcoordinate(bubbleParentLayout.getBottom(), scrollView.getScrollY());
+        else
+            return localBubble.returnFittingYcoordinate(bubbleParentLayout.getBottom(), (int)bubblePosition.getyCoordinate());
+    }
+
+
     private void init() {
         initListeners();
         initLineList();
         initAnimations();
 
         intentSearchActivity = new Intent(this, SearchActivity.class);
-        randomNumber = new Random();
+        parentLayoutIndexes = null;
+        pauseButton = (ImageButton)findViewById(R.id.btn_pause);
+
         bubbleList = new ArrayList<>();
+        bubblePosition = new BubblePosition();
+        bubbleParentLayoutRandomizer = new BubbleParentLayoutRandomizer(linesList);
+
     }
 
     private void assignViews() {
@@ -197,6 +218,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         fixedLayout_5 = (FixedLayout)findViewById(R.id.fixedLaytout_5);
         fixedLayout_6 = (FixedLayout)findViewById(R.id.fixedLaytout_6);
         removeView = (ImageView)findViewById(R.id.remove_view);
+        emptyTimeLineView = (TextView)findViewById(R.id.emptyTimeline);
 
     }
 
@@ -212,12 +234,23 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 playDetectedBubble(Float.valueOf(animation.getAnimatedValue("y").toString()));
             }
         });
+        horizontalLineAnimator.addPauseListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationPause(Animator animation) {
+                horizontalLinePaused = true;
+                playButton.setSelected(false);
+                pausePlaying();
+            }
+        });
+
         horizontalLineAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
                 playButton.setSelected(true);
                 horizontalLine.setVisibility(View.VISIBLE);
                 animationON = true;
+                pauseButton.setVisibility(View.VISIBLE);
+                disableBubbleDragging();
             }
 
             @Override
@@ -225,12 +258,13 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 playButton.setSelected(false);
                 horizontalLine.setVisibility(View.INVISIBLE);
                 animationON = false;
-
+                pauseButton.setVisibility(View.GONE);
+                enableBubbleDragging();
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                Log.d(DEBUG_TAG, "AnimationON changed onAnimationCancel ");
             }
 
             @Override
@@ -275,6 +309,9 @@ public class MainSurfaceActivity extends AppCompatActivity{
             @Override
             public void bubbleRemoved(Bubble bubble) {
                 bubbleList.remove(bubble);
+                if(bubbleList.isEmpty()){
+                    emptyTimeLineView.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -342,14 +379,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
     public void addNewBubble(View v){
         stop();
 
-        Log.d(DEBUG_TAG, "Y coordinate is " + scrollView.getScrollY());
-
-
-        /** adding Y coordinate of visible screen to intent for activityOnResult*/
-        intentSearchActivity.putExtra(viewCoordinates, 0.0f);
-
-        /** adding random fixedLayout ID to intent for activityOnResult*/
-        intentSearchActivity.putExtra(viewID, linesList.get(randomNumber.nextInt(linesList.size())).getId());
+        bubblePosition.setyCoordinate(0f);
+        bubblePosition.setDoubleTappedLayoutIndex(-1);
 
         /** starting SearchActivity for a result */
         startActivityForResult(intentSearchActivity, secondActivityRequest);
@@ -367,6 +398,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
             linesList.get(index).removeAllViews();
         }
         bubbleList.clear();
+        emptyTimeLineView.setVisibility(View.VISIBLE);
     }
 
     /** method for stopping horizontal line animation and  playing, aswell resets active bubbles to passive*/
@@ -374,6 +406,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
         if(animationON){
             Log.d(DEBUG_TAG, "Animation was on");
             horizontalLineAnimator.end();
+            horizontalLinePaused = false;
             stopAllBubblePlaying();
             resetBubblesDetected();
         }else
@@ -383,6 +416,7 @@ public class MainSurfaceActivity extends AppCompatActivity{
     /** called on new button click*/
     public void startNewSession(View v){
         ConfirmDialogFragment dialogFragment = new ConfirmDialogFragment();
+
         dialogFragment.setConfirmDialogListener(new ConfirmDialogFragment.ConfirmDialogListener() {
             @Override
             public void onDialogYesClick(DialogFragment dialog) {
@@ -396,21 +430,61 @@ public class MainSurfaceActivity extends AppCompatActivity{
                 dialog.dismiss();
             }
         });
+
         dialogFragment.show(getFragmentManager(), "ConfirmDialogFagment");
 
     }
 
     /**called on play button click*/
     public void startPlay(View v){
-        if(!animationON){
+        if(!animationON && !horizontalLinePaused){
 
             Toast.makeText(getBaseContext(), "Playing started", Toast.LENGTH_SHORT).show();
             horizontalLineAnimator.start();
+
+        }
+        else if(animationON && horizontalLinePaused){
+            horizontalLinePaused = false;
+            horizontalLineAnimator.resume();
+            pauseButton.setVisibility(View.VISIBLE);
+            disableBubbleDragging();
+            playButton.setSelected(true);
         }
         else{
 
             Toast.makeText(getBaseContext(),"Playing stopped", Toast.LENGTH_SHORT).show();
             stop();
+        }
+    }
+
+    public void pauseButtonClick(View v){
+        Toast.makeText(getBaseContext(),"Playing paused", Toast.LENGTH_SHORT).show();
+        horizontalLineAnimator.pause();
+        v.setVisibility(View.GONE);
+        enableBubbleDragging();
+
+    }
+
+    private void pausePlaying(){
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            if(calcBubble.bubbleIsPlaying()){
+                calcBubble.pausePlaying();
+            }
+        }
+    }
+
+    private void disableBubbleDragging(){
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            calcBubble.disableDragging(true);
+        }
+    }
+
+    private void enableBubbleDragging(){
+        for (int i = 0; i < bubbleList.size(); i++){
+            calcBubble = bubbleList.get(i);
+            calcBubble.disableDragging(false);
         }
     }
 
@@ -443,25 +517,31 @@ public class MainSurfaceActivity extends AppCompatActivity{
             calcBubbleHeight = calcBubble.getBubbleHeight();
             calcBubbleBottomY = calcBubble.getBubbleBottomY();
 
-            if(!calcBubble.isDetected()){
-                if(y <= calcBubbleBottomY && calcBubbleBottomY - calcBubbleHeight <= y){
-                    calcBubble.setDetected(true);
-                    calcBubble.setColor(calcBubble.getActive_color());
-                    calcBubble.invalidate();
-                    Log.d(DEBUG_TAG, "bubble detected");
-                    calcBubble.startPlaying();
+            if(calcBubble.isPaused()){
+                calcBubble.startPlaying();
+            }
+            else {
+                if (!calcBubble.isDetected()) {
+                    if (y <= calcBubbleBottomY && calcBubbleBottomY - calcBubbleHeight <= y) {
+                        calcBubble.setDetected(true);
+                        calcBubble.setColor(calcBubble.getActive_color());
+                        calcBubble.invalidate();
+                        Log.d(DEBUG_TAG, "bubble detected");
+                        calcBubble.startPlaying();
+                    }
 
                 }
-            }else{
-                if(calcBubbleBottomY - calcBubbleHeight >= y){
-                    calcBubble.setColor(calcBubble.getPassive_color());
-                    calcBubble.invalidate();
-                    calcBubble.setDetected(false);
+                else if(y > calcBubbleBottomY || calcBubbleBottomY - calcBubbleHeight  > y){
+                        calcBubble.stopPlaying();
+                        calcBubble.setColor(calcBubble.getPassive_color());
+                        calcBubble.invalidate();
+                        calcBubble.setDetected(false);
                 }
             }
         }
-
     }
+
+
 
     /** DialogFragment for adjusting volume */
     private void openVolumeControlDialog(final Bubble bubble){
@@ -484,6 +564,8 @@ public class MainSurfaceActivity extends AppCompatActivity{
     }
 
 
+
+
     /** Class for controlling touches on FixedLayout(lines)*/
     private class FixedLayoutTouchController extends GestureDetector.SimpleOnGestureListener {
 
@@ -503,13 +585,12 @@ public class MainSurfaceActivity extends AppCompatActivity{
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.d(DEBUG_TAG, "double tapped Y: " + e.getY());
+            Log.d(DEBUG_TAG, "Double tapped Y: " + e.getY());
             stop();
+            Log.d(DEBUG_TAG, "Double Tapped line index is " + linesList.indexOf(container));
 
-
-            /** adding data relevant for bubble view creation in onActivityResult method */
-            intentSearchActivity.putExtra(viewCoordinates, e.getY());
-            intentSearchActivity.putExtra(viewID, container.getId());
+            bubblePosition.setDoubleTappedLayoutIndex(linesList.indexOf(container));
+            bubblePosition.setyCoordinate(e.getY());
 
             /** starting SearchActivity for a result */
             startActivityForResult(intentSearchActivity, secondActivityRequest);

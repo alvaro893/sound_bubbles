@@ -102,32 +102,43 @@
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_marginRight="30dp"
             android:id="@+id/btn_new"
             android:src="@drawable/new_doc_button"
             android:onClick="startNewSession"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter" />
+            android:scaleType="center"
+            android:layout_marginRight="20dp" />
 
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:id="@+id/btn_record"
             android:src="@drawable/record_button"
-            android:layout_marginRight="40dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            android:onClick="startRecordActivity" />
+            android:scaleType="center"
+            android:onClick="startRecordActivity"
+            android:layout_marginRight="20dp" />
 
         <ImageButton
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:id="@+id/btn_play"
             android:src="@drawable/play_button"
-            android:layout_marginRight="30dp"
+            android:layout_marginRight="20dp"
             android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
+            android:scaleType="center"
             android:onClick="startPlay"/>
+
+        <ImageButton
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:id="@+id/btn_pause"
+            android:src="@drawable/pause_button"
+            android:layout_marginRight="20dp"
+            android:background="@android:color/transparent"
+            android:scaleType="center"
+            android:visibility="gone"
+            android:onClick="pauseButtonClick" />
 
         <ImageButton
             android:layout_width="56dp"
@@ -136,7 +147,17 @@
             android:background="@android:color/transparent"
             android:src="@drawable/add_button"
             android:onClick="addNewBubble"
-            android:scaleType="fitCenter" />
+            android:scaleType="center" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_timeline"
+        android:id="@+id/emptyTimeline"
+        android:textColor="@color/text_gray"
+        android:layout_alignParentStart="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="160dp" />
 
 </RelativeLayout>

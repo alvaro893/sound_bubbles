@@ -3,19 +3,14 @@ package metropolia.fi.suondbubbles.activities;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
@@ -33,6 +28,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
+import metropolia.fi.suondbubbles.Controllers.GridTouchController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.CategoriesAdapter;
 import metropolia.fi.suondbubbles.adapters.ServerFilesArrayAdapter;
@@ -41,40 +37,53 @@ import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.apiConnection.tasks.CategoryTask;
 import metropolia.fi.suondbubbles.apiConnection.tasks.SearchTask;
 import metropolia.fi.suondbubbles.helper.SoundFile;
+import metropolia.fi.suondbubbles.media.SoundPlayer;
 import pl.droidsonroids.gif.GifImageView;
 
 public class SearchActivity extends AppCompatActivity implements AsyncResponse {
+
+    /** Constants*/
     private final String DEBUG_TAG = "SearchActivity";
+    private final String SELECTED_FILE = "SELECTED_FILE";
+    private final int MAXIMUM_AMOUNT = 5;
 
-
+    /** Views */
     private EditText activity_search_et_search;
-    private GridView activity_search_grid;
-    private TextView warning_text;
-    private Button activity_search_btn_add;
+    private GridView gridView;
+    private GifImageView gifImageView;
+    private TextView categoryTextView;
+    private Button selectSoundsButton, backToBubbles, cancel, addSounds;
+
+    /** Adapters */
+    private CategoriesAdapter categoriesAdapter;
+
+    /** Arrays*/
     private ServerFile[] filesArray;
     private ArrayList<ServerFile> filesList;
-    private MediaPlayer mediaPlayer;
-    private Integer lastSelectedId;
     private String[] categories;
-    private boolean categoryWasSelected;
-    private View lastElementSelected;
-    private DrawerLayout drawerLayout;
-    private NavigationView nav;
-    private Bundle bundle;
-    private final String viewCoordinates = "viewCoordinates";
-    private final String viewID = "viewID";
-    private final String selectedFile = "selectedFile";
-    private final String returnBundle = "returnBundle";
-    private View previousView;
-    private View currentView;
-    private int currPosition = -1;
-    private int previousPosition = -1;
-    private ServerFile serverFile;
     private ServerFilesArrayAdapter adapter;
-    private GifImageView gifImageView;
-    private ViewGroup gridLayoutElement;
-    private boolean downloadCompleted = false;
-    private boolean invalidFile = false;
+    private boolean[] isSelected;
+    private ArrayList<View> selectedViews;
+    private ArrayList<ServerFile> selectedViewsServerFileArray;
+
+    /** Integers */
+    private int currentSelectedSounds;
+    private int downloadedSounds;
+
+    /** Booleans*/
+    private boolean outsideCategoryScreen;
+    private boolean downloadCompleted;
+    private boolean invalidFile;
+    private boolean modeAddSounds;
+    private boolean modeSearchSounds;
+
+
+    private GridTouchController gridTouchController;
+    private SoundPlayer player;
+    private ServerFile serverFile;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,299 +91,351 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         setContentView(R.layout.activity_search);
 
         // don't use this activity if the user isn't logged yet
-        if(!SoundBubbles.userIsLogged())
+        if (!SoundBubbles.userIsLogged())
             SoundBubbles.openLoginActivity(this);
 
-        // initialize views
-        activity_search_et_search = (EditText)findViewById(R.id.search);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        nav = (NavigationView) findViewById(R.id.nav);
-        activity_search_et_search = (EditText) findViewById(R.id.search);
-        activity_search_et_search.setOnEditorActionListener(setSearchActionListener());
-        activity_search_grid = (GridView) findViewById(R.id.gridView);
-        activity_search_btn_add = (Button) findViewById(R.id.add);
-        warning_text = (TextView)findViewById(R.id.warning_text);
-        gifImageView = new GifImageView(getBaseContext());
-        gifImageView.setBackgroundResource(R.drawable.loading);
-
-        previousView = null;
-        currentView = null;
-
-        // broad search in order to show something
-        //performSearch(" ");
-        setAddButton();
-
-        //initilize media player
-        initMediaPlayer();
+        init();
 
         // categories
+        getCategories();
         showCategoriesList();
-        categoryWasSelected = false;
 
     }
 
+    private void init() {
+        outsideCategoryScreen = false;
+        downloadCompleted = false;
+        invalidFile = false;
+        modeAddSounds = false;
+        modeSearchSounds = false;
 
-    private TextView.OnEditorActionListener setSearchActionListener(){
-        return new TextView.OnEditorActionListener() {
+        selectedViewsServerFileArray = new ArrayList<>();
+        selectedViews = new ArrayList<>();
+
+        gridTouchController = new GridTouchController();
+
+        currentSelectedSounds = 0;
+
+        initViews();
+        initSoundPlayer();
+        setListeners();
+    }
+
+    private void initViews() {
+        activity_search_et_search = (EditText) findViewById(R.id.search);
+        gridView = (GridView) findViewById(R.id.gridView);
+        backToBubbles = (Button) findViewById(R.id.back_to_bubbles);
+        selectSoundsButton = (Button) findViewById(R.id.select_sounds);
+        cancel = (Button) findViewById(R.id.search_activity_cancel);
+        addSounds = (Button) findViewById(R.id.search_activity_add_sounds);
+        categoryTextView = (TextView) findViewById(R.id.textView_categories);
+        gifImageView = new GifImageView(getBaseContext());
+        gifImageView.setBackgroundResource(R.drawable.loading);
+
+    }
+
+    private void initSoundPlayer() {
+
+        player = new SoundPlayer();
+
+        player.setSoundPlayerListener(new SoundPlayer.SoundPlayerListener() {
+            @Override
+            public void onStarting() {
+                startAnimation(gridTouchController.getCurrentTouchedView(), player);
+                adapter.switchToProgressBarWithPause(gridTouchController.getCurrentTouchedView());
+            }
+
+            @Override
+            public void onPausing() {
+                adapter.backToNormal(gridTouchController.getCurrentTouchedView());
+            }
+
+            @Override
+            public void onStopping() {
+                adapter.backToNormal(gridTouchController.getCurrentTouchedView());
+
+            }
+        });
+    }
+
+    private void setListeners() {
+        activity_search_et_search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 SoundBubbles.hideKeyboard(SearchActivity.this, v);
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    modeSearchSounds = true;
+                    outsideCategoryScreen = true;
+                    player.stopIfPlaying();
+                    categoryTextView.setText(R.string.search_result);
                     performSearch(v.getText().toString());
                     return true;
                 }
                 return false;
             }
-        };
-    }
-
-    private void initMediaPlayer(){
-
-        //set up MediaPlayer
-        mediaPlayer = new MediaPlayer();
-
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                startAnimation(currentView, mp);
-                adapter.switchToProgressBarWithPause(currentView);
-                mp.start();
-            }
         });
 
-        // remove button when music is gone
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.stop();
-                adapter.backToNormal(currentView);
-
-            }
-        });
-    }
-
-    private void startAnimation(View currentView, MediaPlayer player){
-        ProgressBar progressBar = (ProgressBar)currentView.findViewById(R.id.progressBar);
-        progressBar.setMax(player.getDuration());
-        ObjectAnimator animation = ObjectAnimator.ofInt (progressBar, "progress", 0, progressBar.getMax()); // see this max value coming back here, we animale towards that value
-        animation.setDuration(player.getDuration()); //in milliseconds
-        animation.setInterpolator(new LinearInterpolator());
-        animation.start();
-    }
-
-    private void playFile(ServerFile file, View currectGridView){
-
-        if(currPosition == previousPosition && mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            adapter.backToNormal(currectGridView);
-
-        }else {
-
-            if(previousView != null){
-                adapter.backToNormal(previousView);
-            }
-            if(mediaPlayer.isPlaying()){
-                mediaPlayer.stop();
-            }
-
-            //Download file if not exits in external memory
-            download(file);
-
-
-        }
-
-    }
-
-
-    private void startPlayingSound(){
-        try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(serverFile.getPathLocalFile());
-            mediaPlayer.setVolume(0.5f,0.5f);
-            mediaPlayer.prepareAsync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void showServerFileList() {
-        filesList = new ArrayList<>(Arrays.asList(filesArray));
-        Log.d("filesArray", filesList.toString());
-
-        /*if(filesList.isEmpty()){
-            String warning = "No sounds found, verify that Collection ID " + CollectionID.getCollectionID() + " is correct one.";
-            warning_text.setText(warning);
-            warning_text.setVisibility(View.VISIBLE);
-        }*/
-
-        adapter = new ServerFilesArrayAdapter(this, filesList);
-        this.activity_search_grid.setAdapter(adapter);
-
-        // set click for every item
-        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View currentGridView, int position, long id) {
-                currentView = currentGridView;
-                currPosition = position;
-                Log.d(DEBUG_TAG, "clicked element");
-
-                serverFile = filesList.get(position);
-                Log.d(DEBUG_TAG, serverFile.getLink());
-
-                playFile(serverFile, currentGridView);
-
-                selectLastElement(position, currentGridView);
-
-
-                previousView = currentView;
-                previousPosition = currPosition;
-            }
-
-        });
-    }
-
-    private void showCategoriesList(){
-        getCategories();
-        CategoriesAdapter adapter = new CategoriesAdapter(this, this.categories);
-        this.activity_search_grid.setAdapter(adapter);
-
-        this.activity_search_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long l) {
-                performSearch(categories[itemPosition]);
-                categoryWasSelected = true;
-            }
-        });
-    }
-
-    // processFinish is called after this method automatically
-    protected void performSearch(String search) {
-        lastSelectedId = null;
-        search = search.trim();
-        SearchTask searchTask = new SearchTask();
-        searchTask.delegate = this;
-        Log.d("serverConnection", SoundBubbles.serverConnection.toString());
-        searchTask.execute(SoundBubbles.serverConnection, search.trim());
-        Toast. makeText (getBaseContext(), "searching", Toast.LENGTH_SHORT ).show();
-    }
-
-    @Override
-    public void processFinish(Object result) {
-        filesArray = (ServerFile[]) result;
-        showServerFileList();
-    }
-
-    private void download(ServerFile serverFile){
-        SoundDownloadTask downloadTask = new SoundDownloadTask();
-
-
-        // filename is not set, a timestamp will be used instead
-        if(serverFile.getFilename() == null){
-            String filename = Calendar.getInstance().getTimeInMillis() + "";
-            downloadTask.execute(serverFile.getLink(), filename);
-        }else{
-            downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
-        }
-
-    }
-
-    private void setAddButton(){
-
-        this.activity_search_btn_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (lastSelectedId == null) {
-                    Toast.makeText(SearchActivity.this, "Select some sound first",
-                            Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View currentGridView, int position, long id) {
+                if (!outsideCategoryScreen) {
+                    performSearch(categories[position]);
+                    categoryTextView.setText(categories[position]);
+                    outsideCategoryScreen = true;
+                    selectSoundsButton.setVisibility(View.VISIBLE);
                 } else {
-                    if (downloadCompleted && !invalidFile) {
-                        Intent receivedIntent = getIntent();
-                        float coordinates = receivedIntent.getFloatExtra(viewCoordinates, 0);
-                        int receivedViewId = receivedIntent.getIntExtra(viewID, 0);
+
+                    if (!modeAddSounds) {
+                        Log.d(DEBUG_TAG, "View position is: " + position);
+                        gridTouchController.setTouchedView(currentGridView, position);
+
+                        serverFile = filesList.get(position);
+                        Log.d(DEBUG_TAG, serverFile.getLink());
+
+                        playFile(serverFile);
 
 
-                        bundle = new Bundle();
-                        bundle.putSerializable(selectedFile, filesList.get(lastSelectedId));
-                        bundle.putFloat(viewCoordinates, coordinates);
-                        bundle.putInt(viewID, receivedViewId);
-
-
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra(returnBundle, bundle);
-                        setResult(Activity.RESULT_OK, returnIntent);
-                        mediaPlayer.stop();
-                        finish();
-                    } else if (invalidFile) {
-                        Toast.makeText(getBaseContext(), "Sound file is corrupted, select another one", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(getBaseContext(), "Sound is not yet available, please wait", Toast.LENGTH_SHORT).show();
+                        if (isSelected[position]) {
+                            isSelected[position] = false;
+                            currentSelectedSounds -= 1;
+                            selectedViews.remove(currentGridView);
+                            selectedViewsServerFileArray.remove(filesList.get(position));
+                            currentGridView.setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
+                        } else {
+                            if (currentSelectedSounds < MAXIMUM_AMOUNT) {
+                                isSelected[position] = true;
+                                currentSelectedSounds += 1;
+                                selectedViews.add(currentGridView);
+                                selectedViewsServerFileArray.add(filesList.get(position));
+
+                                // passive aqua color with 60% alpha
+                                currentGridView.setBackgroundColor(Color.argb(153, 171, 206, 203));
+                            } else {
+                                Toast.makeText(getBaseContext(), "Maximum amount sounds selected", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
                     }
                 }
             }
         });
+
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-        return true;
+    private void showCategoriesList() {
+
+        gridView.setAdapter(categoriesAdapter);
+
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            SoundBubbles.logout();
-            SoundBubbles.openLoginActivity(this);
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void getCategories(){
+    private void getCategories() {
         categories = new String[0];
         CategoryTask categoryTask = new CategoryTask();
         categoryTask.execute();
         try {
             categories = categoryTask.get();
+            categoriesAdapter = new CategoriesAdapter(this, categories);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        Log.d("categories", Arrays.deepToString(categories));
+        Log.d(DEBUG_TAG, "categories: " + Arrays.deepToString(categories));
+    }
+
+    // processFinish is called after this method automatically
+    protected void performSearch(String search) {
+        gridTouchController.resetAll();
+        search = search.trim();
+        SearchTask searchTask = new SearchTask();
+        searchTask.delegate = this;
+        Log.d(DEBUG_TAG, "serverConnection: " + SoundBubbles.serverConnection.toString());
+        searchTask.execute(SoundBubbles.serverConnection, search.trim());
+        Toast.makeText(getBaseContext(), "Searching", Toast.LENGTH_SHORT).show();
     }
 
     @Override
+    public void processFinish(Object result) {
+        showServerFileList((ServerFile[]) result);
+    }
+
+
+    /** Starts circle progress animation*/
+    private void startAnimation(View currentView, SoundPlayer player) {
+        ProgressBar progressBar = (ProgressBar) currentView.findViewById(R.id.progressBar);
+        progressBar.setMax(player.getDuration());
+        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 0, progressBar.getMax()); // see this max value coming back here, we animale towards that value
+        animation.setDuration(player.getDuration()); //in milliseconds
+        animation.setInterpolator(new LinearInterpolator());
+        animation.start();
+    }
+
+    private void playFile(ServerFile file) {
+
+        if (gridTouchController.isTouchedViewSame()) {
+            if(player.isSoundPlayerPlaying())
+                player.stopIfPlaying();
+            else
+                player.playIfNotPlaying();
+        }
+        else {
+
+            if (gridTouchController.getPreviousTouchedView() != null) {
+                adapter.backToNormal(gridTouchController.getPreviousTouchedView());
+            }
+            if (player.isSoundPlayerPlaying()) {
+                player.stopIfPlaying();
+            }
+
+            //Download file if not exits in external memory
+            downloadAndPlay(file);
+
+        }
+
+        gridTouchController.adjustPreviousTouchedView();
+    }
+
+    private void changeToModeAdd() {
+        modeAddSounds = true;
+        backToBubbles.setVisibility(View.GONE);
+        selectSoundsButton.setVisibility(View.GONE);
+        cancel.setVisibility(View.VISIBLE);
+        addSounds.setVisibility(View.VISIBLE);
+    }
+
+    private void changeToModeNormal() {
+        modeAddSounds = false;
+        backToBubbles.setVisibility(View.VISIBLE);
+        selectSoundsButton.setVisibility(View.VISIBLE);
+        cancel.setVisibility(View.GONE);
+        addSounds.setVisibility(View.GONE);
+
+        if (isSelected != null) {
+            Arrays.fill(isSelected, Boolean.FALSE);
+            resetSelectedViews();
+            currentSelectedSounds = 0;
+        }
+    }
+
+    public void cancelAdding(View v) {
+        changeToModeNormal();
+    }
+
+    private void resetSelectedViews() {
+        for (int i = 0; i < selectedViews.size(); i++) {
+            selectedViews.get(i).setBackground(ContextCompat.getDrawable(getBaseContext(), R.drawable.grid_border));
+        }
+        selectedViews.clear();
+        selectedViewsServerFileArray.clear();
+    }
+
+    public void addSounds(View v) {
+        player.stopIfPlaying();
+        downloadedSounds = 0;
+
+        if (selectedViewsServerFileArray.size() == 0) {
+            Toast.makeText(SearchActivity.this, "Select some sound first",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getBaseContext(), "Downloading", Toast.LENGTH_SHORT).show();
+            Log.d(DEBUG_TAG, "number of selected: " + selectedViewsServerFileArray.size());
+            for(int i = 0; i < selectedViewsServerFileArray.size(); i++){
+                download(selectedViewsServerFileArray.get(i), i);
+            }
+        }
+    }
+
+    private void finishActivity(){
+        Intent intent = new Intent();
+        intent.putExtra(SELECTED_FILE, selectedViewsServerFileArray);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
+
+    private void showServerFileList(ServerFile[] result) {
+        filesArray = result;
+        filesList = new ArrayList<>(Arrays.asList(filesArray));
+
+
+        Log.v(DEBUG_TAG, filesList.toString());
+        isSelected = new boolean[filesList.size()];
+
+        adapter = new ServerFilesArrayAdapter(this, filesList);
+        this.gridView.setAdapter(adapter);
+
+
+    }
+
+
+
+
+    private void downloadAndPlay(ServerFile serverFile) {
+        DownLoadAndPlayTask downloadTask = new DownLoadAndPlayTask();
+
+        // filename is not set, a timestamp will be used instead
+        if (serverFile.getFilename() == null) {
+            String filename = Calendar.getInstance().getTimeInMillis() + "";
+            downloadTask.execute(serverFile.getLink(), filename);
+        } else {
+            downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
+        }
+
+    }
+
+    private void download(ServerFile serverFile , int index) {
+        DownLoadTask downloadTask = new DownLoadTask();
+
+
+        // filename is not set, a timestamp will be used instead
+        if (serverFile.getFilename() == null) {
+            String filename = Calendar.getInstance().getTimeInMillis() + "";
+            downloadTask.execute(serverFile.getLink(), filename);
+        } else {
+            downloadTask.execute(serverFile.getLink(), serverFile.getFilename(), Integer.toString(index));
+        }
+
+    }
+
+    public void backToBubbles(View v) {
+        player.stopIfPlaying();
+        player.releaseSoundPlayer();
+        finish();
+    }
+
+    public void selectBubbles(View v) {
+        player.stopIfPlaying();
+        changeToModeAdd();
+    }
+
+
+
+    @Override
     public void onBackPressed() {
-        if(categoryWasSelected){
-            showCategoriesList();
-            categoryWasSelected = false;
-        }else{
+        player.stopIfPlaying();
+        gridTouchController.resetAll();
+
+        if (outsideCategoryScreen | modeSearchSounds) {
+            if (modeSearchSounds && !modeAddSounds) {
+                modeSearchSounds = false;
+            }
+            if (!modeAddSounds) {
+                showCategoriesList();
+                outsideCategoryScreen = false;
+                categoryTextView.setText(R.string.categories);
+                selectSoundsButton.setVisibility(View.GONE);
+            } else {
+                changeToModeNormal();
+            }
+        } else {
             super.onBackPressed();
         }
     }
 
-    // make visible the clicked element
-    private void selectLastElement(int position, View currentGridView){
-        if(lastElementSelected != null){
-            lastElementSelected.setBackground(ContextCompat.getDrawable(SearchActivity.this, R.drawable.grid_border));
-        }
-        lastSelectedId = position;
-        lastElementSelected = currentGridView;
-        currentGridView.setBackground(ContextCompat.getDrawable(
-                SearchActivity.this, R.drawable.grid_border_selected));
-    }
 
-    /** copied from DownloadTask */
-    private class SoundDownloadTask extends AsyncTask<String, Void, String> {
-        private final String DEBUG_TAG = "SoundDownloadTask";
+    private class DownLoadAndPlayTask extends AsyncTask<String, Void, String> {
+        private final String DEBUG_TAG = "DownLoadAndPlayTask";
 
         @Override
         protected String doInBackground(String... params) {
@@ -383,13 +444,13 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             File file;
             String path = null;
 
-            try{
+            try {
                 URL url = new URL(urlString);
                 SoundFile soundFile = new SoundFile(url.openStream());
                 file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
                 path = file.getPath();
-            }catch (Exception e){
-                Log.d(DEBUG_TAG, e.getClass().toString() + ":" +e.getMessage());
+            } catch (Exception e) {
+                Log.d(DEBUG_TAG, e.getClass().toString() + ":" + e.getMessage());
                 e.printStackTrace();
             }
 
@@ -400,23 +461,75 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         @Override
         protected void onPreExecute() {
             downloadCompleted = false;
-            adapter.switchToGifImage(currentView);
+            adapter.switchToGifImage(gridTouchController.getCurrentTouchedView());
         }
 
         @Override
         protected void onPostExecute(String path) {
             downloadCompleted = true;
             Log.d(DEBUG_TAG, "DOWNLOAD COMPLETED");
-            if(path != null){
+            if (path != null) {
+                invalidFile = false;
                 serverFile.setPathLocalFile(path);
-                startPlayingSound();
-                if(invalidFile){
-                    invalidFile = false;
-                }
-            }else {
+                player.setSound(serverFile.getPathLocalFile());
+                player.playIfNotPlaying();
+
+            } else {
                 invalidFile = true;
-                adapter.backToNormal(currentView);
-                Toast.makeText(getBaseContext(),"Corrupted sound", Toast.LENGTH_SHORT).show();
+                adapter.backToNormal(gridTouchController.getCurrentTouchedView());
+                Toast.makeText(getBaseContext(), "Corrupted sound", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class DownLoadTask extends AsyncTask<String, Void, String> {
+        private final String DEBUG_TAG = "DownLoadTask";
+        private String name;
+        private String index;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String urlString = params[0];
+            String filename = params[1];
+            name = filename;
+            index = params[2];
+            File file;
+            String path = null;
+
+            try {
+                URL url = new URL(urlString);
+                SoundFile soundFile = new SoundFile(url.openStream());
+                file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
+                path = file.getPath();
+            } catch (Exception e) {
+                Log.d(DEBUG_TAG, e.getClass().toString() + ":" + e.getMessage());
+                e.printStackTrace();
+            }
+
+
+            return path;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onPostExecute(String path) {
+            Log.d(DEBUG_TAG, "DOWNLOAD COMPLETED");
+            if (path != null) {
+                downloadedSounds += 1;
+                selectedViewsServerFileArray.get(Integer.parseInt(index)).setPathLocalFile(path);
+                Log.d(DEBUG_TAG, "Path is " + path);
+                if(downloadedSounds == selectedViewsServerFileArray.size()){
+                    Log.d(DEBUG_TAG, "ALL SOUNDS COMPLETED");
+                    Toast.makeText(getBaseContext(), "Download complete", Toast.LENGTH_SHORT).show();
+                    finishActivity();
+                }
+
+            } else {
+                Toast.makeText(getBaseContext(), "Corrupted sound: " + name, Toast.LENGTH_SHORT).show();
             }
         }
     }

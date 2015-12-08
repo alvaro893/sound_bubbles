@@ -3,10 +3,13 @@ package metropolia.fi.suondbubbles.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +21,7 @@ import metropolia.fi.suondbubbles.Controllers.BubbleTouchController;
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.apiConnection.ServerFile;
 import metropolia.fi.suondbubbles.helper.PixelsConverter;
+import metropolia.fi.suondbubbles.media.SoundPlayer;
 
 
 public class Bubble extends View {
@@ -27,12 +31,15 @@ public class Bubble extends View {
     }
 
     private final String DEBUG_TAG = "Bubble class";
-    private final int MAX_VOLUME = 100;
+    private final int MINIUM_ALLOWED_SIZE = 3000;
 
-    private Paint color, passive_color, active_color;
+
+
+    private Paint color, passive_color, active_color, textPaint;
 
     private GestureDetector mDetector;
     private int bubbleHeight;
+    private int bubbleWidth;
     private int color_selection;
     private int bubbleBottomY;
     private int finalfittingYcoordinate = 0;
@@ -44,14 +51,16 @@ public class Bubble extends View {
     private ServerFile serverFile;
 
     private RectF rectCoordinates;
-    private MediaPlayer mediaPlayer;
+    private SoundPlayer soundPlayer;
     private int soundVolume;
     private float bubbleVolume;
     private BubbleTouchController bubbleTouchController;
 
+    private Rect textBounds;
 
     private boolean detected = false;
-    private boolean active = false;
+    private boolean paused = false;
+
 
     public Bubble(Context context, ServerFile serverFile) {
         super(context);
@@ -59,11 +68,27 @@ public class Bubble extends View {
         init(serverFile);
         initHeight();
 
-
-        initMediaplayer();
+        initSoundPlayer();
 
         createRoundedRectangle();
+        initText();
     }
+
+
+    private void initText() {
+        textBounds = new Rect();
+
+        int spValue = 12;
+
+        int pixel= (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                spValue, getResources().getDisplayMetrics());
+
+        textPaint = new Paint();
+        textPaint.setTextSize(pixel);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setStyle(Paint.Style.FILL);
+    }
+
 
     public int getSoundVolume() {
         return soundVolume;
@@ -89,59 +114,47 @@ public class Bubble extends View {
     private void setBubbleVolume(int soundVolume){
 
         bubbleVolume = (float)(soundVolume * 0.01);
-        mediaPlayer.setVolume(bubbleVolume,bubbleVolume);
+        soundPlayer.setSoundVolume(bubbleVolume);
     }
 
-    /** Initializes mediaplayer and set listerners **/
-    private void initMediaplayer() {
-        try {
-            mediaPlayer = new MediaPlayer();
+    private void initSoundPlayer(){
+        soundPlayer = new SoundPlayer();
+        soundPlayer.setSound(serverFile.getPathLocalFile());
+        setSoundVolume(50);
+        soundPlayer.setSoundPlayerListener(new SoundPlayer.SoundPlayerListener() {
+            @Override
+            public void onStarting() {
+                if (paused)
+                    paused = false;
 
-            mediaPlayer.setDataSource(serverFile.getPathLocalFile());
-            setSoundVolume(50);
+            }
 
-            //setBubbleHeight(mediaPlayer.getDuration());
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                public void onPrepared(MediaPlayer mp) {
-                    setBubbleVolume(soundVolume);
-                    mp.start();
+            @Override
+            public void onPausing() {
+                paused = true;
+            }
 
-                }
-            });
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.stop();
-                }
-            });
-        }catch (Exception e){
-            Log.e(DEBUG_TAG,"ERROR: " + e.getMessage());
-        }
+            @Override
+            public void onStopping() {
+
+            }
+        });
 
     }
 
-    /** starts mediaplayer with async prepering*/
+
     public void startPlaying(){
-        try {
-            mediaPlayer.prepareAsync();
-
-        }catch(Exception e){
-            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
-        }
+        soundPlayer.playIfNotPlaying();
     }
 
-    /** stops mediaplayer*/
     public void stopPlaying(){
-        try {
-            mediaPlayer.stop();
-        } catch (Exception e) {
-            Log.e(DEBUG_TAG,"ERROR OCCURED: " + e.getMessage());
-        }
+        soundPlayer.stopIfPlaying();
     }
-
-    /** return boolean value whether mediaplayer is playing currently **/
+    public void pausePlaying(){
+        soundPlayer.pauseIfPlaying();
+    }
     public boolean bubbleIsPlaying(){
-        return mediaPlayer.isPlaying();
+        return soundPlayer.isSoundPlayerPlaying();
     }
 
     public void setDoubletapOnBubbleDetector(DoubletapOnBubbleDetector doubletapOnBubbleDetector) {
@@ -153,17 +166,14 @@ public class Bubble extends View {
         return detected;
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
     public void setDetected(boolean detected) {
         this.detected = detected;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     /** returns bubble bottom line Y coordinate (int) */
     public int getBubbleBottomY() {
@@ -191,12 +201,19 @@ public class Bubble extends View {
     }
 
     public void setBubbleHeight(int bubbleHeight) {
+        Log.d(DEBUG_TAG,"HEIGHT IS : " + bubbleHeight);
+        if(bubbleHeight < MINIUM_ALLOWED_SIZE){
+            bubbleHeight = MINIUM_ALLOWED_SIZE;
+        }
         this.bubbleHeight = (int)PixelsConverter.convertDpToPixel(bubbleHeight * 0.025f,getContext());
 
     }
 
+
     private void init(ServerFile serverFile){
         this.serverFile = serverFile;
+
+
 
         bubbleTouchController = new BubbleTouchController(getContext(),this);
 
@@ -208,6 +225,10 @@ public class Bubble extends View {
         });
 
         this.mDetector = new GestureDetector(getContext(),bubbleTouchController);
+    }
+
+    public void disableDragging(boolean value){
+        bubbleTouchController.setDragDisabled(value);
     }
 
 
@@ -277,23 +298,48 @@ public class Bubble extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.d(DEBUG_TAG, "Filename is " + serverFile.getFilename());
         rectCoordinates.right = canvas.getWidth();
-        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertDpToPixel(100,getContext()),PixelsConverter.convertDpToPixel(100,getContext()),color);
+        canvas.drawRoundRect(rectCoordinates, PixelsConverter.convertDpToPixel(100, getContext()), PixelsConverter.convertDpToPixel(100, getContext()), color);
+        canvas.save();
+        canvas.rotate(90, bubbleWidth / 2, bubbleHeight / 2);
+        if(textPaint.measureText(serverFile.getTitle()) > canvas.getHeight()){
+            calibrateTextSize(serverFile.getTitle(), canvas.getHeight() - PixelsConverter.convertDpToPixel(5,getContext()));
+        }
+        drawTextCentred(canvas, textPaint, serverFile.getTitle(), bubbleWidth / 2, bubbleHeight / 2);
+        canvas.restore();
+
     }
 
+    public void drawTextCentred(Canvas canvas, Paint paint, String text, float cx, float cy){
+        paint.getTextBounds(text, 0, text.length(), textBounds);
+        canvas.drawText(text, cx - textBounds.exactCenterX(), cy - textBounds.exactCenterY(), paint);
+    }
+
+    private int calibrateTextSize(String str, float maxWidth)
+    {
+        int size = 0;
+
+        do {
+            textPaint.setTextSize(++size);
+        } while(textPaint.measureText(str) < maxWidth);
+
+        return size;
+    }
 
     /** handles bubble bound size*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        bubbleWidth = MeasureSpec.getSize(widthMeasureSpec);
         /** set bubble width bound to be same as parent view width */
         int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec),MeasureSpec.EXACTLY);
 
         /** set bubble height bound */
         int heightSpec = MeasureSpec.makeMeasureSpec(bubbleHeight,MeasureSpec.EXACTLY);
 
-        setMeasuredDimension(widthSpec,heightSpec);
+        setMeasuredDimension(widthSpec, heightSpec);
     }
 
 }
