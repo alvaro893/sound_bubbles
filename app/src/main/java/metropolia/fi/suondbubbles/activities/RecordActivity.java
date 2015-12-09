@@ -178,7 +178,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
      **/
     public void clickPlayButton(View v) {
         if(pathRawFile == null || !new File(pathRawFile).exists()){
-            Toast.makeText(this, "select a file or record something", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "slide to select a file or record something", Toast.LENGTH_LONG).show();
             return;
         }
         // stop recording when user attempts to play record
@@ -349,6 +349,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     @Override
     public void onDialogYesClick(String title, String category, DialogFragment dialog) {
         dialog.dismiss();
+        title = title.replaceAll("\\s+","");
         final String PATH_WAV_FILE = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + title + ".wav";
         WavConverter wavConverter = new WavConverter(RecordActivity.this, title, category);
         String response = wavConverter.convertToWavAndUpload(pathRawFile, PATH_WAV_FILE);
