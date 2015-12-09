@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         SoundBubbles.MainContext = this;
 
-
+        intent = new Intent(this, LoginActivity.class);
         intro = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.first_screen_480x800);
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        intent = new Intent(this, LoginActivity.class);
-
         VideoView videoIntro = (VideoView)findViewById(R.id.videoIntro);
         videoIntro.setVideoURI(intro);
         videoIntro.requestFocus();
@@ -77,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 startActivity(intent);
-                finish();
             }
         });
         videoIntro.start();
