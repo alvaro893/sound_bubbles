@@ -10,17 +10,17 @@
     android:gravity="bottom"
     tools:context="metropolia.fi.suondbubbles.activities.RecordActivity">
 
-    <TextView
-        android:id="@+id/htv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Recordings"
-        android:textSize="35dp"/>
+    <!--<TextView-->
+        <!--android:id="@+id/htv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Recordings"-->
+        <!--android:textSize="35dp"/>-->
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recordings_list_view"/>
+    <!--<ListView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/recordings_list_view"/>-->
 
 
 </LinearLayout>

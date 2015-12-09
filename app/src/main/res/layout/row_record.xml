@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--the descendantFocusability attribute is very important to make buttons work-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:descendantFocusability="blocksDescendants">
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0.9"
+        android:gravity="center|left"
+        android:layout_marginLeft="10dp"
+        android:text="record"
+        android:textSize="20sp"
         android:id="@+id/row_record_name_tv"/>
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/delete_record_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:tint="@color/passive_red"
+        android:layout_gravity="right" />
 
 </LinearLayout>

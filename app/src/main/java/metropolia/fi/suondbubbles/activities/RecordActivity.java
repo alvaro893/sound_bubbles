@@ -8,12 +8,12 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 import metropolia.fi.suondbubbles.R;
 import metropolia.fi.suondbubbles.adapters.RecordingsAdapter;
-import metropolia.fi.suondbubbles.apiConnection.AsyncResponse;
-import metropolia.fi.suondbubbles.apiConnection.CollectionID;
-import metropolia.fi.suondbubbles.apiConnection.ServerFile;
-import metropolia.fi.suondbubbles.apiConnection.tasks.UploadTask;
 import metropolia.fi.suondbubbles.dialogFragments.InputDialogFragment;
 import metropolia.fi.suondbubbles.helper.Record;
 import metropolia.fi.suondbubbles.helper.SoundFile;
@@ -50,29 +47,47 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     private TextView time_tv;
     private ListView recordings_lv;
     private RecordingsAdapter recordingsAdapter;
+    private DrawerLayout drawerLayout;
+    private ArrayList<Record> recordsArray;
     private final String DEBUG_TAG = this.getClass().getSimpleName();
     private final String FOLDER_NAME = "SoundBubbleRecords";
-    private final String PATH_RAW_FILE = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + "testrec.raw";
+    private final String PATH_TO_FOLDER = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME;
+    private String pathRawFile;
+    //private String currentFilePath = pathRawFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        recordings_lv = (ListView) findViewById(R.id.recordings_list_view);
+        setContentView(R.layout.activity_record);
+
         // creates folder if not exits
         SoundFile.createFolder(FOLDER_NAME);
-        // populates the slide menu if there are recordings
-        initRecordingListView();
 
-        setContentView(R.layout.activity_record);
 
         time_tv = (TextView) findViewById(R.id.time_tv);
         recRunning = false;
         playRunning = false;
         countRuning = false;
+
+        recordings_lv = (ListView) findViewById(R.id.recordings_list_view);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_record);
+        // populates the slide menu if there are recordings
+        initRecordingListView();
+
+        recordings_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(DEBUG_TAG, "pathfile:" + recordsArray.get(i).getPath());
+                setCurrentFilePath(recordsArray.get(i).getPath());
+                drawerLayout.closeDrawers();
+            }
+        });
+
+
     }
 
     private void initRecordingListView(){
-        ArrayList<Record> recordsArray = new ArrayList<>();
+        recordsArray = new ArrayList<>();
         boolean noFiles = false;
 
         // Get all files in the folder
@@ -92,8 +107,24 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
 //        }else{
 //
 //        }
-        recordingsAdapter = new RecordingsAdapter(this, recordsArray);
+        recordingsAdapter = new RecordingsAdapter(this, recordsArray, drawerLayout);
         recordings_lv.setAdapter(recordingsAdapter);
+
+        recordings_lv.setOnItemClickListener(onClickRecordingList());
+    }
+
+    private void setCurrentFilePath(String path){
+        pathRawFile = path;
+    }
+
+    public AdapterView.OnItemClickListener onClickRecordingList(){
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(DEBUG_TAG, "pathfile:"+recordsArray.get(i).getPath());
+                Log.d(DEBUG_TAG, "deleted:"+view.getTag());
+            }
+        };
     }
 
     /**
@@ -106,6 +137,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             recordThread = new Thread() {
                 public void run() {
                     recRunning = true;
+                    setNewFilePath();
                     startRecord();
                 }
             };
@@ -124,7 +156,15 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             recRunning = false;
             countRuning = false;
             removePauseImageToButton(v);
+
         }
+    }
+
+    private void setNewFilePath(){
+        Date date = new Date();
+        long time = date.getTime();
+        String path = PATH_TO_FOLDER + File.separator + "rec" + String.valueOf(time) + ".raw";
+        pathRawFile = path;
     }
 
     /**
@@ -191,15 +231,16 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     }
 
     private void addPauseImageToButton(View v) {
-        ((Button) v).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_media_pause,0,0,0);
+        ((AppCompatImageButton) v).setImageResource(android.R.drawable.ic_media_pause);
+        //((Button) v).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_media_pause,0,0,0);
     }
 
     private void removePauseImageToButton(View v) {
-        ((Button) v).setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+        ((AppCompatImageButton) v).setImageResource(android.R.color.transparent);//((Button) v).setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
     }
 
     private void addPlayImageToButton(View v) {
-        ((Button) v).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_media_play,0,0,0);
+        ((AppCompatImageButton) v).setImageResource(android.R.drawable.ic_media_play);//setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_media_play,0,0,0);
     }
 
     /**
@@ -222,7 +263,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
      **/
     public void startRecord() {
 
-        File file = new File(PATH_RAW_FILE);
+        File file = new File(pathRawFile);
 
         try {
             file.createNewFile();
@@ -264,7 +305,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
      * called from the play thread
      **/
     public void playRecord() {
-        File file = new File(PATH_RAW_FILE);
+        File file = new File(pathRawFile);
         FileInputStream inputStream = null;
 
         int minBufferSize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_STEREO,
@@ -302,7 +343,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         dialog.dismiss();
         final String PATH_WAV_FILE = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME + File.separator + title + ".wav";
         WavConverter wavConverter = new WavConverter(RecordActivity.this, title, category);
-        String response = wavConverter.convertToWavAndUpload(PATH_RAW_FILE, PATH_WAV_FILE);
+        String response = wavConverter.convertToWavAndUpload(pathRawFile, PATH_WAV_FILE);
         Log.d(DEBUG_TAG, response);
         Toast.makeText(this, "done", Toast.LENGTH_LONG).show();
     }
