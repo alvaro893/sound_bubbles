@@ -8,6 +8,7 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
@@ -53,7 +54,6 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
     private final String FOLDER_NAME = "SoundBubbleRecords";
     private final String PATH_TO_FOLDER = Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME;
     private String pathRawFile;
-    //private String currentFilePath = pathRawFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,6 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         // creates folder if not exits
         SoundFile.createFolder(FOLDER_NAME);
 
-
         time_tv = (TextView) findViewById(R.id.time_tv);
         recRunning = false;
         playRunning = false;
@@ -71,30 +70,39 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
 
         recordings_lv = (ListView) findViewById(R.id.recordings_list_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_record);
-        // populates the slide menu if there are recordings
         initRecordingListView();
 
-        recordings_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(DEBUG_TAG, "pathfile:" + recordsArray.get(i).getPath());
-                setCurrentFilePath(recordsArray.get(i).getPath());
-                drawerLayout.closeDrawers();
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                initRecordingListView();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                initRecordingListView();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
             }
         });
-
-
     }
 
-    private void initRecordingListView(){
+    /** populates the slide menu if there are recordings **/
+    public void initRecordingListView(){
         recordsArray = new ArrayList<>();
         boolean noFiles = false;
 
         // Get all files in the folder
         File recordingsFolder = new File(Environment.getExternalStorageDirectory() + File.separator + FOLDER_NAME);
-        if(recordingsFolder.listFiles().length < 0){
-            noFiles = true;
-        }
+
         for (final File fileEntry : recordingsFolder.listFiles()) {
             Record record = new Record();
             record.setPath(fileEntry.getPath());
@@ -102,11 +110,7 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             recordsArray.add(record);
         }
         Log.d(DEBUG_TAG, "recordings found:" + recordsArray.size());
-//        if(noFiles){
-//            recordingsAdapter.setNoFilesView();
-//        }else{
-//
-//        }
+
         recordingsAdapter = new RecordingsAdapter(this, recordsArray, drawerLayout);
         recordings_lv.setAdapter(recordingsAdapter);
 
@@ -121,8 +125,9 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(DEBUG_TAG, "pathfile:"+recordsArray.get(i).getPath());
-                Log.d(DEBUG_TAG, "deleted:"+view.getTag());
+                Log.d(DEBUG_TAG, "pathfile:" + recordsArray.get(i).getPath());
+                setCurrentFilePath(recordsArray.get(i).getPath());
+                drawerLayout.closeDrawers();
             }
         };
     }
@@ -156,7 +161,6 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
             recRunning = false;
             countRuning = false;
             removePauseImageToButton(v);
-
         }
     }
 
@@ -173,6 +177,10 @@ public class RecordActivity extends AppCompatActivity implements InputDialogFrag
      * @param v View that represents the button that was clicked
      **/
     public void clickPlayButton(View v) {
+        if(pathRawFile == null || !new File(pathRawFile).exists()){
+            Toast.makeText(this, "select a file or record something", Toast.LENGTH_SHORT).show();
+            return;
+        }
         // stop recording when user attempts to play record
         if (recRunning) {
             recRunning = false;
