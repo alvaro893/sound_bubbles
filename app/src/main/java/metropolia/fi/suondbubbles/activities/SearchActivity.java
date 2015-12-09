@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -91,9 +90,6 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // don't use this activity if the user isn't logged yet
-        if (!SoundBubbles.userIsLogged())
-            SoundBubbles.openLoginActivity(this);
 
         init();
 
@@ -101,6 +97,21 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         getCategories();
         showCategoriesList();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // don't use this activity if the user isn't logged yet
+        if (!SoundBubbles.userIsLogged())
+            SoundBubbles.openLoginActivity(this);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        player.stopIfPlaying();
     }
 
     private void init() {
@@ -221,7 +232,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                             }
                         }
                     } else {
-                        Toast.makeText(getBaseContext(), "download in progress, please wait", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), "Download in progress, please wait", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -395,8 +406,10 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         // filename is not set, a timestamp will be used instead
         if (serverFile.getFilename() == null) {
             String filename = Calendar.getInstance().getTimeInMillis() + "";
+            Log.d(DEBUG_TAG, "Filename not set, name is now" + filename);
             downloadTask.execute(serverFile.getLink(), filename);
         } else {
+            Log.d("getFilename", "Filename set, name is" + serverFile.getFilename());
             downloadTask.execute(serverFile.getLink(), serverFile.getFilename());
         }
 
@@ -409,7 +422,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         // filename is not set, a timestamp will be used instead
         if (serverFile.getFilename() == null) {
             String filename = Calendar.getInstance().getTimeInMillis() + "";
-            downloadTask.execute(serverFile.getLink(), filename);
+            downloadTask.execute(serverFile.getLink(), filename, Integer.toString(index));
         } else {
             downloadTask.execute(serverFile.getLink(), serverFile.getFilename(), Integer.toString(index));
         }
@@ -417,13 +430,19 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     public void backToBubbles(View v) {
-        player.stopIfPlaying();
-        finish();
+        if(downloadCompleted) {
+            player.stopIfPlaying();
+            finish();
+        }
+        else{
+            Toast.makeText(getBaseContext(),"Download is not yet completed, please wait", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void selectBubbles(View v) {
         if(downloadCompleted){
             player.stopIfPlaying();
+            adapter.backToNormal(gridTouchController.getCurrentTouchedView());
             changeToModeAdd();
         }
         else{
@@ -472,13 +491,15 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             File file;
             String path = null;
 
+            Log.d(DEBUG_TAG, "Url is: " + urlString);
+            Log.d(DEBUG_TAG, "Filename is: " + filename);
+
             try {
-                URL url = new URL(urlString);
-                SoundFile soundFile = new SoundFile(url.openStream());
+                SoundFile soundFile = new SoundFile(urlString);
                 file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
                 path = file.getPath();
             } catch (Exception e) {
-                Log.d(DEBUG_TAG, e.getClass().toString() + ":" + e.getMessage());
+                Log.d(DEBUG_TAG, e.getClass().toString() + "error:" + e.getMessage());
                 e.printStackTrace();
             }
 
@@ -525,8 +546,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
             String path = null;
 
             try {
-                URL url = new URL(urlString);
-                SoundFile soundFile = new SoundFile(url.openStream());
+                SoundFile soundFile = new SoundFile(urlString);
                 file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
                 path = file.getPath();
             } catch (Exception e) {

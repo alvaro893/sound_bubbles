@@ -98,6 +98,14 @@ public class MainSurfaceActivity extends AppCompatActivity{
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // don't use this activity if the user isn't logged yet
+        if (!SoundBubbles.userIsLogged())
+            SoundBubbles.openLoginActivity(this);
+    }
+
+    @Override
     public void onBackPressed() {
         ConfirmExitDialogFragment dialogFragment = new ConfirmExitDialogFragment();
         dialogFragment.setConfirmExitDialogListener(new ConfirmExitDialogFragment.ConfirmExitDialogListener() {
