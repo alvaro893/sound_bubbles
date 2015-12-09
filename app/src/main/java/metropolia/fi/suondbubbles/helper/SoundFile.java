@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Calendar;
 
 /**
@@ -27,10 +28,22 @@ public class SoundFile {
     private final String FOLDER_NAME = "bubblesSounds";
     private File file;
     private InputStream urlSream;
+    private String urlLink;
 
-    public SoundFile(InputStream urlSream) {
-        this.urlSream = urlSream;
+    public SoundFile(String urlLink) {
+
+        this.urlLink = urlLink;
+
+        try {
+            URL url = new URL(urlLink);
+            urlSream = url.openStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
+
 
     // It creates file in external memory (It does not work anymore)
     public File createFile(String filename) throws IOException {
@@ -60,12 +73,17 @@ public class SoundFile {
         file = new File(folder,filename);
         if(file.exists()){
             String md5file = calculateHashFile(file);
-            String md5url = calculateHashFile(urlSream);
+            String md5url = calculateHashFile(urlLink);
             if(!md5file.equals(md5url)){
-                file.delete();
-                Log.d(DEBUG_TAG, "file was deleted");
-                file.createNewFile();
-                performDownload();
+                if(file.delete()){
+                    Log.d(DEBUG_TAG, "file was deleted");
+                }
+                if(file.createNewFile()){
+                    Log.d(DEBUG_TAG, "file was created");
+                    performDownload();
+                }
+
+
             }
         }else{
             file.createNewFile();
@@ -81,19 +99,24 @@ public class SoundFile {
 
         // stream from url
         BufferedInputStream bufferedInputStream = new BufferedInputStream(urlSream);
+
+
+
         // size of the buffer
         int minBufferSize = AudioRecord.getMinBufferSize(44100,
                 AudioFormat.CHANNEL_OUT_STEREO,
                 AudioFormat.ENCODING_PCM_16BIT);
         Log.d(DEBUG_TAG, "minbuff:"+minBufferSize);
 
+
         byte[] buffer = new byte[minBufferSize];
 
         // copy data to the file
         int bytesread;
         while((bytesread = bufferedInputStream.read(buffer)) != -1){
-            bufferedOutputStream.write(buffer, 0, bytesread);
             Log.d(DEBUG_TAG, "bytesread:" + bytesread);
+            bufferedOutputStream.write(buffer, 0, bytesread);
+
         }
         // close streams
         bufferedOutputStream.close();
@@ -114,11 +137,10 @@ public class SoundFile {
         return md5;
     }
 
-    public String calculateHashFile(InputStream is){
+    public String calculateHashFile(String is){
         String md5 = null;
         try{
             md5 = new String(Hex.encodeHex(DigestUtils.md5(is)));
-            is.close();
         }catch (Exception e){
             Log.d(DEBUG_TAG, e.getMessage());
         }

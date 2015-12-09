@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.File;
-import java.net.URL;
 
 import metropolia.fi.suondbubbles.activities.SoundBubbles;
 import metropolia.fi.suondbubbles.helper.SoundFile;
@@ -29,8 +28,7 @@ public class DownloadTask extends AsyncTask<String, Void, String> {
         String filename = params[1];
         File file = null;
         try{
-            URL url = new URL(urlString);
-            SoundFile soundFile = new SoundFile(url.openStream());
+            SoundFile soundFile = new SoundFile(urlString);
             file = soundFile.createFileInCache(SoundBubbles.getMainContext(), filename);
         }catch (Exception e){
             Log.d(DEBUG_TAG, e.getClass().toString() + ":" +e.getMessage());

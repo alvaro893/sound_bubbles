@@ -40,8 +40,6 @@ public class BubbleDragController implements View.OnDragListener {
 
     @Override
     public boolean onDrag(View v, DragEvent event) {
-        int action = event.getAction();
-
         switch (event.getAction()) {
 
 
