@@ -76,6 +76,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     private boolean invalidFile;
     private boolean modeAddSounds;
     private boolean modeSearchSounds;
+    private boolean searchCompleted;
 
 
     private GridTouchController gridTouchController;
@@ -121,6 +122,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
         modeAddSounds = false;
         modeSearchSounds = false;
         loading = false;
+        searchCompleted = true;
 
         selectedViewsServerFileArray = new ArrayList<>();
         downloadServerFileArray = new ArrayList<>();
@@ -198,7 +200,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                     outsideCategoryScreen = true;
                     selectSoundsButton.setVisibility(View.VISIBLE);
                 } else {
-                    if (downloadCompleted) {
+                    if (downloadCompleted && searchCompleted) {
                         if (!modeAddSounds) {
                             Log.d(DEBUG_TAG, "View position is: " + position);
                             gridTouchController.setTouchedView(currentGridView, position);
@@ -264,7 +266,9 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
 
     // processFinish is called after this method automatically
     protected void performSearch(String search) {
+        searchCompleted = false;
         gridTouchController.resetAll();
+
         search = search.trim();
         SearchTask searchTask = new SearchTask();
         searchTask.delegate = this;
@@ -277,6 +281,7 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void processFinish(Object result) {
         showServerFileList((ServerFile[]) result);
+        searchCompleted = true;
     }
 
 
@@ -356,23 +361,25 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     public void addSounds(View v) {
-        player.stopIfPlaying();
-        downloadedSounds = 0;
-        downloadServerFileArray.clear();
+        if(downloadCompleted){
+            player.stopIfPlaying();
+            downloadedSounds = 0;
+            downloadServerFileArray.clear();
 
-        if (selectedViewsServerFileArray.size() == 0) {
-            Toast.makeText(SearchActivity.this, "Select some sound first",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getBaseContext(), "Downloading", Toast.LENGTH_SHORT).show();
-            downloadCompleted = false;
-            Log.d(DEBUG_TAG, "number of selected: " + selectedViewsServerFileArray.size());
-            for(int i = 0; i < selectedViewsServerFileArray.size(); i++){
-                downloadServerFileArray.add(selectedViewsServerFileArray.get(i));
-                download(downloadServerFileArray.get(i), i);
+            if (selectedViewsServerFileArray.size() == 0) {
+                Toast.makeText(SearchActivity.this, "Select some sound first",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), "Downloading", Toast.LENGTH_SHORT).show();
+                downloadCompleted = false;
+                Log.d(DEBUG_TAG, "number of selected: " + selectedViewsServerFileArray.size());
+                for(int i = 0; i < selectedViewsServerFileArray.size(); i++){
+                    downloadServerFileArray.add(selectedViewsServerFileArray.get(i));
+                    download(downloadServerFileArray.get(i), i);
+                }
+
+                changeToModeNormal();
             }
-
-            changeToModeNormal();
         }
     }
 
@@ -476,7 +483,12 @@ public class SearchActivity extends AppCompatActivity implements AsyncResponse {
                 changeToModeNormal();
             }
         } else {
-            super.onBackPressed();
+            if (downloadCompleted){
+                super.onBackPressed();
+            }
+            else {
+                Toast.makeText(getBaseContext(),"Downloading, please wait", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
