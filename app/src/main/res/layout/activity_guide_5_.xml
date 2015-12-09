@@ -9,60 +9,78 @@
     android:layout_marginRight="40dp"
     android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/guide_5_line_1"
-        android:gravity="center" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="100dp">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1.20"
+        android:gravity="center">
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="@string/guide_5_line_2"
-            android:drawableRight="@drawable/ic_record_passive"
-            android:gravity="center_vertical|right" />
+            android:textSize="18sp"
+            android:text="@string/guide_5_line_1"
+            android:gravity="center" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="@string/guide_5_line_3"
-            android:gravity="left|center_vertical" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/guide_5_line_2"
+                android:drawableRight="@drawable/ic_record_passive"
+                android:gravity="center_vertical|right" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/guide_5_line_3"
+                android:gravity="left|center_vertical" />
+        </LinearLayout>
+
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small"
-        android:text="@string/guide_5_step"
-        android:gravity="center"
-        android:textColor="@color/text_gray"
-        android:layout_marginBottom="10dp"/>
-
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="0.80"
+        android:gravity="center_horizontal">
 
-
-        <Button
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/guide_5_button"
-            android:background="@drawable/aqua_button"
-            android:textColor="@android:color/white"
-            android:id="@+id/btn_next"
-            android:textSize="16sp"
-            android:onClick="onNextClick"
-            android:layout_weight="1" />
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:text="@string/guide_5_step"
+            android:gravity="center"
+            android:textColor="@color/text_gray"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/guide_5_button"
+                android:background="@drawable/aqua_button"
+                android:textColor="@android:color/white"
+                android:id="@+id/btn_next"
+                android:textSize="14sp"
+                android:onClick="onNextClick"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

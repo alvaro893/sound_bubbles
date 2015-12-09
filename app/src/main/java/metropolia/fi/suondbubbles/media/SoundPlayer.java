@@ -129,6 +129,7 @@ public class SoundPlayer {
     public void releaseSoundPlayer(){
         if(mediaPlayer != null){
             mediaPlayer.release();
+            mediaPlayer = null;
         }
 
     }
@@ -140,5 +141,7 @@ public class SoundPlayer {
     public int getDuration(){
         return mediaPlayer.getDuration();
     }
+
+
 
 }
