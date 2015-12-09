@@ -12,6 +12,14 @@
     tools:context="metropolia.fi.suondbubbles.activities.RecordActivity"
     tools:showIn="@layout/activity_record">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:gravity="center|top"
+        android:text="@string/title_activity_record"
+        android:autoText="false" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -51,7 +59,7 @@
             android:layout_height="wrap_content"
             android:gravity="center">
 
-            <Button
+            <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/play_fab"
                 android:layout_width="54dp"
                 android:layout_height="54dp"
@@ -59,17 +67,16 @@
                 android:background="@drawable/small_buttons_record"
                 android:onClick="clickPlayButton"
                 android:color="@color/passive_aqua"
-                android:drawableLeft="@android:drawable/ic_media_play"
-                android:drawableTint="@color/passive_aqua"
-                android:paddingLeft="12dp"/>
+                android:src="@android:drawable/ic_media_play"
+                android:tint="@color/passive_aqua"/>
 
-            <Button
+            <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/record_button"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_margin="@dimen/fab_margin"
+                android:tint="@color/passive_aqua"
                 android:background="@drawable/big_record_button"
-                android:paddingLeft="25dp"
                 android:onClick="clickRecordButton" />
 
             <Button
