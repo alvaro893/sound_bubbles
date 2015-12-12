@@ -1,17 +1,11 @@
 package metropolia.fi.suondbubbles.apiConnection;
 
-import android.util.Log;
-
-import org.json.JSONObject;
-
 import java.io.Serializable;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 /**
  * - This is a JavaBean that contains all information related to every file from the server
- * - It contains all possible fields from server which are the following:
+ * - It contains all possible fields from server which are the following (although, not all are used):
  *
  0:  {
  Metadata name: "Title"
@@ -89,7 +83,7 @@ public class ServerFile implements Serializable {
             tags, creator, language, publisher, rights, location, source, link, pathLocalFile;
     private int length, collectionID;
     private double fileSize;
-    /** this match the name of the field in the java bean with the name in the remote database **/
+    /** this match the name of the field in this java bean with the name in the remote database **/
     public static final HashMap<String,String> fieldMap = new HashMap<String,String>()
     {{      put("title",   "field8");
             put("category",   "field75");

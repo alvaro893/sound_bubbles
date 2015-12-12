@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 /**
  * Created by Alvaro on 24/11/2015.
+ * This class is meant to help the upload method in ServerConnection method
  * Mandaroty parameters (copy from server documentation)
  key=[string]          			auth key
  userfile=[@file]        		set the file path

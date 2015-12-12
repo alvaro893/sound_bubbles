@@ -8,9 +8,11 @@ import org.json.JSONObject;
 
 
 /**
- * Created by alvarob on 16.11.2015.
+ * Created by Alvaro on 16.11.2015.
+ * This class is meant to create a Java Bean 'ServerFile' from an obtained JSON
  */
 public class JSONtoServerFile {
+    /**  */
     public ServerFile[] parseJSON(JSONArray jsonArray){
         ServerFile[] fileArray = null;
         try {

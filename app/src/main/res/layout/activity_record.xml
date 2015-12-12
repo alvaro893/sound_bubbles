@@ -9,6 +9,38 @@
     android:fitsSystemWindows="true"
     tools:context="metropolia.fi.suondbubbles.activities.RecordActivity">
 
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <metropolia.fi.suondbubbles.layouts.VerticalTextView
+        style="@style/verticalTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        />
+
+        <metropolia.fi.suondbubbles.layouts.VerticalTextView
+            style="@style/verticalTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.02"
+            android:text="Slide here"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:background="@color/passive_red"
+            />
+
+        <metropolia.fi.suondbubbles.layouts.VerticalTextView
+            style="@style/verticalTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            />
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
 
     <include layout="@layout/content_record"/>
 
@@ -29,7 +61,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Recordings"
-                android:textSize="35dp"/>
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textSize="35sp"/>
 
             <ListView
                 android:layout_width="match_parent"
