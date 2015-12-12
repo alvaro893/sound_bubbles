@@ -33,7 +33,7 @@ import java.util.Map;
  * auth -> authentication: it gets the api key
  * search -> get a list of files
  * upload -> upload recording file from the phone
- * getCategories -> get categories dinamicly from the server**/
+ * getCategories -> get categories dynamically from the server**/
 public class ServerConnection {
     public String Lastresponse;
     private String message;
@@ -52,7 +52,10 @@ public class ServerConnection {
     }
 
 
-
+    /** Get the Api key for an correct given user/password pair. The key is stored in @apiKey field
+     * @param user
+     * @param  pass
+     * */
     public void auth(String user, String pass) throws NoApiKeyException {
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_auth/auth.php/");
@@ -81,6 +84,10 @@ public class ServerConnection {
             e.printStackTrace();
         }
     }
+    /** Sends a search string to the server using the collection that the user selected in the
+     *  login screen.
+     *  @param search the search
+     *  @return The result of the search in a String JSON*/
     public String search(String search){
 
         Uri.Builder uri = setUri();
@@ -93,6 +100,11 @@ public class ServerConnection {
         String builtUrl = uri.build().toString();
         return doHttpGetRequest(builtUrl);
     }
+
+    /** Performs an "multipart/form-data" POST request  sending a ServerFile object as the body of this request, including
+     * both the metedata and the binary file itself. It uses ServerFileToParameters class for this
+     * purpose.
+     * @param serverFile The file to upload with its metadata*/
     public String upload(ServerFile serverFile) {
         String crlf = "\r\n";
         String twoHyphens = "--";
@@ -167,6 +179,7 @@ public class ServerConnection {
         }
         return getResponse(httpUrlConnection);
     }
+    /** Return and array with the catagories used in this API */
     public String[] getCategories(){
         Uri.Builder uri = setUri();
         uri.appendEncodedPath("api_upload/help_options.php");
@@ -198,6 +211,9 @@ public class ServerConnection {
         return uri;
     }
 
+    /** Makes an GET request
+     * @param urlString the destiny and the parameters of the GET request
+     * @return it returns a String JSON response*/
     private String doHttpGetRequest(String urlString){
         StringBuffer sb = new StringBuffer();
 
@@ -206,7 +222,6 @@ public class ServerConnection {
             URL url = new URL(urlString);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            //readStream(in);
 
             BufferedReader bf = new BufferedReader(new InputStreamReader(in));
             sb = new StringBuffer("");
@@ -223,7 +238,10 @@ public class ServerConnection {
             return sb.toString();
         }
     }
-
+    /** Makes an POST request using a JSON body. It can't be used to upload a file, use method
+     * upload() instead.
+     * @param urlString the url of the post request destiny
+     * @param params the parameters of the post request payload (will be converted to JSON)*/
     private String doHttpPostRequest(String urlString, HashMap<String,String> params){
         StringBuffer sb;
         String response = "some error happend";
@@ -272,7 +290,8 @@ public class ServerConnection {
         }
     }
 
-    /** converts a file into array of bytes **/
+    /** converts a file into an array of bytes
+     * @param inStream the stream of the file **/
     private byte[] inputStreamToByteArray(InputStream inStream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[8192];
