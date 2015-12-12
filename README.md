@@ -1,5 +1,15 @@
 # Sound bubbles
 
+## The App
+### Playing with sounds
+The user can play the sounds draging them as bubbles
+![image](screenshots/Screenshot_2015-12-13-00-25-48.png)
+### Recording sounds
+![image](screenshots/Screenshot_2015-12-13-00-25-56.png)
+### Search files from Museo database
+![image](screenshots/Screenshot_2015-12-13-00-30-02.png)
+### More screenshoots
+![image](screenshots/Screenshot_2015-12-13-00-27-38.png)
 
 ## Pushing changes to this Repository
 - Never push directly to the master
@@ -9,7 +19,7 @@ Hence you first make a branch:
 - `git checkout -b your-branch-name`
 - add the changed files `git add --all` for all files
 - `git commit -m 'my commit message'`
--  Before push download the last changes with: `git pull origin master`
+-  Before push download the last changes with: `git fetch && git rebase origin/master` or `git pull origin master`
 - `git push origin your-branch-name`
 After that, go to GitHub:
 - review your code and if needed make changes locally and push again
